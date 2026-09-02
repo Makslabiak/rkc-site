@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Услуги РКС-НР — реализация масштабных проектов жилищного строительства и инфраструктуры">
+  <title>Услуги — РКС-НР</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="services-page.css">
+  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js" defer></script>
+  <script src="assets/vendor/gsap.min.js" defer></script>
+  <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
+  <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="services-page.js" defer></script>
+  <script src="animations.js" defer></script>
+</head>
+<body class="services-page">
+  <a class="skip-link" href="#main">Перейти к&nbsp;содержимому</a>
+
+  <header class="services-cover" id="top">
+    <div class="site-header">
+      <a class="site-logo" href="index.html" aria-label="РКС-НР — на главную">
+        <img src="assets/icons/logo-header.svg" width="142" height="54" alt="РКС-НР">
+      </a>
+
+      <nav class="desktop-nav" aria-label="Основная навигация" data-anim="typeChars" data-anim-target="a" data-anim-on-load>
+        <div class="desktop-nav__group">
+          <a href="index.html#company">О&nbsp;компании</a>
+          <a href="services.html" aria-current="page">Услуги</a>
+          <a href="index.html#projects">Проекты</a>
+        </div>
+        <div class="desktop-nav__group">
+          <a href="index.html#news">Новости</a>
+          <a href="#contacts">Контакты</a>
+        </div>
+      </nav>
+
+      <div class="site-header__actions">
+        <button class="menu-button button--fill-hover" type="button" aria-expanded="false" aria-controls="mobile-menu"><span class="button__text button__text--current">Меню</span><span class="button__text button__text--hover" aria-hidden="true">Меню</span></button>
+        <button class="language-button button--fill-hover" type="button" aria-label="Выбран русский язык"><span class="button__text button__text--current">RU</span><span class="button__text button__text--hover" aria-hidden="true">RU</span></button>
+      </div>
+    </div>
+    <h1 class="services-cover__title">Услуги</h1>
+  </header>
+
+  <div class="menu-panel" id="mobile-menu" hidden>
+    <nav class="menu-panel__nav" aria-label="Основная навигация">
+      <a href="index.html#company">О&nbsp;компании</a>
+      <a href="services.html" aria-current="page">Услуги</a>
+      <a href="index.html#projects">Проекты</a>
+      <a href="index.html#news">Новости</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    <div class="menu-panel__contacts">
+      <p class="menu-panel__contacts-title">Свяжитесь с&nbsp;нами</p>
+      <div class="menu-panel__contacts-content">
+        <div class="menu-panel__contacts-links">
+          <a href="tel:+74951472233">+7&nbsp;(495)&nbsp;147-22-33</a>
+          <a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a>
+        </div>
+        <p>Пн-Пт с&nbsp;9:00 до&nbsp;18:00</p>
+        <p>125167, город Москва,<br>Ленинградский проспект, д.&nbsp;47, стр.&nbsp;3, подъезд&nbsp;3</p>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+    <section class="services-hero" aria-labelledby="services-hero-title">
+      <div class="services-hero__media image-tone" aria-hidden="true" data-dither-scale="1">
+        <img src="assets/images/services-hero-3.jpg" alt="">
+      </div>
+      <h2 class="services-hero__title" id="services-hero-title">Мы&nbsp;предоставляем весь спектр услуг по&nbsp;реализации масштабных проектов жилищно-коммунального строительства и&nbsp;крупных инфраструктурных проектов</h2>
+    </section>
+
+    <section class="services-catalog" aria-labelledby="services-catalog-title">
+      <div class="services-catalog__intro">
+        <h2 id="services-catalog-title">Наши услуги</h2>
+        <div class="services-catalog__image image-tone" aria-hidden="true" data-dither-scale="1">
+          <img src="assets/images/services-intro-1.jpg" alt="">
+        </div>
+      </div>
+
+      <div class="service-accordion">
+        <article class="service-accordion__item" id="service-1">
+          <button class="service-accordion__header" type="button" aria-expanded="false" aria-controls="service-panel-1" id="service-button-1">
+            <span class="service-accordion__number">01</span>
+            <span class="service-accordion__name">EPCM<br>контракт</span>
+            <span class="service-accordion__description">В&nbsp;случае, когда Заказчик предпочитает самостоятельно контролировать все этапы строительства, мы&nbsp;оказываем услуги в&nbsp;рамках EPCM-контракта.</span>
+            <span class="service-accordion__toggle" aria-hidden="true"><img src="assets/icons/accordion-up.svg" alt=""></span>
+          </button>
+          <div class="service-accordion__panel" id="service-panel-1" role="region" aria-labelledby="service-button-1" hidden>
+            <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
+            <ul>
+              <li>Управление проектированием и&nbsp;согласование проектных решений с&nbsp;Заказчиком.</li>
+              <li>Организация закупок материалов, оборудования и&nbsp;работ.</li>
+              <li>Координация подрядных организаций на&nbsp;всех этапах реализации проекта.</li>
+              <li>Контроль сроков, стоимости и&nbsp;качества строительства.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="service-accordion__item is-open" id="service-2">
+          <button class="service-accordion__header" type="button" aria-expanded="true" aria-controls="service-panel-2" id="service-button-2">
+            <span class="service-accordion__number">02</span>
+            <span class="service-accordion__name">EPC<br>контракт</span>
+            <span class="service-accordion__description">Оказываем услуги генерального подрядчика при реализации проектов строительства, капитального ремонта и&nbsp;реконструкции объектов жилищного строительства и&nbsp;крупных инфраструктурных проектов</span>
+            <span class="service-accordion__toggle" aria-hidden="true"><img src="assets/icons/accordion-up.svg" alt=""></span>
+          </button>
+          <div class="service-accordion__panel" id="service-panel-2" role="region" aria-labelledby="service-button-2">
+            <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
+            <ul>
+              <li>Разработка технических заданий и&nbsp;проведение закупочных процедур по&nbsp;выбору субподрядчиков по&nbsp;заданным критериям. Проведение технико-экономических, юридических, финансовых и&nbsp;коммерческих экспертиз. Договорная работа.</li>
+              <li>Выполнение проектно-изыскательских работ. Обеспечение субподрядных организаций проектно-сметной документацией, прошедшей экспертизу.</li>
+              <li>Разработка графиков выполнения строительно-монтажных работ, поставок материалов, механизмов и&nbsp;оборудования и&nbsp;контроль их&nbsp;выполнения с&nbsp;предоставлением Заказчику аналитических отчетов по&nbsp;ходу выполнения работ.</li>
+              <li>Разработка детальных бюджетов проектов и&nbsp;контроль их&nbsp;выполнения с&nbsp;предоставлением Заказчику финансовой аналитики.</li>
+              <li>Контроль и&nbsp;координация действий (в&nbsp;штабном режиме) субподрядных организаций в&nbsp;ходе реализации проекта.</li>
+              <li>Обеспечение безопасности труда: планирование и&nbsp;проведение мероприятий по&nbsp;охране окружающей среды.</li>
+              <li>Участие в&nbsp;приемке объекта в&nbsp;эксплуатацию и&nbsp;передача документации по&nbsp;проекту Заказчику.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="service-accordion__item" id="service-3">
+          <button class="service-accordion__header" type="button" aria-expanded="false" aria-controls="service-panel-3" id="service-button-3">
+            <span class="service-accordion__number">03</span>
+            <span class="service-accordion__name">Технический<br>заказчик</span>
+            <span class="service-accordion__description">Заказчик вправе без согласия Подрядчика привлекать инженерную организацию для контроля строительства и&nbsp;принятия решений во&nbsp;взаимоотношениях с&nbsp;Подрядчиком.</span>
+            <span class="service-accordion__toggle" aria-hidden="true"><img src="assets/icons/accordion-up.svg" alt=""></span>
+          </button>
+          <div class="service-accordion__panel" id="service-panel-3" role="region" aria-labelledby="service-button-3" hidden>
+            <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
+            <ul>
+              <li>Получение исходно-разрешительной документации и&nbsp;технических условий.</li>
+              <li>Сопровождение проектирования, экспертизы и&nbsp;согласований.</li>
+              <li>Строительный контроль и&nbsp;координация участников проекта.</li>
+              <li>Организация приемки и&nbsp;ввода объекта в&nbsp;эксплуатацию.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="service-accordion__item" id="service-4">
+          <button class="service-accordion__header" type="button" aria-expanded="false" aria-controls="service-panel-4" id="service-button-4">
+            <span class="service-accordion__number">04</span>
+            <span class="service-accordion__name">Стоимостной<br>инжиниринг</span>
+            <span class="service-accordion__description">Предоставляем услуги стоимостного инжиниринга на&nbsp;всех этапах жизненного цикла с&nbsp;целью оптимизации стоимости проектов</span>
+            <span class="service-accordion__toggle" aria-hidden="true"><img src="assets/icons/accordion-up.svg" alt=""></span>
+          </button>
+          <div class="service-accordion__panel" id="service-panel-4" role="region" aria-labelledby="service-button-4" hidden>
+            <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
+            <ul>
+              <li>Оценка инвестиционной стоимости и&nbsp;формирование бюджета проекта.</li>
+              <li>Сметное нормирование и&nbsp;проверка стоимости работ и&nbsp;материалов.</li>
+              <li>Аудит бюджета, прогнозирование и&nbsp;контроль отклонений.</li>
+              <li>Стоимостная оценка изменений проектных решений.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="service-accordion__item" id="service-5">
+          <button class="service-accordion__header" type="button" aria-expanded="false" aria-controls="service-panel-5" id="service-button-5">
+            <span class="service-accordion__number">05</span>
+            <span class="service-accordion__name">Специализированный<br>застройщик</span>
+            <span class="service-accordion__description">Являемся экспертами в&nbsp;строительстве жилых домов бизнес- и&nbsp;комфорт-класса, а&nbsp;также активно участвуем в&nbsp;программе льготного кредитования</span>
+            <span class="service-accordion__toggle" aria-hidden="true"><img src="assets/icons/accordion-up.svg" alt=""></span>
+          </button>
+          <div class="service-accordion__panel" id="service-panel-5" role="region" aria-labelledby="service-button-5" hidden>
+            <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
+            <ul>
+              <li>Разработка концепции и&nbsp;подготовка исходно-разрешительной документации.</li>
+              <li>Организация проектирования, строительства и&nbsp;авторского надзора.</li>
+              <li>Финансовое планирование и&nbsp;контроль реализации проекта.</li>
+              <li>Ввод объекта в&nbsp;эксплуатацию и&nbsp;передача готовых помещений.</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="advantages" aria-labelledby="advantages-title">
+      <h2 class="advantages__title" id="advantages-title"><span>Наши</span><span>преимущества</span></h2>
+      <div class="advantages__grid">
+        <article class="advantage-card"><strong>01</strong><p>Мобилизация большого количества работников и&nbsp;техники в&nbsp;кратчайшие сроки.</p></article>
+        <article class="advantage-card"><strong>02</strong><p>Организация работ в&nbsp;сложных условиях</p></article>
+        <article class="advantage-card"><strong>03</strong><p>Достижение поставленных целей в&nbsp;кратчайшие сроки и&nbsp;в&nbsp;условиях ограниченных ресурсов</p></article>
+        <article class="advantage-card"><strong>04</strong><p>Одновременное управление множеством подрядных организаций</p></article>
+        <article class="advantage-card"><strong>05</strong><p>Продуктивное взаимодействие со&nbsp;структурами Правительства&nbsp;РФ</p></article>
+        <article class="advantage-card"><strong>06</strong><p>Успешный опыт команды ООО&nbsp;«РКС-НР» в&nbsp;реализации масштабных инфраструктурных проектов</p></article>
+      </div>
+    </section>
+
+    <section class="services-cta" aria-labelledby="services-cta-title">
+      <div class="services-cta__image image-tone" aria-hidden="true" data-dither-scale="1">
+        <img src="assets/images/services-cta-1.jpg" alt="">
+      </div>
+      <h2 class="services-cta__title" id="services-cta-title">Строим<br>новую историю</h2>
+      <p class="services-cta__descriptor">Восстанавливаем объекты там, где это труднее всего</p>
+      <a class="button services-cta__button" href="mailto:mail@rks-nr.ru"><span class="button__text button__text--current">Оставить заявку</span><span class="button__text button__text--hover" aria-hidden="true">Оставить заявку</span></a>
+    </section>
+  </main>
+
+  <footer class="footer" id="contacts">
+    <img class="footer__background" src="assets/images/hero.jpg" alt="">
+    <img class="footer__logo" src="assets/icons/logo-footer.svg" width="738" height="147" alt="РКС-НР">
+    <div class="footer__nav">
+      <nav aria-label="Навигация в подвале">
+        <a href="index.html#company">О&nbsp;компании</a>
+        <a href="services.html" aria-current="page">Услуги</a>
+        <a href="index.html#projects">Проекты</a>
+        <a href="index.html#news">Новости</a>
+        <a href="#contacts">Контакты</a>
+        <a href="#">Охрана труда</a>
+        <a href="#">Этика и&nbsp;ответственность</a>
+        <a href="#">Противодействие коррупции</a>
+      </nav>
+      <div class="footer__socials"><a href="#">MAX</a><a href="#">Telegram</a></div>
+    </div>
+    <div class="footer__contacts">
+      <div><a href="tel:+74951472233">+7&nbsp;(495)&nbsp;147-22-33</a><a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a></div>
+      <div class="footer__legal"><a href="#"><span class="footer__legal-line">Согласие на обработку</span><span class="footer__legal-line">персональных данных</span></a><a href="#"><span class="footer__legal-line">Политика в отношении обработки</span><span class="footer__legal-line">персональных данных</span></a></div>
+    </div>
+    <p class="footer__copyright">©&nbsp;ООО&nbsp;«РКС-НР», 2026. Все права защищены</p>
+  </footer>
+
+  <script src="annotator-tool%C2%A0%E2%80%94%20%D0%BA%D0%BE%D0%BF%D0%B8%D1%8F/annotator.js"></script>
+</body>
+</html>

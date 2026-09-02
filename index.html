@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="РКС-НР — строительство и восстановление объектов в новых регионах России">
+  <title>РКС-НР — первые в&nbsp;строительстве новой истории</title>
+  <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/images/hero.jpg" as="image" fetchpriority="high">
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add('has-anim');</script>
+  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js" defer></script>
+  <script src="assets/vendor/gsap.min.js" defer></script>
+  <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
+  <script src="assets/vendor/SplitText.min.js" defer></script>
+  <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="animations.js" defer></script>
+</head>
+<body>
+  <div class="loader" aria-hidden="true">
+    <span class="loader__backdrop"></span>
+    <img class="loader__logo" src="assets/icons/logo-header.svg" width="142" height="54" alt="">
+  </div>
+
+  <a class="skip-link" href="#main">Перейти к&nbsp;содержимому</a>
+
+  <header class="hero" id="top">
+    <div class="hero__media" data-dither-src="assets/images/hero.jpg" aria-hidden="true">
+      <span class="hero__shade"></span>
+    </div>
+    <div class="site-header">
+      <a class="site-logo" href="#top" aria-label="РКС-НР — на главную">
+        <img src="assets/icons/logo-header.svg" width="142" height="54" alt="РКС-НР">
+      </a>
+
+      <nav class="desktop-nav" aria-label="Основная навигация" data-anim="typeChars" data-anim-target="a" data-anim-on-load>
+        <div class="desktop-nav__group">
+          <a href="#company">О&nbsp;компании</a>
+          <a href="services.html">Услуги</a>
+          <a href="#projects">Проекты</a>
+        </div>
+        <div class="desktop-nav__group">
+          <a href="#news">Новости</a>
+          <a href="#contacts">Контакты</a>
+        </div>
+      </nav>
+
+      <div class="site-header__actions">
+        <button class="menu-button button--fill-hover" type="button" aria-expanded="false" aria-controls="mobile-menu"><span class="button__text button__text--current">Меню</span><span class="button__text button__text--hover" aria-hidden="true">Меню</span></button>
+        <button class="language-button button--fill-hover" type="button" aria-label="Выбран русский язык"><span class="button__text button__text--current">RU</span><span class="button__text button__text--hover" aria-hidden="true">RU</span></button>
+      </div>
+    </div>
+
+    <div class="hero__lines" data-anim="line" data-anim-target=".hero__line" data-anim-stagger=".08" aria-hidden="true">
+      <div class="hero__line hero__line--nav-left"></div>
+      <div class="hero__line hero__line--nav-right"></div>
+      <div class="hero__line hero__line--top"></div>
+      <div class="hero__line hero__line--bottom"></div>
+      <div class="hero__line hero__line--left-bottom"></div>
+    </div>
+    <p class="hero__descriptor" data-anim="lineUp" data-anim-duration=".8" data-anim-delay=".4" data-anim-stagger=".14">Восстановление объектов<br>жилищного и&nbsp;социально-бытового<br>назначения в&nbsp;новых регионах России</p>
+    <h1 class="hero__title" data-anim="title" data-anim-start="top 100%">Первые в&nbsp;строительстве новой истории</h1>
+  </header>
+
+  <div class="menu-panel" id="mobile-menu" hidden>
+    <nav class="menu-panel__nav" aria-label="Основная навигация">
+      <a href="#company">О&nbsp;компании</a>
+      <a href="services.html">Услуги</a>
+      <a href="#projects">Проекты</a>
+      <a href="#news">Новости</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    <div class="menu-panel__contacts">
+      <p class="menu-panel__contacts-title">Свяжитесь с&nbsp;нами</p>
+      <div class="menu-panel__contacts-content">
+        <div class="menu-panel__contacts-links">
+          <a href="tel:+74951472233">+7&nbsp;(495)&nbsp;147-22-33</a>
+          <a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a>
+        </div>
+        <p>Пн-Пт с&nbsp;9:00 до&nbsp;18:00</p>
+        <p>125167, город Москва,<br>Ленинградский проспект, д.&nbsp;47, стр.&nbsp;3, подъезд&nbsp;3</p>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+    <section class="company-intro" id="company">
+      <div class="company-intro__steps" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <h2 class="company-intro__lead" data-anim="lineUp">Наша компания осуществляет функции генерального подрядчика строительства и&nbsp;восстановления объектов жилищной и&nbsp;социально-культурной сферы в&nbsp;новых регионах Российской Федерации</h2>
+      <div class="company-intro__copy">
+        <p data-anim="lineUp">ООО&nbsp;«РКС-НР» было создано в&nbsp;2022&nbsp;году по&nbsp;поручению Министерства строительства и&nbsp;жилищно-коммунального хозяйства Российской Федерации для&nbsp;участия в&nbsp;реализации специального инфраструктурного проекта.</p>
+        <p data-anim="lineUp" data-anim-delay=".15">В&nbsp;марте 2023&nbsp;года Минстроем России было принято решение о&nbsp;расширении деятельности ООО&nbsp;«РКС-НР» по&nbsp;реализации проектов в&nbsp;других регионах Российской Федерации, странах Ближнего Зарубежья и&nbsp;дружественных странах.</p>
+      </div>
+    </section>
+
+    <section class="stats" aria-labelledby="stats-title">
+      <h2 class="stats__title" id="stats-title"><span data-anim="title">Компания</span><span data-anim="title" data-anim-delay=".12">в&nbsp;цифрах</span></h2>
+      <p class="stats__eyebrow" data-anim="lineUp" data-anim-delay=".2">В&nbsp;рамках реализации специального инфраструктурного проекта в&nbsp;сжатые сроки</p>
+      <div class="stats__image image-tone" data-anim="fadeIn" aria-hidden="true">
+        <img src="assets/images/company-workers.jpg" alt="">
+      </div>
+      <div class="stats__list" data-anim="stats" data-anim-duration=".72" data-anim-stagger=".26">
+        <article class="stat-item" tabindex="0">
+          <strong>30&nbsp;000</strong>
+          <p>Привлечено специалистов в&nbsp;области строительства</p>
+        </article>
+        <article class="stat-item" tabindex="0">
+          <strong>1&nbsp;841</strong>
+          <p>Восстановлено объектов, в&nbsp;т.&nbsp;ч. в&nbsp;объеме теплового контура</p>
+        </article>
+        <article class="stat-item" tabindex="0">
+          <strong>405</strong>
+          <p>Демонтировано аварийных объектов</p>
+        </article>
+        <article class="stat-item" tabindex="0">
+          <strong>2&nbsp;275</strong>
+          <p>Положительных заключений от&nbsp;Главгосэкспертизы РФ</p>
+        </article>
+        <a class="button stats__button" href="#company"><span class="button__text button__text--current">Подробнее о&nbsp;компании</span><span class="button__text button__text--hover" aria-hidden="true">Подробнее о&nbsp;компании</span></a>
+      </div>
+    </section>
+
+    <section class="projects" id="projects" aria-labelledby="projects-title">
+      <h2 class="section-title projects__title" id="projects-title" data-anim="title">Реализованные проекты</h2>
+      <div class="projects__grid">
+        <article class="project-card">
+          <span class="project-card__number" data-anim="typeChars">01</span>
+          <h3 data-anim="lineUp">Восстановительные работы</h3>
+          <a class="project-card__media image-tone" href="#" aria-label="Подробнее: Восстановительные работы">
+            <img src="assets/images/project-restoration.jpg" alt="Восстановленный жилой дом">
+            <span class="project-card__arrow" aria-hidden="true"><img src="assets/icons/arrow-box.svg" width="90" height="90" alt=""></span>
+          </a>
+          <p data-anim="lineUp" data-anim-delay=".1">Ремонтно-восстановительные работы более 1&nbsp;500 объектов жилищного строительства Донецкой Народной Республики</p>
+        </article>
+
+        <article class="project-card">
+          <span class="project-card__number" data-anim="typeChars" data-anim-delay=".3">02</span>
+          <h3 data-anim="lineUp" data-anim-delay=".3">Новые жилые дома</h3>
+          <a class="project-card__media image-tone" href="#" aria-label="Подробнее: Новые жилые дома">
+            <img src="assets/images/project-houses.jpg" alt="Новые жилые дома">
+            <span class="project-card__arrow" aria-hidden="true"><img src="assets/icons/arrow-box.svg" width="90" height="90" alt=""></span>
+          </a>
+          <p data-anim="lineUp" data-anim-delay=".4">Строительство 45&nbsp;000&nbsp;кв.&nbsp;м жилья в&nbsp;рамках реализации специального инфраструктурного проекта в&nbsp;ДНР</p>
+          <a class="button projects__button projects__button--desktop" href="#" data-anim="fadeUp" data-anim-delay=".5"><span class="button__text button__text--current">Все проекты</span><span class="button__text button__text--hover" aria-hidden="true">Все проекты</span></a>
+        </article>
+
+        <article class="project-card">
+          <span class="project-card__number" data-anim="typeChars" data-anim-delay=".6">03</span>
+          <h3 data-anim="lineUp" data-anim-delay=".6">Объекты здравоохранения</h3>
+          <a class="project-card__media image-tone" href="#" aria-label="Подробнее: Объекты здравоохранения">
+            <img src="assets/images/project-healthcare.jpg" alt="Восстановленный объект здравоохранения">
+            <span class="project-card__arrow" aria-hidden="true"><img src="assets/icons/arrow-box.svg" width="90" height="90" alt=""></span>
+          </a>
+          <p data-anim="lineUp" data-anim-delay=".7">Восстановительные работы ключевых объектов здравоохранения в&nbsp;городах Мариуполе и&nbsp;Волновахе</p>
+        </article>
+      </div>
+      <a class="button projects__button projects__button--adaptive" href="#" data-anim="fadeUp"><span class="button__text button__text--current">Все проекты</span><span class="button__text button__text--hover" aria-hidden="true">Все проекты</span></a>
+    </section>
+
+    <section class="services" id="services" aria-labelledby="services-title">
+      <div class="services__intro-sticky">
+        <div class="services__intro">
+          <h2 class="section-title" id="services-title" data-anim="title">Услуги</h2>
+          <p data-anim="lineUp" data-anim-delay=".2">Высокие компетенции в&nbsp;области реализации масштабных проектов в&nbsp;строительстве</p>
+        </div>
+      </div>
+      <div class="services__list">
+        <article class="service-card">
+          <div class="service-card__media image-tone"><img src="assets/images/service-epcm.jpg" alt="Строительная площадка"></div>
+          <div class="service-card__content">
+            <div class="service-card__head"><h3>ЕРСМ</h3><span data-anim="typeChars">01</span></div>
+            <p>Оказываем услуги в&nbsp;рамках ЕРСМ-контракта</p>
+            <a class="text-link" href="services.html#service-1">Подробнее</a>
+          </div>
+        </article>
+        <article class="service-card">
+          <div class="service-card__media image-tone"><img src="assets/images/service-epc.jpg" alt="Строительство высотного здания"></div>
+          <div class="service-card__content">
+            <div class="service-card__head"><h3>ЕРС</h3><span data-anim="typeChars">02</span></div>
+            <p>Ген.&nbsp;подрядчик при&nbsp;строительстве, капитальном ремонте и&nbsp;реконструкции</p>
+            <a class="text-link" href="services.html#service-2">Подробнее</a>
+          </div>
+        </article>
+        <article class="service-card">
+          <div class="service-card__media image-tone"><img src="assets/images/service-cost-raw.jpg" alt="Работа со строительной документацией"></div>
+          <div class="service-card__content">
+            <div class="service-card__head"><h3>Стоимостной инжиниринг</h3><span data-anim="typeChars">03</span></div>
+            <p>Стоимостный инжиниринг на&nbsp;всех этапах жизненного цикла</p>
+            <a class="text-link" href="services.html#service-4">Подробнее</a>
+          </div>
+        </article>
+        <article class="service-card">
+          <div class="service-card__media image-tone"><img src="assets/images/service-client.jpg" alt="Контроль строительства"></div>
+          <div class="service-card__content">
+            <div class="service-card__head"><h3>Технический заказчик</h3><span data-anim="typeChars">04</span></div>
+            <p>Контроль и&nbsp;надзор за&nbsp;строительством</p>
+            <a class="text-link" href="services.html#service-3">Подробнее</a>
+          </div>
+        </article>
+        <article class="service-card">
+          <div class="service-card__media image-tone"><img src="assets/images/service-developer-raw.jpg" alt="Новый жилой комплекс"></div>
+          <div class="service-card__content">
+            <div class="service-card__head"><h3>Специализированный застройщик</h3><span data-anim="typeChars">05</span></div>
+            <p>Девелопмент</p>
+            <a class="text-link" href="services.html#service-5">Подробнее</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="video-section" aria-label="Видео о компании">
+      <div class="video-frame">
+        <div class="video-frame__ticker video-frame__ticker--top" aria-hidden="true">Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории</div>
+        <div class="video-frame__ticker video-frame__ticker--right" aria-hidden="true">Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории</div>
+        <div class="video-frame__ticker video-frame__ticker--bottom" aria-hidden="true">Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории</div>
+        <div class="video-frame__ticker video-frame__ticker--left" aria-hidden="true">Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории</div>
+        <div class="video-frame__media image-tone image-tone--hero">
+          <img src="assets/images/video-cover.jpg" alt="Строительство жилого комплекса">
+          <button class="play-button" type="button" aria-label="Воспроизвести видео">
+            <img src="assets/icons/play.svg" width="127" height="127" alt="">
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="news" id="news" aria-labelledby="news-title">
+      <div class="news__header">
+        <h2 class="section-title" id="news-title" data-anim="title">Новости</h2>
+        <a class="text-link" href="#news" data-anim="typeChars">Все новости</a>
+      </div>
+      <div class="news__layout">
+        <div class="news__image image-tone image-tone--hero" data-anim="fadeIn"><img src="assets/images/news.jpg" alt="Панорама города ночью"></div>
+        <div class="news__grid" data-anim="fadeUp" data-anim-target=".news-card">
+          <a class="news-card news-card--featured is-active" href="#">
+            <time datetime="2026-02-04">04.02.2026</time>
+            <span>В&nbsp;доме на&nbsp;проспекте Ленина в&nbsp;Мариуполе выполняется чистовой ремонт квартир.</span>
+            <span class="news-card__arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="news-card" href="#">
+            <time datetime="2026-02-02">02.02.2026</time>
+            <span>ООО&nbsp;«РКС-НР» совместно с&nbsp;Фондом капитального ремонта Московской области завершил восстановление дома 1993&nbsp;года постройки на&nbsp;проспекте Маршала Жукова</span>
+            <span class="news-card__arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="news-card" href="#">
+            <time datetime="2026-01-27">27.01.2026</time>
+            <span>В&nbsp;рамках программы «Благоустройство придомовых территорий 2024–2026» завершены работы во&nbsp;дворе дома на&nbsp;улице Кронштадтской в&nbsp;Мариуполе</span>
+            <span class="news-card__arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="news-card" href="#">
+            <time datetime="2026-01-23">23.01.2026</time>
+            <span>В&nbsp;Мариуполе завершено восстановление дома в&nbsp;Орджоникидзевском районе</span>
+            <span class="news-card__arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="contacts">
+    <img class="footer__logo" src="assets/icons/logo-footer.svg" width="738" height="147" alt="РКС-НР">
+    <div class="footer__nav">
+      <nav aria-label="Навигация в подвале" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom">
+        <a href="#company">О&nbsp;компании</a>
+        <a href="services.html">Услуги</a>
+        <a href="#projects">Проекты</a>
+        <a href="#news">Новости</a>
+        <a href="#contacts">Контакты</a>
+        <a href="#">Охрана труда</a>
+        <a href="#">Этика и&nbsp;ответственность</a>
+        <a href="#">Противодействие коррупции</a>
+      </nav>
+      <div class="footer__socials" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom"><a href="#">MAX</a><a href="#">Telegram</a></div>
+    </div>
+    <div class="footer__contacts">
+      <div data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom"><a href="tel:+74951472233">+7&nbsp;(495)&nbsp;147-22-33</a><a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a></div>
+      <div class="footer__legal" data-anim="fadeIn" data-anim-target="a" data-anim-start="top bottom"><a href="#"><span class="footer__legal-line">Согласие на обработку</span><span class="footer__legal-line">персональных данных</span></a><a href="#"><span class="footer__legal-line">Политика в отношении обработки</span><span class="footer__legal-line">персональных данных</span></a></div>
+    </div>
+    <p class="footer__copyright" data-anim="typeChars" data-anim-start="top bottom">©&nbsp;ООО&nbsp;«РКС-НР», 2026. Все права защищены</p>
+  </footer>
+  <script src="annotator-tool%C2%A0%E2%80%94%20%D0%BA%D0%BE%D0%BF%D0%B8%D1%8F/annotator.js"></script>
+</body>
+</html>

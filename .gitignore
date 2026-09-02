@@ -1,0 +1,12 @@
+.DS_Store
+Thumbs.db
+
+# Local development artifacts
+node_modules/
+.env
+.env.*
+!.env.example
+
+# OS/editor files
+.idea/
+.vscode/
