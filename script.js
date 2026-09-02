@@ -1,3 +1,39 @@
+/* Единый пресет дизера для всех фото сайта. Меняем параметры здесь —
+   основной движок и страницы получают одинаковые значения. */
+window.SITE_DITHER_ENGINE = 'shared-webgl';
+window.SITE_DITHER_CONFIG = Object.freeze({
+  blockPx: 3,
+  dpr: 1.5,
+  bias: 0.16,
+  levels: 4,
+  exposure: 0.8,
+  saturation: 1.12,
+  dark: [8, 37, 84],
+  light: [215, 240, 255]
+});
+document.documentElement.style.setProperty('--dither-exposure', window.SITE_DITHER_CONFIG.exposure);
+document.documentElement.style.setProperty('--dither-saturation', window.SITE_DITHER_CONFIG.saturation);
+
+/* На обычном reload браузер часто восстанавливает прежнюю позицию скролла.
+   Тогда scrub-анимация блока услуг сразу оказывается в финале и выглядит
+   так, будто не запустилась. На главной без hash начинаем reload сверху. */
+(function resetHomeScrollOnReload() {
+  if (document.body?.dataset.sitePage !== 'home' || location.hash) return;
+  const navigation = performance.getEntriesByType?.('navigation')?.[0];
+  if (navigation?.type !== 'reload') return;
+
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  const reset = () => {
+    window.scrollTo(0, 0);
+    window.lenis?.scrollTo(0, { immediate: true });
+  };
+
+  reset();
+  window.addEventListener('pageshow', () => {
+    window.requestAnimationFrame(reset);
+  }, { once: true });
+})();
+
 /* ---------- Лоадер: гейт готовности страницы ----------
    Ждём шрифты и первый кадр hero-дизера, затем запускаем закрытие лоадера
    вместе с зумом hero и вступительными анимациями из animations.js.
@@ -143,27 +179,314 @@
   }
 })();
 
+/* Кастомный scrollbar в стиле референса. Скролл остаётся нативным,
+   заменяется только его визуальное представление. */
+(function initCustomScrollbar() {
+  const track = document.createElement('div');
+  track.className = 'site-scrollbar is-hidden';
+  track.setAttribute('aria-hidden', 'true');
+  track.innerHTML = '<span class="site-scrollbar__thumb"></span>';
+  document.body.appendChild(track);
+
+  const thumb = track.querySelector('.site-scrollbar__thumb');
+  let limit = 0;
+  let hideTimer;
+  let isDragging = false;
+  let dragStartY = 0;
+  let dragStartScroll = 0;
+
+  function getScrollLimit() {
+    const pageHeight = Math.max(
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight
+    );
+    const nativeLimit = Math.max(0, pageHeight - window.innerHeight);
+    const lenisLimit = window.lenis && typeof window.lenis.limit === 'number'
+      ? window.lenis.limit
+      : 0;
+    return Math.max(nativeLimit, lenisLimit);
+  }
+
+  function updateThumb() {
+    limit = getScrollLimit();
+    const trackHeight = track.clientHeight;
+    const thumbHeight = limit > 0
+      ? Math.max(38, Math.round(window.innerHeight * window.innerHeight / (window.innerHeight + limit) * .8))
+      : 0;
+    const maxOffset = Math.max(0, trackHeight - thumbHeight);
+    const currentScroll = window.lenis && typeof window.lenis.animatedScroll === 'number'
+      ? window.lenis.animatedScroll
+      : window.scrollY;
+    const progress = limit > 0 ? Math.min(1, Math.max(0, currentScroll / limit)) : 0;
+
+    thumb.style.height = `${thumbHeight}px`;
+    thumb.style.transform = `translate3d(-50%, ${Math.round(progress * maxOffset)}px, 0)`;
+    track.classList.toggle('is-hidden', limit <= 0);
+  }
+
+  function showScrollbar() {
+    if (limit <= 0) return;
+    track.classList.remove('is-hidden');
+    window.clearTimeout(hideTimer);
+    hideTimer = window.setTimeout(() => {
+      if (!isDragging) track.classList.add('is-hidden');
+    }, 2000);
+  }
+
+  function isDarkBackgroundAtThumb() {
+    const viewportMidpoint = window.innerHeight / 2;
+    const darkSections = document.querySelectorAll('.hero, .services-hero, .news-cover, .documents-cover, .footer, .documents-footer');
+    for (const section of darkSections) {
+      const bounds = section.getBoundingClientRect();
+      if (bounds.top <= viewportMidpoint && bounds.bottom >= viewportMidpoint) return true;
+    }
+
+    const probe = document.elementFromPoint(Math.max(0, window.innerWidth - 2), thumb.getBoundingClientRect().top + thumb.offsetHeight / 2);
+    let element = probe;
+
+    while (element && element !== document.body) {
+      const style = window.getComputedStyle(element);
+      const color = style.backgroundColor.match(/rgba?\(([^)]+)\)/);
+      if (color) {
+        const values = color[1].split(',').map((value) => Number.parseFloat(value.trim()));
+        const alpha = values.length === 4 ? values[3] : 1;
+        if (alpha > 0) {
+          const luminance = values[0] * .299 + values[1] * .587 + values[2] * .114;
+          return luminance < 150;
+        }
+      }
+
+      if (element.matches('.hero, .services-hero, .news-cover, .documents-cover, .footer, .documents-footer')) {
+        return true;
+      }
+      element = element.parentElement;
+    }
+
+    return false;
+  }
+
+  function updateDragColor() {
+    thumb.classList.toggle('is-over-dark', isDragging && isDarkBackgroundAtThumb());
+  }
+
+  function getCurrentScroll() {
+    return window.lenis && typeof window.lenis.animatedScroll === 'number'
+      ? window.lenis.animatedScroll
+      : window.scrollY;
+  }
+
+  function scrollToPosition(value) {
+    const nextScroll = Math.min(limit, Math.max(0, value));
+    if (window.lenis) {
+      window.lenis.scrollTo(nextScroll, { immediate: true });
+    } else {
+      window.scrollTo(0, nextScroll);
+    }
+  }
+
+  thumb.addEventListener('pointerdown', (event) => {
+    if (limit <= 0) return;
+    isDragging = true;
+    dragStartY = event.clientY;
+    dragStartScroll = getCurrentScroll();
+    thumb.classList.add('is-dragging');
+    thumb.setPointerCapture(event.pointerId);
+    showScrollbar();
+    updateDragColor();
+    event.preventDefault();
+  });
+
+  thumb.addEventListener('pointermove', (event) => {
+    if (!isDragging) return;
+    const maxOffset = Math.max(1, track.clientHeight - thumb.offsetHeight);
+    const scrollDelta = (event.clientY - dragStartY) / maxOffset * limit;
+    scrollToPosition(dragStartScroll + scrollDelta);
+    showScrollbar();
+    updateDragColor();
+    event.preventDefault();
+  });
+
+  function stopDragging(event) {
+    if (!isDragging) return;
+    isDragging = false;
+    thumb.classList.remove('is-dragging');
+    thumb.classList.remove('is-over-dark');
+    if (event && thumb.hasPointerCapture(event.pointerId)) {
+      thumb.releasePointerCapture(event.pointerId);
+    }
+    showScrollbar();
+  }
+
+  thumb.addEventListener('pointerup', stopDragging);
+  thumb.addEventListener('pointercancel', stopDragging);
+
+  function handleScrollActivity() {
+    updateThumb();
+    showScrollbar();
+  }
+
+  window.addEventListener('resize', handleScrollActivity, { passive: true });
+  window.addEventListener('scroll', handleScrollActivity, { passive: true });
+  window.lenis?.on('scroll', handleScrollActivity);
+  window.requestAnimationFrame(handleScrollActivity);
+})();
+
 const menuButton = document.querySelector('.menu-button');
 const menuButtonLabels = menuButton?.querySelectorAll('.button__text');
 const menuPanel = document.querySelector('.menu-panel');
 const menuLinks = document.querySelectorAll('.menu-panel a');
+let menuCloseTimer;
+let menuMotion;
+const MENU_SCRAMBLE_CHARS = 'РКСНРМЕЮАБВГД';
 
-function setMenu(open) {
-  menuPanel.hidden = !open;
-  menuButton.setAttribute('aria-expanded', String(open));
-  menuButton.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
-  if (menuButtonLabels?.length) {
-    menuButtonLabels.forEach((label) => {
-      label.textContent = open ? 'Закрыть' : 'Меню';
-    });
-  } else {
-    menuButton.textContent = open ? 'Закрыть' : 'Меню';
+function scrambleMenuButtonLabel(targetText) {
+  if (!menuButtonLabels?.length) {
+    menuButton.textContent = targetText;
+    return;
   }
-  document.body.classList.toggle('menu-open', open);
+
+  menuButtonLabels.forEach((label) => {
+    if (window.gsap && window.ScrambleTextPlugin) {
+      window.gsap.registerPlugin(window.ScrambleTextPlugin);
+      window.gsap.killTweensOf(label);
+      window.gsap.fromTo(label,
+        { scrambleText: { text: label.textContent } },
+        {
+          duration: 0.68,
+          ease: 'power2.out',
+          scrambleText: {
+            text: targetText,
+            speed: 2,
+            chars: MENU_SCRAMBLE_CHARS
+          }
+        }
+      );
+      return;
+    }
+
+    /* Fallback, если GSAP или ScrambleTextPlugin ещё не загрузились. */
+    const startedAt = performance.now();
+    const duration = 680;
+    const animate = (now) => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const settled = Math.floor(targetText.length * progress);
+      label.textContent = Array.from(targetText, (character, index) => {
+        if (index < settled || character === ' ') return character;
+        return MENU_SCRAMBLE_CHARS[Math.floor(Math.random() * MENU_SCRAMBLE_CHARS.length)];
+      }).join('');
+      if (progress < 1) window.requestAnimationFrame(animate);
+    };
+    window.requestAnimationFrame(animate);
+  });
 }
 
-menuButton?.addEventListener('click', () => setMenu(menuPanel.hidden));
+function finishMenuClose() {
+  window.clearTimeout(menuCloseTimer);
+      menuPanel.hidden = true;
+      menuPanel.classList.remove('is-closing');
+      document.body.classList.remove('menu-closing');
+      document.documentElement.classList.remove('menu-closing');
+}
+
+if (menuPanel && window.gsap) {
+  const gsap = window.gsap;
+  const nav = menuPanel.querySelector('.menu-panel__nav');
+  const navLinks = menuPanel.querySelectorAll('.menu-panel__nav a');
+  const contacts = menuPanel.querySelector('.menu-panel__contacts');
+  const contactsTitle = menuPanel.querySelector('.menu-panel__contacts-title');
+  const contactsContent = menuPanel.querySelector('.menu-panel__contacts-content');
+
+  menuPanel.classList.add('menu-panel--gsap');
+  gsap.set(menuPanel, { '--menu-panel-x': '100%', autoAlpha: 0 });
+  gsap.set([nav, contacts], { y: 18, autoAlpha: 0 });
+  gsap.set(navLinks, { yPercent: 100, autoAlpha: 0 });
+  gsap.set([contactsTitle, contactsContent], { y: 12, autoAlpha: 0 });
+  if (contacts) gsap.set(contacts, { '--menu-line-progress': 0 });
+
+  menuMotion = gsap.timeline({ paused: true, onReverseComplete: finishMenuClose });
+  menuMotion
+    .to(menuPanel, { '--menu-panel-x': '0%', autoAlpha: 1, duration: .5, ease: 'power2.inOut' }, 0)
+    .to(nav, { y: 0, autoAlpha: 1, duration: .36, ease: 'power2.out' }, .12)
+    .to(navLinks, { yPercent: 0, autoAlpha: 1, duration: .4, ease: 'power2.out', stagger: .045 }, .18)
+    .to(contacts, { y: 0, autoAlpha: 1, duration: .4, ease: 'power2.out' }, .26)
+    .to(contacts, { '--menu-line-progress': 1, duration: .42, ease: 'power2.out' }, .31)
+    .to(contactsTitle, { y: 0, autoAlpha: 1, duration: .36, ease: 'power2.out' }, .36)
+    .to(contactsContent, { y: 0, autoAlpha: 1, duration: .4, ease: 'power2.out' }, .41);
+}
+
+function setMenu(open) {
+  if (!menuPanel || !menuButton) return;
+
+  window.clearTimeout(menuCloseTimer);
+
+  if (open) {
+    menuPanel.hidden = false;
+    menuPanel.setAttribute('aria-hidden', 'false');
+    menuPanel.classList.remove('is-closing');
+    /* Возвращаем панель в стартовую точку перед каждым новым открытием,
+       чтобы повторный запуск после закрытия не перескакивал без перехода. */
+    menuPanel.classList.remove('is-open');
+    void menuPanel.offsetWidth;
+    menuPanel.classList.add('is-open');
+    if (menuMotion) {
+      menuMotion.timeScale(.8);
+      menuMotion.play();
+    }
+  } else if (!menuPanel.hidden) {
+    menuPanel.setAttribute('aria-hidden', 'true');
+    menuPanel.classList.remove('is-open');
+    menuPanel.classList.add('is-closing');
+    if (menuMotion) {
+      menuMotion.timeScale(1);
+      menuMotion.reverse();
+      menuCloseTimer = window.setTimeout(finishMenuClose, 1200);
+    } else {
+      menuCloseTimer = window.setTimeout(() => {
+        menuPanel.hidden = true;
+        menuPanel.classList.remove('is-closing');
+        document.body.classList.remove('menu-closing');
+      }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 20 : 1050);
+    }
+  }
+
+  menuButton.setAttribute('aria-expanded', String(open));
+  menuButton.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+  scrambleMenuButtonLabel(open ? 'Закрыть' : 'Меню');
+  if (open) {
+    document.body.classList.add('menu-open');
+    document.body.classList.remove('menu-closing');
+    document.documentElement.classList.add('menu-open');
+    document.documentElement.classList.remove('menu-closing');
+  } else if (!menuPanel.hidden) {
+    document.body.classList.remove('menu-open');
+    document.body.classList.add('menu-closing');
+    document.documentElement.classList.remove('menu-open');
+    document.documentElement.classList.add('menu-closing');
+  } else {
+    document.body.classList.remove('menu-open', 'menu-closing');
+    document.documentElement.classList.remove('menu-open', 'menu-closing');
+  }
+}
+
+menuPanel?.setAttribute('aria-hidden', 'true');
+menuButton?.addEventListener('click', () => setMenu(!menuPanel.classList.contains('is-open')));
 menuLinks.forEach((link) => link.addEventListener('click', () => setMenu(false)));
+
+document.addEventListener('click', (event) => {
+  if (!menuPanel || menuPanel.hidden || !menuPanel.classList.contains('is-open')) return;
+  if (event.target.closest('.menu-panel, .site-header__actions')) return;
+  setMenu(false);
+}, true);
+
+function closeMenuOnScrollStart() {
+  if (menuPanel && !menuPanel.hidden && menuPanel.classList.contains('is-open')) {
+    setMenu(false);
+  }
+}
+
+window.addEventListener('wheel', closeMenuOnScrollStart, { passive: true });
+window.addEventListener('touchmove', closeMenuOnScrollStart, { passive: true });
+window.addEventListener('scroll', closeMenuOnScrollStart, { passive: true });
 
 function syncDesktopMenu(scrollTop) {
   const isDesktop = window.matchMedia('(min-width: 1200px)').matches;
@@ -188,19 +511,48 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-document.querySelector('.play-button')?.addEventListener('click', (event) => {
-  event.currentTarget.classList.toggle('is-active');
+document.querySelectorAll('.play-button').forEach((playButton) => {
+  playButton.addEventListener('click', (event) => {
+    event.currentTarget.classList.toggle('is-active');
+  });
+
+  const videoMedia = playButton.closest('.video-frame__media');
+  videoMedia?.addEventListener('click', (event) => {
+    if (event.target.closest('.play-button')) return;
+    playButton.click();
+  });
 });
 
 (function initVideoTicker() {
   document.querySelectorAll('.video-frame__ticker').forEach((ticker) => {
     const text = ticker.textContent.trim();
     if (!text) return;
-    const loopText = `${text}　${text}`;
+
+    /* На узких и широких экранах ширина строки разная. Измеряем один блок и
+       добираем повторы с запасом, чтобы на стыке двух половин не появлялся
+       пустой участок. */
+    const measure = document.createElement('span');
+    measure.className = 'video-frame__ticker-item';
+    measure.textContent = text;
+    Object.assign(measure.style, {
+      position: 'absolute',
+      display: 'inline-block',
+      visibility: 'hidden',
+      pointerEvents: 'none',
+      whiteSpace: 'nowrap'
+    });
+    ticker.append(measure);
+    const itemWidth = measure.getBoundingClientRect().width;
+    measure.remove();
+    const tickerWidth = ticker.offsetWidth;
+    const repeats = Math.max(1, Math.ceil(tickerWidth / Math.max(itemWidth, 1)) + 1);
+    const loopText = Array.from({ length: repeats }, () => text).join('　');
 
     const track = document.createElement('span');
     track.className = 'video-frame__ticker-track';
 
+    /* Две одинаковые половины позволяют оставить translateX(-50%) и сделать
+       цикл бесшовным, независимо от ширины конкретной стороны видео. */
     for (let index = 0; index < 2; index += 1) {
       const item = document.createElement('span');
       item.className = 'video-frame__ticker-item';
@@ -211,6 +563,20 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
 
     ticker.replaceChildren(track);
   });
+
+  /* Бегущая строка крутится бесконечно даже вне вьюпорта — ставим на паузу,
+     пока блок реально не виден, чтобы не грузить компоузер зря на скролле. */
+  const videoSection = document.querySelector('.video-section');
+  if (videoSection && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        videoSection.classList.toggle('is-ticker-active', entry.isIntersecting);
+      });
+    }, { rootMargin: '200px 0px' });
+    observer.observe(videoSection);
+  } else {
+    videoSection?.classList.add('is-ticker-active');
+  }
 })();
 
 (function initNewsCards() {
@@ -289,6 +655,9 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
 })();
 
 (function initDitherEffect() {
+  /* Основным является новый общий WebGL-движок из services-dither.js. */
+  if (window.SITE_DITHER_ENGINE === 'shared-webgl') return;
+
   const BAYER_2 = [[0, 2], [3, 1]];
   const BAYER_4 = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
   const BAYER_8 = [
@@ -304,16 +673,21 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
 
   const MATRIX_SIZE = 8;
 
-  /* Размер одного блока дизера в физических пикселях экрана.
-     Больше значение — крупнее зерно. Это единственные ручки для настройки;
-     от разрешения исходника картинки результат больше не зависит.
-     Переопределяется на блоке атрибутом data-dither-block="3" */
-  const DITHER_BLOCK_PX = 3;
+  /* Единый размер блока дизера для всех фотографий — такой же, как у hero.
+     Больше значение — крупнее зерно; от разрешения исходника результат
+     больше не зависит. */
+  const DITHER_CONFIG = window.SITE_DITHER_CONFIG;
+  const DITHER_BLOCK_PX = DITHER_CONFIG.blockPx;
 
-  const DPR = Math.min(window.devicePixelRatio || 1, 2);
-  const LIGHT_POINT_BIAS = 0.08;
-  const FG_COLOR = [8, 37, 84];
-  const BG_COLOR = [215, 240, 255];
+  /* Единое количество уровней яркости — hero использует 4. */
+  const DITHER_LEVELS = DITHER_CONFIG.levels;
+
+  const DPR = Math.min(window.devicePixelRatio || 1, DITHER_CONFIG.dpr);
+  /* Базовый порог текущего пресета: в среднем около 70% точек остаются
+     тёмно-синими, при этом результат всё ещё зависит от яркости фото. */
+  const LIGHT_POINT_BIAS = DITHER_CONFIG.bias;
+  const FG_COLOR = DITHER_CONFIG.dark;
+  const BG_COLOR = DITHER_CONFIG.light;
   const queue = [];
   let queueIsRunning = false;
 
@@ -367,15 +741,23 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
       'uniform float uBias;',
       'uniform float uZoom;',
       'uniform vec2 uGridSize;',
+      'uniform float uLevels;',
       'void main() {',
       '  vec2 zoomedUv = (vUv - 0.5) / uZoom + 0.5;',
       '  vec3 rgb = texture2D(uImage, zoomedUv).rgb;',
-      '  float luma = dot(rgb, vec3(0.299, 0.587, 0.114));',
+      '  float luma = dot(rgb, vec3(0.2126, 0.7152, 0.0722));',
       '  vec2 cellIndex = mod(floor(vUv * uGridSize), 8.0);',
       '  vec2 cellUv = (cellIndex + 0.5) / 8.0;',
-      '  float threshold = min(texture2D(uBayer, cellUv).r + uBias, 1.0);',
-      '  float ink = step(threshold, 1.0 - luma);',
-      '  gl_FragColor = vec4(mix(uPaper, uInk, ink), 1.0);',
+      '  float threshold = texture2D(uBayer, cellUv).r;',
+      '  float levels = max(uLevels, 2.0);',
+      '  float scaledLum = luma * (levels - 1.0);',
+      '  float lowerLevel = floor(scaledLum);',
+      '  float upperLevel = ceil(scaledLum);',
+      '  float frac = scaledLum - lowerLevel;',
+      '  float ditheredLevel = lowerLevel;',
+      '  if (frac + uBias > threshold) { ditheredLevel = upperLevel; }',
+      '  float ditheredLum = ditheredLevel / (levels - 1.0);',
+      '  gl_FragColor = vec4(mix(uInk, uPaper, ditheredLum), 1.0);',
       '}'
     ].join('\n');
 
@@ -398,12 +780,12 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
     gl.enableVertexAttribArray(positionLoc);
     gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
 
-    /* матрица Байера как 8×8 lookup-текстура: значение ячейки = (matrix+0.5)/64,
-       ровно та же формула порога, что и в CPU-версии */
+    /* матрица Байера как 8×8 lookup-текстура — те же сырые значения matrix/64,
+       что и в шейдере Figma (без сдвига +0.5), и та же формула, что в CPU-версии */
     const matrixBytes = new Uint8Array(64);
     for (let y = 0; y < 8; y += 1) {
       for (let x = 0; x < 8; x += 1) {
-        matrixBytes[y * 8 + x] = Math.round(((BAYER_8[y][x] + 0.5) / 64) * 255);
+        matrixBytes[y * 8 + x] = Math.round((BAYER_8[y][x] / 64) * 255);
       }
     }
     const bayerTexture = gl.createTexture();
@@ -431,6 +813,7 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
     const uBias = gl.getUniformLocation(program, 'uBias');
     const uZoom = gl.getUniformLocation(program, 'uZoom');
     const uGridSize = gl.getUniformLocation(program, 'uGridSize');
+    const uLevels = gl.getUniformLocation(program, 'uLevels');
 
     let lost = false;
     canvas.addEventListener('webglcontextlost', (event) => {
@@ -446,7 +829,7 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
     let uploadedSource = null;
 
     return {
-      render(sourceCanvas, fg, bg, bias, zoom) {
+      render(sourceCanvas, fg, bg, bias, zoom, levels) {
         if (lost) return null;
 
         const width = sourceCanvas.width;
@@ -475,6 +858,7 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
         gl.uniform1f(uBias, bias);
         gl.uniform1f(uZoom, zoom || 1);
         gl.uniform2f(uGridSize, width, height);
+        gl.uniform1f(uLevels, levels || DITHER_LEVELS);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
@@ -491,10 +875,9 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
   }
 
   /* ---------- CPU-путь: запасной вариант, если WebGL недоступен ---------- */
-  function ditherImageCPU(context, source, gridWidth, gridHeight) {
-    const matrixData = getMatrix(MATRIX_SIZE);
-    const matrix = matrixData.matrix;
-    const matrixSize = matrix.length;
+  function ditherImageCPU(context, source, gridWidth, gridHeight, bias, levels) {
+    const biasValue = bias !== undefined ? bias : LIGHT_POINT_BIAS;
+    const levelsValue = Math.max(2, levels || DITHER_LEVELS);
     const output = context.createImageData(gridWidth, gridHeight);
     const pixels = output.data;
 
@@ -504,15 +887,18 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
         const red = source[index];
         const green = source[index + 1];
         const blue = source[index + 2];
-        const luminance = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
-        const threshold = Math.min(1, (
-          matrix[gridY % matrixSize][gridX % matrixSize] + 0.5
-        ) / matrixData.count + LIGHT_POINT_BIAS);
-        const color = (1 - luminance) > threshold ? FG_COLOR : BG_COLOR;
+        const luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255;
+        const threshold = BAYER_8[gridY % 8][gridX % 8] / 64;
+        const scaledLum = luminance * (levelsValue - 1);
+        const lowerLevel = Math.floor(scaledLum);
+        const upperLevel = Math.ceil(scaledLum);
+        const frac = scaledLum - lowerLevel;
+        const ditheredLevel = (frac + biasValue > threshold) ? upperLevel : lowerLevel;
+        const ditheredLum = ditheredLevel / (levelsValue - 1);
 
-        pixels[index] = color[0];
-        pixels[index + 1] = color[1];
-        pixels[index + 2] = color[2];
+        pixels[index] = FG_COLOR[0] + (BG_COLOR[0] - FG_COLOR[0]) * ditheredLum;
+        pixels[index + 1] = FG_COLOR[1] + (BG_COLOR[1] - FG_COLOR[1]) * ditheredLum;
+        pixels[index + 2] = FG_COLOR[2] + (BG_COLOR[2] - FG_COLOR[2]) * ditheredLum;
         pixels[index + 3] = 255;
       }
     }
@@ -560,7 +946,7 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
     return { gridWidth, gridHeight };
   }
 
-  function ditherImage(image, container, objectPosition, blockPx) {
+  function ditherImage(image, container, objectPosition, blockPx, biasOverride, levelsOverride) {
     const { gridWidth, gridHeight } = getGridSize(image, container, blockPx);
 
     const sourceCanvas = document.createElement('canvas');
@@ -584,10 +970,10 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
 
     /* текущие параметры живут в замыкании — rerender() дальше меняет
        только их и перерисовывает, не трогая остальной DOM/CSS */
-    const state = { bias: LIGHT_POINT_BIAS, zoom: 1 };
+    const state = { bias: biasOverride !== undefined ? biasOverride : LIGHT_POINT_BIAS, zoom: 1, levels: levelsOverride !== undefined ? levelsOverride : DITHER_LEVELS };
 
     function paint() {
-      const glResult = glDitherer && glDitherer.render(sourceCanvas, FG_COLOR, BG_COLOR, state.bias, state.zoom);
+      const glResult = glDitherer && glDitherer.render(sourceCanvas, FG_COLOR, BG_COLOR, state.bias, state.zoom, state.levels);
       if (glResult) {
         context.drawImage(glResult, 0, 0);
         return true;
@@ -598,7 +984,7 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
     if (!paint()) {
       glDitherer = null; /* GPU однажды подвела — дальше на этой странице работаем на CPU */
       const source = sourceContext.getImageData(0, 0, gridWidth, gridHeight).data;
-      ditherImageCPU(context, source, gridWidth, gridHeight);
+      ditherImageCPU(context, source, gridWidth, gridHeight, state.bias, state.levels);
     }
 
     container.querySelector(':scope > .dither-photo__canvas')?.remove();
@@ -635,12 +1021,12 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
     runQueue();
   }
 
-  function prepare(container, source, getObjectPosition, blockPx, onFirstRender) {
+  function prepare(container, source, getObjectPosition, blockPx, onFirstRender, biasOverride, levelsOverride) {
     let image = null;
     let firstRenderDone = false;
 
     const render = () => {
-      const handle = ditherImage(image, container, getObjectPosition(), blockPx);
+      const handle = ditherImage(image, container, getObjectPosition(), blockPx, biasOverride, levelsOverride);
       if (!handle) return;
       container.__ditherHandle = handle;
       if (!firstRenderDone) {
@@ -684,7 +1070,7 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
         if (!entries.some((entry) => entry.isIntersecting)) return;
         observer.disconnect();
         load();
-      }, { rootMargin: '800px 0px' });
+      }, { rootMargin: '200px 0px' });
       observer.observe(container);
     } else {
       load();
@@ -730,32 +1116,43 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
         } else {
           window.addEventListener('site:hero-zoom', play, { once: true });
         }
-      }
+      },
+      undefined,
+      4
     );
   }
 
   document.querySelectorAll('.image-tone').forEach((container) => {
-    const sourceImage = container.querySelector(':scope > img:first-child');
+    const sourceImage = container.querySelector(':scope > img:last-of-type');
     if (!sourceImage || sourceImage.classList.contains('project-card__arrow')) return;
     const requested = Number(container.dataset.ditherBlock);
     const blockPx = Number.isFinite(requested) && requested > 0
       ? requested
       : DITHER_BLOCK_PX;
+    const requestedBias = Number(container.dataset.ditherBias);
+    const biasOverride = Number.isFinite(requestedBias) ? requestedBias : undefined;
+    const requestedLevels = Number(container.dataset.ditherLevels);
+    const levelsOverride = Number.isFinite(requestedLevels) && requestedLevels >= 2 ? requestedLevels : undefined;
     prepare(
       container,
       sourceImage.currentSrc || sourceImage.src,
       () => getComputedStyle(sourceImage).objectPosition,
-      blockPx
+      blockPx,
+      undefined,
+      biasOverride,
+      levelsOverride
     );
   });
 
-  /* ---------- реакция дизера на наведение: карточки проектов и услуг ----------
+  /* ---------- реакция дизера на наведение: только интерактивные фото ----------
      Порог (bias) плавно растёт — паттерн «разрежается», приоткрывая исходное
      фото, вместо резкой подмены прозрачности. Идёт поверх уже существующего
      CSS-перехода (canvas тоже подтухает через opacity) — эффекты складываются. */
   const HOVER_BIAS = 0.34;
 
-  document.querySelectorAll('.project-card__media, .service-card__media').forEach((container) => {
+  Array.from(document.querySelectorAll('.project-card__media, .video-frame__media'))
+    .filter((container) => container.querySelector(':scope > button, :scope > .project-card__arrow'))
+    .forEach((container) => {
     let currentBias = LIGHT_POINT_BIAS;
     let cancelTween = null;
 
@@ -774,5 +1171,5 @@ document.querySelector('.play-button')?.addEventListener('click', (event) => {
     container.addEventListener('pointerleave', () => animateTo(LIGHT_POINT_BIAS));
     container.addEventListener('focusin', () => animateTo(HOVER_BIAS));
     container.addEventListener('focusout', () => animateTo(LIGHT_POINT_BIAS));
-  });
+    });
 })();

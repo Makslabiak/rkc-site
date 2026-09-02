@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Новости ООО «РКС-НР»">
+  <title>Новости — РКС-НР</title>
+  <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=20260903-42">
+  <link rel="stylesheet" href="news-page.css">
+  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js" defer></script>
+  <script src="assets/vendor/gsap.min.js" defer></script>
+  <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
+  <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
+  <script src="site-header.js?v=20260903-2" defer></script>
+  <script src="script.js?v=20260903-20" defer></script>
+  <script src="services-dither.js?v=20260903-6" defer></script>
+  <script src="news-page.js" defer></script>
+  <script src="animations.js?v=20260903-6" defer></script>
+</head>
+<body class="news-page" data-site-page="news">
+  <a class="skip-link" href="#main">Перейти к содержимому</a>
+
+  <header class="news-cover" id="top">
+    <div class="site-header" data-site-header></div>
+    <h1 class="news-cover__title">Новости</h1>
+  </header>
+
+  <div data-site-menu></div>
+
+  <main id="main">
+    <section class="news-page__content" aria-label="Лента новостей">
+      <aside class="news-page__categories" aria-label="Категории новостей">
+        <button class="news-page__category is-active" type="button" data-category="all" aria-pressed="true">Все</button>
+        <button class="news-page__category" type="button" data-category="restoration" aria-pressed="false">Восстановление</button>
+        <button class="news-page__category" type="button" data-category="improvement" aria-pressed="false">Благоустройство</button>
+        <button class="news-page__category" type="button" data-category="company" aria-pressed="false">Компания</button>
+      </aside>
+
+      <div class="news-page__list">
+        <a class="news-page-card is-active" href="news-detail.html" data-category="restoration" aria-label="Открыть новость от 02.02.2026">
+          <div class="news-page-card__image image-tone"><img src="assets/images/news-card.jpg" width="284" height="269" alt="Восстановленный городской дом" loading="lazy"></div>
+          <div class="news-page-card__info"><time datetime="2026-02-02">02.02.2026</time><span class="news-page-card__headline">ООО «РКС-НР» совместно с Фондом капитального ремонта Московской области завершили восстановление дома 1993 года постройки на проспекте Маршала Жукова</span></div>
+          <span class="news-page-card__arrow" aria-hidden="true"></span>
+        </a>
+        <a class="news-page-card" href="#" data-category="restoration" aria-label="Открыть новость от 30.01.2026">
+          <div class="news-page-card__image image-tone news-page-card__image--default"><img src="assets/images/news-card.jpg" width="284" height="269" alt="Городской объект после восстановления" loading="lazy"></div>
+          <div class="news-page-card__info"><time datetime="2026-01-30">30.01.2026</time><span class="news-page-card__headline">В Мариуполе завершено восстановление дома в Орджоникидзевском районе</span></div>
+          <span class="news-page-card__arrow" aria-hidden="true"></span>
+        </a>
+        <a class="news-page-card" href="#" data-category="company" aria-label="Открыть новость от 27.01.2026">
+          <div class="news-page-card__image image-tone news-page-card__image--default"><img src="assets/images/news-card.jpg" width="284" height="269" alt="Объект социальной инфраструктуры" loading="lazy"></div>
+          <div class="news-page-card__info"><time datetime="2026-01-27">27.01.2026</time><span class="news-page-card__headline">РКС-НР завершил работы по восстановлению объектов социальной инфраструктуры</span></div>
+          <span class="news-page-card__arrow" aria-hidden="true"></span>
+        </a>
+        <a class="news-page-card" href="#" data-category="restoration" aria-label="Открыть новость от 23.01.2026">
+          <div class="news-page-card__image image-tone news-page-card__image--default"><img src="assets/images/news-card.jpg" width="284" height="269" alt="Восстановленный дом в Мариуполе" loading="lazy"></div>
+          <div class="news-page-card__info"><time datetime="2026-01-23">23.01.2026</time><span class="news-page-card__headline">В Мариуполе завершено восстановление дома в Орджоникидзевском районе</span></div>
+          <span class="news-page-card__arrow" aria-hidden="true"></span>
+        </a>
+        <a class="news-page-card" href="#" data-category="improvement" aria-label="Открыть новость о благоустройстве">
+          <div class="news-page-card__image image-tone news-page-card__image--default"><img src="assets/images/news-card.jpg" width="284" height="269" alt="Благоустройство городской территории" loading="lazy"></div>
+          <div class="news-page-card__info"><time datetime="2026-01-16">16.01.2026</time><span class="news-page-card__headline">В Мариуполе завершены работы по благоустройству городской территории</span></div>
+          <span class="news-page-card__arrow" aria-hidden="true"></span>
+        </a>
+        <a class="news-page-card" href="#" data-category="company" aria-label="Открыть новость компании">
+          <div class="news-page-card__image image-tone news-page-card__image--default"><img src="assets/images/news-card.jpg" width="284" height="269" alt="Команда РКС-НР на объекте" loading="lazy"></div>
+          <div class="news-page-card__info"><time datetime="2026-01-12">12.01.2026</time><span class="news-page-card__headline">РКС-НР продолжает развивать проекты восстановления и благоустройства</span></div>
+          <span class="news-page-card__arrow" aria-hidden="true"></span>
+        </a>
+        <a class="news-page-card" href="#" data-category="restoration" aria-label="Открыть новость о восстановлении">
+          <div class="news-page-card__image image-tone news-page-card__image--default"><img src="assets/images/news-card.jpg" width="284" height="269" alt="Городской дом после ремонта" loading="lazy"></div>
+          <div class="news-page-card__info"><time datetime="2026-01-09">09.01.2026</time><span class="news-page-card__headline">Новые объекты вошли в программу восстановления жилого фонда</span></div>
+          <span class="news-page-card__arrow" aria-hidden="true"></span>
+        </a>
+        <a class="news-page-card" href="#" data-category="company" aria-label="Открыть новость компании от 05.01.2026">
+          <div class="news-page-card__image image-tone news-page-card__image--default"><img src="assets/images/news-card.jpg" width="284" height="269" alt="Специалисты на строительном объекте" loading="lazy"></div>
+          <div class="news-page-card__info"><time datetime="2026-01-05">05.01.2026</time><span class="news-page-card__headline">Специалисты РКС-НР приступили к работе на новых объектах</span></div>
+          <span class="news-page-card__arrow" aria-hidden="true"></span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer news-footer">
+    <img class="footer__logo" src="assets/icons/logo-footer.svg" width="738" height="147" alt="РКС-НР">
+    <div class="footer__nav">
+      <nav aria-label="Навигация в подвале" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom">
+        <a href="index.html#company">О компании</a>
+        <a href="services.html">Услуги</a>
+        <a href="index.html#projects">Проекты</a>
+        <a href="news.html" aria-current="page">Новости</a>
+        <a href="contacts.html">Контакты</a>
+        <a href="#">Охрана труда</a>
+        <a href="#">Этика и ответственность</a>
+        <a href="#">Противодействие коррупции</a>
+      </nav>
+      <div class="footer__socials" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom"><a href="#">MAX</a><a href="#">Telegram</a></div>
+    </div>
+    <div class="footer__contacts">
+      <div data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom"><a href="tel:+74951472233">+7 (495) 147-22-33</a><a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a></div>
+      <div class="footer__legal" data-anim="fadeIn" data-anim-target="a" data-anim-start="top bottom"><a href="documents.html#agreement"><span class="footer__legal-line">Согласие на обработку</span><span class="footer__legal-line">персональных данных</span></a><a href="documents.html#policy"><span class="footer__legal-line">Политика в отношении обработки</span><span class="footer__legal-line">персональных данных</span></a></div>
+    </div>
+    <p class="footer__copyright">© ООО «РКС-НР», 2026. Все права защищены</p>
+  </footer>
+</body>
+</html>

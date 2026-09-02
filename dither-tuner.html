@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Подбор параметров дизера — stats__image</title>
+<style>
+  :root {
+    --dark: #082554;
+    --light: #f0faff;
+    --blue: #d7f0ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px;
+    background: #1b1f27;
+    color: #e7ecf2;
+    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    align-items: flex-start;
+  }
+  h1 {
+    margin: 0 0 20px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .preview-col {
+    flex: 1 1 500px;
+    max-width: 700px;
+  }
+  .stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 442 / 294;
+    overflow: hidden;
+    background: var(--blue);
+  }
+  .stage img,
+  .stage canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .stage img { visibility: hidden; }
+  .stage canvas {
+    image-rendering: pixelated;
+    transform: scale(1.25);
+  }
+  .layer-tint {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .layer-shadow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+  .hint {
+    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #93a0b3;
+  }
+  .panel {
+    flex: 0 0 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .control__head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+  .control__head b { font-weight: 500; }
+  .control__head span {
+    font-variant-numeric: tabular-nums;
+    color: #93a0b3;
+  }
+  input[type="range"] {
+    width: 100%;
+    accent-color: #f2551b;
+  }
+  button {
+    margin-top: 4px;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 4px;
+    background: #f2551b;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:active { opacity: .85; }
+  button.is-copied { background: #2e8b57; }
+  pre {
+    margin: 0;
+    padding: 14px;
+    background: #11141a;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1.6;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+</style>
+</head>
+<body>
+
+  <div class="preview-col">
+    <h1>stats__image — подбор дизера</h1>
+    <div class="stage" id="stage">
+      <img id="source" src="assets/images/company-workers.jpg" alt="">
+      <canvas id="canvas"></canvas>
+      <div class="layer-tint" id="tintLayer"></div>
+      <div class="layer-shadow" id="shadowLayer"></div>
+    </div>
+    <p class="hint">Пропорции превью примерно соответствуют десктопной верстке блока (не 1:1 с мобильной/адаптивной версткой). Дизер считается тем же алгоритмом (матрица Байера 8×8), что и в script.js.</p>
+  </div>
+
+  <div class="panel">
+    <div class="control">
+      <div class="control__head"><b>Размер зерна (Pixel Scale)</b><span id="blockVal"></span></div>
+      <input type="range" id="block" min="1" max="8" step="1" value="2">
+    </div>
+
+    <div class="control">
+      <div class="control__head"><b>Порог / контраст (bias)</b><span id="biasVal"></span></div>
+      <input type="range" id="bias" min="-0.3" max="0.3" step="0.01" value="-0.01">
+    </div>
+
+    <div class="control">
+      <div class="control__head"><b>Тон 082554 поверх (::after)</b><span id="tintVal"></span></div>
+      <input type="range" id="tint" min="0" max="1" step="0.01" value="0.3">
+    </div>
+    <div class="control">
+      <div class="control__head"><b>Тень на фото (наложение)</b><span id="shadowVal"></span></div>
+      <input type="range" id="shadow" min="0" max="1" step="0.01" value="0.4">
+    </div>
+
+    <button id="copyBtn">Скопировать значения</button>
+    <pre id="output"></pre>
+  </div>
+
+<script>
+(function () {
+  const BAYER_8 = [
+    [0, 32, 8, 40, 2, 34, 10, 42],
+    [48, 16, 56, 24, 50, 18, 58, 26],
+    [12, 44, 4, 36, 14, 46, 6, 38],
+    [60, 28, 52, 20, 62, 30, 54, 22],
+    [3, 35, 11, 43, 1, 33, 9, 41],
+    [51, 19, 59, 27, 49, 17, 57, 25],
+    [15, 47, 7, 39, 13, 45, 5, 37],
+    [63, 31, 55, 23, 61, 29, 53, 21]
+  ];
+  const FG = [8, 37, 84];
+  const BG = [215, 240, 255];
+
+  const img = document.getElementById('source');
+  const canvas = document.getElementById('canvas');
+  const stage = document.getElementById('stage');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const tintLayer = document.getElementById('tintLayer');
+  const shadowLayer = document.getElementById('shadowLayer');
+
+  const blockInput = document.getElementById('block');
+  const biasInput = document.getElementById('bias');
+  const tintInput = document.getElementById('tint');
+  const shadowInput = document.getElementById('shadow');
+
+  const blockVal = document.getElementById('blockVal');
+  const biasVal = document.getElementById('biasVal');
+  const tintVal = document.getElementById('tintVal');
+  const shadowVal = document.getElementById('shadowVal');
+
+  const output = document.getElementById('output');
+  const copyBtn = document.getElementById('copyBtn');
+
+  function dither(source, gridWidth, gridHeight, bias) {
+    const output = ctx.createImageData(gridWidth, gridHeight);
+    const pixels = output.data;
+    for (let y = 0; y < gridHeight; y += 1) {
+      for (let x = 0; x < gridWidth; x += 1) {
+        const i = (y * gridWidth + x) * 4;
+        const r = source[i], g = source[i + 1], b = source[i + 2];
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        const threshold = Math.min(1, (BAYER_8[y % 8][x % 8] + 0.5) / 64 + bias);
+        const color = (1 - luminance) > threshold ? FG : BG;
+        pixels[i] = color[0];
+        pixels[i + 1] = color[1];
+        pixels[i + 2] = color[2];
+        pixels[i + 3] = 255;
+      }
+    }
+    ctx.putImageData(output, 0, 0);
+  }
+  function render() {
+    const blockPx = Number(blockInput.value);
+    const bias = Number(biasInput.value);
+    const tint = Number(tintInput.value);
+    const shadow = Number(shadowInput.value);
+
+    blockVal.textContent = blockPx;
+    biasVal.textContent = bias.toFixed(2);
+    tintVal.textContent = Math.round(tint * 100) + '%';
+    shadowVal.textContent = Math.round(shadow * 100) + '%';
+
+    const rect = stage.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const cover = Math.max(rect.width / img.naturalWidth, rect.height / img.naturalHeight);
+    let gridWidth = Math.round(img.naturalWidth * cover * dpr / blockPx);
+    gridWidth = Math.max(16, Math.min(gridWidth, img.naturalWidth));
+    const gridHeight = Math.max(16, Math.round(gridWidth * img.naturalHeight / img.naturalWidth));
+
+    const srcCanvas = document.createElement('canvas');
+    srcCanvas.width = gridWidth;
+    srcCanvas.height = gridHeight;
+    const srcCtx = srcCanvas.getContext('2d', { willReadFrequently: true });
+    srcCtx.drawImage(img, 0, 0, gridWidth, gridHeight);
+    const data = srcCtx.getImageData(0, 0, gridWidth, gridHeight).data;
+
+    canvas.width = gridWidth;
+    canvas.height = gridHeight;
+    dither(data, gridWidth, gridHeight, bias);
+    tintLayer.style.background = `rgba(8, 37, 84, ${tint})`;
+    shadowLayer.style.background =
+      `linear-gradient(135deg, rgba(8, 37, 84, 0) 35%, rgba(8, 37, 84, ${shadow}) 100%)`;
+
+    output.textContent =
+`data-dither-block="${blockPx}"
+data-dither-bias="${bias}"
+
+.stats__image::after {
+  background: rgba(8, 37, 84, ${tint});
+}
+
+.stats__image::before {
+  background: linear-gradient(135deg, rgba(8, 37, 84, 0) 35%, rgba(8, 37, 84, ${shadow}) 100%);
+  mix-blend-mode: multiply;
+}`;
+  }
+
+  [blockInput, biasInput, tintInput, shadowInput].forEach((el) => {
+    el.addEventListener('input', render);
+  });
+
+  window.addEventListener('resize', render);
+
+  copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(output.textContent).then(() => {
+      copyBtn.textContent = 'Скопировано ✓';
+      copyBtn.classList.add('is-copied');
+      window.setTimeout(() => {
+        copyBtn.textContent = 'Скопировать значения';
+        copyBtn.classList.remove('is-copied');
+      }, 1400);
+    });
+  });
+
+  if (img.complete) {
+    render();
+  } else {
+    img.addEventListener('load', render);
+  }
+})();
+</script>
+</body>
+</html>

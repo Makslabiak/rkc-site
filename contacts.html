@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Контакты ООО «РКС-НР»">
+  <title>Контакты — РКС-НР</title>
+  <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=20260903-42">
+  <link rel="stylesheet" href="contacts-page.css">
+  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js" defer></script>
+  <script src="assets/vendor/gsap.min.js" defer></script>
+  <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
+  <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
+  <script src="site-header.js?v=20260903-2" defer></script>
+  <script src="script.js?v=20260903-20" defer></script>
+  <script src="services-dither.js?v=20260903-6" defer></script>
+  <script src="contacts-page.js" defer></script>
+  <script src="animations.js?v=20260903-6" defer></script>
+</head>
+<body class="contacts-page" data-site-page="contacts">
+  <a class="skip-link" href="#main">Перейти к содержимому</a>
+
+  <header class="contacts-cover" id="top">
+    <div class="site-header" data-site-header></div>
+    <h1 class="contacts-cover__title">Контакты</h1>
+  </header>
+
+  <div data-site-menu></div>
+
+  <main id="main">
+    <section class="contacts-main" aria-label="Контакты и форма обратной связи">
+      <div class="contacts-info">
+        <p class="contacts-info__eyebrow">Свяжитесь с нами</p>
+        <h2>Восстанавливаем объекты там, где это труднее всего</h2>
+        <div class="contacts-info__details">
+          <div class="contacts-info__links">
+            <a href="tel:+74951472233">+7 (495) 147-22-33</a>
+            <a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a>
+          </div>
+          <p>Пн-Пт с 9:00 до 18:00</p>
+          <p>125167, город Москва,<br>Ленинградский проспект, д. 47, стр. 3, подъезд 3</p>
+        </div>
+      </div>
+
+      <section class="contacts-form-section" id="contact-form" aria-labelledby="contact-form-title">
+        <h2 id="contact-form-title">Давайте строить вместе</h2>
+        <form class="contact-form" data-contact-form novalidate>
+          <div class="contact-fields">
+            <div class="contact-field" data-field>
+              <label for="contact-name">Имя*</label>
+              <input id="contact-name" name="name" type="text" placeholder="Ваше имя" autocomplete="name" required>
+              <span class="contact-field__error">Обязательное поле</span>
+            </div>
+            <div class="contact-field" data-field>
+              <label for="contact-organization">Организация</label>
+              <input id="contact-organization" name="organization" type="text" placeholder="Название организации" autocomplete="organization">
+              <span class="contact-field__error">Обязательное поле</span>
+            </div>
+            <div class="contact-field" data-field>
+              <label for="contact-phone">Телефон*</label>
+              <input id="contact-phone" name="phone" type="tel" placeholder="+7" autocomplete="tel" inputmode="tel" pattern="[+]7 [0-9]{10}" required>
+              <span class="contact-field__error">Обязательное поле</span>
+            </div>
+            <div class="contact-field" data-field>
+              <label for="contact-email">Почта*</label>
+              <input id="contact-email" name="email" type="email" placeholder="Ваша почта" autocomplete="email" required>
+              <span class="contact-field__error">Обязательное поле</span>
+            </div>
+            <div class="contact-field contact-field--message" data-field>
+              <label for="contact-message">Сообщение</label>
+              <textarea id="contact-message" name="message" placeholder="Опишите задачу" rows="1"></textarea>
+              <span class="contact-field__error">Обязательное поле</span>
+            </div>
+          </div>
+
+          <div class="contact-form__bottom">
+            <label class="contact-consent" data-consent>
+              <input class="contact-consent__input" type="checkbox" name="consent" required>
+              <span class="contact-consent__box" aria-hidden="true"></span>
+              <span class="contact-consent__text">Нажимая кнопку «Отправить», вы подтверждаете, что ознакомлены и согласны с <a href="documents.html#policy">Политикой в отношении обработки персональных данных</a> и даёте <a href="documents.html#agreement">Согласие на обработку персональных данных</a>. Вы также подтверждаете достоверность предоставленных данных.</span>
+            </label>
+            <button class="button contact-form__submit" type="submit"><span class="button__text button__text--current">Отправить</span><span class="button__text button__text--hover" aria-hidden="true">Отправить</span></button>
+            <p class="contact-form__status" role="status" aria-live="polite" hidden>Спасибо, заявка отправлена.</p>
+          </div>
+        </form>
+      </section>
+    </section>
+
+    <section class="contacts-map-section" aria-label="Адрес на карте">
+      <picture class="contacts-map image-tone">
+        <source media="(max-width: 599px)" srcset="assets/images/contacts-image-mobile.jpg">
+        <source media="(max-width: 1199px)" srcset="assets/images/contacts-image-tablet.jpg">
+        <img src="assets/images/contacts-image.jpg" width="1798" height="558" alt="Карта проезда к офису РКС-НР" loading="lazy">
+      </picture>
+    </section>
+  </main>
+
+  <footer class="footer contacts-footer">
+    <img class="footer__logo" src="assets/icons/logo-footer.svg" width="738" height="147" alt="РКС-НР">
+    <div class="footer__nav">
+      <nav aria-label="Навигация в подвале" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom">
+        <a href="index.html#company">О компании</a>
+        <a href="services.html">Услуги</a>
+        <a href="index.html#projects">Проекты</a>
+        <a href="news.html">Новости</a>
+        <a href="contacts.html" aria-current="page">Контакты</a>
+        <a href="#">Охрана труда</a>
+        <a href="#">Этика и ответственность</a>
+        <a href="#">Противодействие коррупции</a>
+      </nav>
+      <div class="footer__socials" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom"><a href="#">MAX</a><a href="#">Telegram</a></div>
+    </div>
+    <div class="footer__contacts">
+      <div data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom"><a href="tel:+74951472233">+7 (495) 147-22-33</a><a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a></div>
+      <div class="footer__legal" data-anim="fadeIn" data-anim-target="a" data-anim-start="top bottom"><a href="documents.html#agreement"><span class="footer__legal-line">Согласие на обработку</span><span class="footer__legal-line">персональных данных</span></a><a href="documents.html#policy"><span class="footer__legal-line">Политика в отношении обработки</span><span class="footer__legal-line">персональных данных</span></a></div>
+    </div>
+    <p class="footer__copyright">© ООО «РКС-НР», 2026. Все права защищены</p>
+  </footer>
+</body>
+</html>

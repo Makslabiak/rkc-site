@@ -5,65 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Услуги РКС-НР — реализация масштабных проектов жилищного строительства и инфраструктуры">
   <title>Услуги — РКС-НР</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260903-42">
   <link rel="stylesheet" href="services-page.css">
   <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js" defer></script>
   <script src="assets/vendor/gsap.min.js" defer></script>
   <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
-  <script src="script.js" defer></script>
+  <script src="site-header.js?v=20260903-2" defer></script>
+  <script src="script.js?v=20260903-20" defer></script>
+  <script src="services-dither.js?v=20260903-6" defer></script>
   <script src="services-page.js" defer></script>
-  <script src="animations.js" defer></script>
+  <script src="animations.js?v=20260903-6" defer></script>
 </head>
-<body class="services-page">
+<body class="services-page" data-site-page="services">
   <a class="skip-link" href="#main">Перейти к&nbsp;содержимому</a>
 
   <header class="services-cover" id="top">
-    <div class="site-header">
-      <a class="site-logo" href="index.html" aria-label="РКС-НР — на главную">
-        <img src="assets/icons/logo-header.svg" width="142" height="54" alt="РКС-НР">
-      </a>
-
-      <nav class="desktop-nav" aria-label="Основная навигация" data-anim="typeChars" data-anim-target="a" data-anim-on-load>
-        <div class="desktop-nav__group">
-          <a href="index.html#company">О&nbsp;компании</a>
-          <a href="services.html" aria-current="page">Услуги</a>
-          <a href="index.html#projects">Проекты</a>
-        </div>
-        <div class="desktop-nav__group">
-          <a href="index.html#news">Новости</a>
-          <a href="#contacts">Контакты</a>
-        </div>
-      </nav>
-
-      <div class="site-header__actions">
-        <button class="menu-button button--fill-hover" type="button" aria-expanded="false" aria-controls="mobile-menu"><span class="button__text button__text--current">Меню</span><span class="button__text button__text--hover" aria-hidden="true">Меню</span></button>
-        <button class="language-button button--fill-hover" type="button" aria-label="Выбран русский язык"><span class="button__text button__text--current">RU</span><span class="button__text button__text--hover" aria-hidden="true">RU</span></button>
-      </div>
-    </div>
+    <div class="site-header" data-site-header></div>
     <h1 class="services-cover__title">Услуги</h1>
   </header>
 
-  <div class="menu-panel" id="mobile-menu" hidden>
-    <nav class="menu-panel__nav" aria-label="Основная навигация">
-      <a href="index.html#company">О&nbsp;компании</a>
-      <a href="services.html" aria-current="page">Услуги</a>
-      <a href="index.html#projects">Проекты</a>
-      <a href="index.html#news">Новости</a>
-      <a href="#contacts">Контакты</a>
-    </nav>
-    <div class="menu-panel__contacts">
-      <p class="menu-panel__contacts-title">Свяжитесь с&nbsp;нами</p>
-      <div class="menu-panel__contacts-content">
-        <div class="menu-panel__contacts-links">
-          <a href="tel:+74951472233">+7&nbsp;(495)&nbsp;147-22-33</a>
-          <a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a>
-        </div>
-        <p>Пн-Пт с&nbsp;9:00 до&nbsp;18:00</p>
-        <p>125167, город Москва,<br>Ленинградский проспект, д.&nbsp;47, стр.&nbsp;3, подъезд&nbsp;3</p>
-      </div>
-    </div>
-  </div>
+  <div data-site-menu></div>
 
   <main id="main">
     <section class="services-hero" aria-labelledby="services-hero-title">
@@ -207,8 +169,8 @@
         <a href="index.html#company">О&nbsp;компании</a>
         <a href="services.html" aria-current="page">Услуги</a>
         <a href="index.html#projects">Проекты</a>
-        <a href="index.html#news">Новости</a>
-        <a href="#contacts">Контакты</a>
+        <a href="news.html">Новости</a>
+        <a href="contacts.html">Контакты</a>
         <a href="#">Охрана труда</a>
         <a href="#">Этика и&nbsp;ответственность</a>
         <a href="#">Противодействие коррупции</a>
@@ -217,7 +179,7 @@
     </div>
     <div class="footer__contacts">
       <div><a href="tel:+74951472233">+7&nbsp;(495)&nbsp;147-22-33</a><a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a></div>
-      <div class="footer__legal"><a href="#"><span class="footer__legal-line">Согласие на обработку</span><span class="footer__legal-line">персональных данных</span></a><a href="#"><span class="footer__legal-line">Политика в отношении обработки</span><span class="footer__legal-line">персональных данных</span></a></div>
+      <div class="footer__legal"><a href="documents.html#agreement"><span class="footer__legal-line">Согласие на обработку</span><span class="footer__legal-line">персональных данных</span></a><a href="documents.html#policy"><span class="footer__legal-line">Политика в отношении обработки</span><span class="footer__legal-line">персональных данных</span></a></div>
     </div>
     <p class="footer__copyright">©&nbsp;ООО&nbsp;«РКС-НР», 2026. Все права защищены</p>
   </footer>
