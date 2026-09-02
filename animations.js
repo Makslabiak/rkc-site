@@ -724,8 +724,8 @@
   }
 
   /* ---------- карточки услуг: диагональная scroll-анимация ----------
-     Паттерн повторяет механику референса OCI: возрастающее смещение,
-     чередующийся случайный наклон и scrub по длине секции. */
+     Стартовые значения фиксированы, чтобы resize/refresh не меняли рисунок
+     и не запускали карточки заново с другим поворотом. */
   function initServicesCardsReveal() {
     var section = document.querySelector('.services');
     var list = document.querySelector('.services__list');
@@ -741,16 +741,30 @@
       var isDesktop = context.conditions.desktop;
       var xStep = isDesktop ? 150 : 75;
       var yStep = isDesktop ? 200 : 100;
-      var rotations = cards.map(function (_, i) {
-        var direction = i % 2 === 0 ? -1 : 1;
-        return direction * gsap.utils.random(10, 25);
+      var rotations = [-18, 22, -16, 20, -13];
+      var offsets = cards.map(function (_, i) {
+        return {
+          x: (i + 1) * xStep,
+          y: (i + 1) * yStep,
+          rotation: rotations[i % rotations.length]
+        };
       });
 
-      var tween = gsap.from(cards, {
-        x: function (i) { return (i + 1) * xStep; },
-        y: function (i) { return (i + 1) * yStep; },
-        rotation: function (i) { return rotations[i]; },
+      /* Сначала явно выставляем стабильный старт. Это предотвращает
+         immediateRender-скачок, характерный для gsap.from + scrub. */
+      gsap.set(cards, {
+        x: function (i) { return offsets[i].x; },
+        y: function (i) { return offsets[i].y; },
+        rotation: function (i) { return offsets[i].rotation; },
         transformOrigin: 'center center',
+        force3D: true
+      });
+
+      var tween = gsap.to(cards, {
+        x: 0,
+        y: 0,
+        rotation: 0,
+        immediateRender: false,
         force3D: true,
         stagger: {
           each: 0.1,
@@ -760,14 +774,13 @@
           trigger: section,
           start: 'top bottom',
           end: isDesktop ? 'bottom 50%' : 'bottom 120%',
-          scrub: true,
+          scrub: 0.45,
           invalidateOnRefresh: true
         }
       });
       list.classList.add('is-services-anim-ready');
 
       return function () {
-        list.classList.remove('is-services-anim-ready');
         tween.kill();
         gsap.set(cards, { clearProps: 'transform' });
       };
