@@ -760,28 +760,61 @@
         force3D: true
       });
 
-      var tween = gsap.to(cards, {
-        x: 0,
-        y: 0,
-        rotation: 0,
-        immediateRender: false,
-        force3D: true,
-        stagger: {
-          each: 0.1,
-          ease: 'power2.out'
-        },
-        scrollTrigger: {
-          trigger: section,
-          start: 'top bottom',
-          end: isDesktop ? 'bottom 50%' : 'bottom 120%',
-          scrub: 0.45,
-          invalidateOnRefresh: true
-        }
-      });
+      var tweens = [];
+
+      if (isDesktop) {
+        /* Десктоп: карточки идут в отдельном sticky-блоке рядом с интро,
+           общий триггер на секцию тут уместен — секция короче списка. */
+        tweens.push(gsap.to(cards, {
+          x: 0,
+          y: 0,
+          rotation: 0,
+          immediateRender: false,
+          force3D: true,
+          stagger: {
+            each: 0.1,
+            ease: 'power2.out'
+          },
+          scrollTrigger: {
+            trigger: section,
+            start: 'top bottom',
+            end: 'bottom 50%',
+            scrub: 0.45,
+            invalidateOnRefresh: true
+          }
+        }));
+      } else {
+        /* Моб/планшет: список из 5 карточек значительно выше экрана,
+           поэтому общий триггер на всю секцию раньше растягивал анимацию
+           так, что первые карточки "успокаивались" (transform: none) уже
+           над экраном или впритык к верхнему краю — контент не успевал
+           считаться. У каждой карточки теперь свой триггер: анимация
+           доигрывает именно тогда, когда верх карточки доходит до точки
+           чуть ниже центра экрана, и дальше карточка спокойно стоит на
+           месте, пока не начнёт уходить сама естественным скроллом. */
+        cards.forEach(function (card) {
+          tweens.push(gsap.to(card, {
+            x: 0,
+            y: 0,
+            rotation: 0,
+            immediateRender: false,
+            force3D: true,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top bottom',
+              end: 'top 58%',
+              scrub: 0.45,
+              invalidateOnRefresh: true
+            }
+          }));
+        });
+      }
+
       list.classList.add('is-services-anim-ready');
 
       return function () {
-        tween.kill();
+        tweens.forEach(function (tween) { tween.kill(); });
         gsap.set(cards, { clearProps: 'transform' });
       };
     });
