@@ -1,6 +1,12 @@
 /* Единый пресет дизера для всех фото сайта. Меняем параметры здесь —
    основной движок и страницы получают одинаковые значения. */
-window.SITE_DITHER_ENGINE = 'shared-webgl';
+/* Мобильный Safari прокручивает содержимое асинхронно относительно fixed-слоёв.
+   Общий WebGL-canvas из services-dither.js из-за этого на кадр отстаёт от DOM
+   и фотографии визуально "ездят". На мобильной/планшетной раскладке используем
+   локальные canvas внутри самих блоков: они двигаются вместе с документом. */
+window.SITE_DITHER_ENGINE = window.matchMedia('(max-width: 1199px)').matches
+  ? 'local-canvas'
+  : 'shared-webgl';
 window.SITE_DITHER_CONFIG = Object.freeze({
   blockPx: 3,
   dpr: 1.5,

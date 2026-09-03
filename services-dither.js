@@ -1,6 +1,8 @@
 /* Один WebGL-canvas для всех фотографий страницы услуг.
    DOM-картинки остаются fallback: они скрываются только после загрузки GPU-текстуры. */
 (function initServicesDither() {
+  if (window.SITE_DITHER_ENGINE !== 'shared-webgl') return;
+
   const page = document.body;
   if (!page) return;
   const ditherConfig = window.SITE_DITHER_CONFIG || {
