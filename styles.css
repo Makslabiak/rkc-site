@@ -2151,8 +2151,8 @@ body[data-site-page="home"] .dither-photo__canvas {
 
 @media (min-width: 1200px) {
   .video-frame::after {
-    width: 3.3073vw;
-    height: 3.3073vw;
+    width: 6.6146vw;
+    height: 6.6146vw;
   }
 }
 
