@@ -768,9 +768,9 @@ body.menu-closing .site-header {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: 3px;
   font-family: "LT Superior", Arial, sans-serif;
-  font-size: clamp(36px, 10.2564vw, 44px);
+  font-size: clamp(21.6px, 6.1538vw, 26.4px);
   font-weight: 450;
   line-height: 1.2;
 }
@@ -1218,7 +1218,7 @@ body.menu-closing .site-header {
 /* Services — mobile */
 .services {
   position: relative;
-  min-height: 2183px;
+  min-height: 2110px;
   overflow: hidden;
   padding: 35px 15px 68px;
   background: var(--light);
@@ -1348,18 +1348,18 @@ body.menu-closing .site-header {
 /* Video — mobile */
 .video-section {
   position: relative;
-  height: 316px;
+  height: 360px;
   overflow: hidden;
   background: var(--light);
 }
 
 .video-frame {
   --ticker-thickness: 14px;
-  --ticker-gap: 10px;
+  --ticker-gap: 5px;
   --ticker-media-inset: calc(var(--ticker-thickness) + var(--ticker-gap));
-  --ticker-frame-height: 221px;
+  --ticker-frame-height: 254.15px;
   position: absolute;
-  top: 52px;
+  top: calc((100% - var(--ticker-frame-height)) / 2);
   left: 15px;
   width: calc(100% - 30px);
   height: var(--ticker-frame-height);
@@ -1485,8 +1485,8 @@ body.menu-closing .site-header {
   z-index: 3;
   top: 50%;
   left: 50%;
-  width: 127px;
-  height: 127px;
+  width: 64px;
+  height: 64px;
   overflow: hidden;
   padding: 0;
   border-radius: 50%;
@@ -1622,7 +1622,7 @@ body.menu-closing .site-header {
 
 .footer__nav nav {
   align-items: flex-start;
-  gap: 7px;
+  gap: 16px;
 }
 
 .footer__nav a {
@@ -1658,7 +1658,7 @@ body.menu-closing .site-header {
 
 .footer__socials {
   align-items: flex-start;
-  gap: 18px;
+  gap: 16px;
   margin-top: 54px;
 }
 
@@ -1678,14 +1678,14 @@ body.menu-closing .site-header {
 }
 
 .footer__contacts > div:first-child {
-  gap: 5px;
+  gap: 10px;
   font-size: 18.75px;
   font-weight: 500;
   line-height: 1.4;
 }
 
 .footer__legal {
-  gap: 12px;
+  gap: 14px;
   margin-top: 31px;
   font-size: 14.063px;
   font-weight: 500;
@@ -1720,7 +1720,7 @@ body.menu-closing .site-header {
   .hero__title { top: 80.0728%; left: 4.1667vw; width: 91.4vw; font-size: 59.8px; }
 
   .menu-panel { top: 83px; right: 4.1667vw; bottom: 24px; left: 4.1667vw; padding: 48px 32px 24px; }
-  .menu-panel__nav { gap: 10px; font-size: 54px; }
+  .menu-panel__nav { gap: 5px; font-size: 27px; }
   .menu-panel__contacts { grid-template-columns: 190px 1fr; gap: clamp(60px, 12vw, 205px); padding: 30px 0; font-size: 16px; }
   .menu-panel__contacts-content { gap: 20px; }
 
@@ -1774,7 +1774,7 @@ body.menu-closing .site-header {
   .service-card .text-link { align-self: flex-start; font-size: 16px; }
 
   .video-section { height: 600px; }
-  .video-frame { --ticker-thickness: 22px; --ticker-frame-height: 418px; top: 91px; left: 4.1667vw; width: 91.6667vw; height: var(--ticker-frame-height); font-size: 16px; }
+  .video-frame { --ticker-thickness: 22px; --ticker-frame-height: 418px; top: 91px; left: 4.1667vw; width: 91.6667vw; height: var(--ticker-frame-height); font-size: 16px; transform: none; }
 
   .news { height: 1820px; min-height: 0; padding: 80px 4.1667vw 0; }
   .news__header { height: 60px; }
@@ -1906,7 +1906,7 @@ body.menu-closing .site-header {
   .service-card .text-link { align-self: flex-start; font-size: .8333vw; }
 
   .video-section { height: 67.0313vw; }
-  .video-frame { --ticker-thickness: 1.3542vw; --ticker-frame-height: 50.3646vw; top: 8.3333vw; left: 6.7708vw; width: 86.4583vw; height: var(--ticker-frame-height); font-size: .9896vw; }
+  .video-frame { --ticker-thickness: 1.3542vw; --ticker-frame-height: 50.3646vw; top: 8.3333vw; left: 6.7708vw; width: 86.4583vw; height: var(--ticker-frame-height); font-size: .9896vw; transform: none; }
   .play-button { width: 6.6146vw; height: 6.6146vw; }
 
   .news { height: 69.2708vw; min-height: 0; padding: 4.1146vw 3.125vw 0; border-top: var(--line); }
@@ -2131,8 +2131,8 @@ body[data-site-page="home"] .dither-photo__canvas {
   z-index: 4;
   top: 50%;
   left: 50%;
-  width: 127px;
-  height: 127px;
+  width: 64px;
+  height: 64px;
   pointer-events: none;
   background: url("assets/icons/play.svg") center / contain no-repeat;
   content: "";
@@ -2151,8 +2151,8 @@ body[data-site-page="home"] .dither-photo__canvas {
 
 @media (min-width: 1200px) {
   .video-frame::after {
-    width: 6.6146vw;
-    height: 6.6146vw;
+    width: 3.3073vw;
+    height: 3.3073vw;
   }
 }
 

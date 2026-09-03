@@ -165,7 +165,10 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
     syncTouch: true,
     syncTouchLerp: 0.075,
     wheelMultiplier: 1,
-    touchMultiplier: 2,
+    /* При syncTouch значение 2 удваивает каждый жест и делает мобильный
+       скролл заметно резче нативного. Единица сохраняет плавность Lenis,
+       но возвращает естественную скорость следования за пальцем. */
+    touchMultiplier: 1,
     infinite: false,
   });
 

@@ -278,8 +278,8 @@
   }
 
   .news-detail__video-frame .play-button {
-    width: 90px;
-    height: 90px;
+    width: 45px;
+    height: 45px;
   }
 
   .news-detail-footer {
@@ -351,8 +351,8 @@
   }
 
   .news-detail__video-frame .play-button {
-    width: 64px;
-    height: 64px;
+    width: 32px;
+    height: 32px;
   }
 
   .news-detail-footer {
