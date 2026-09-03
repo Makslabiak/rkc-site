@@ -1,12 +1,9 @@
 /* Единый пресет дизера для всех фото сайта. Меняем параметры здесь —
    основной движок и страницы получают одинаковые значения. */
-/* Мобильный Safari прокручивает содержимое асинхронно относительно fixed-слоёв.
-   Общий WebGL-canvas из services-dither.js из-за этого на кадр отстаёт от DOM
-   и фотографии визуально "ездят". На мобильной/планшетной раскладке используем
-   локальные canvas внутри самих блоков: они двигаются вместе с документом. */
-window.SITE_DITHER_ENGINE = window.matchMedia('(max-width: 1199px)').matches
-  ? 'local-canvas'
-  : 'shared-webgl';
+/* Единый fixed WebGL-canvas нужен для сохранения исходного вида дизера на
+   всех брейкпоинтах. На touch-устройствах Lenis синхронизирует виртуальный
+   скролл с главным потоком, поэтому canvas и DOM обновляются в одном ticker. */
+window.SITE_DITHER_ENGINE = 'shared-webgl';
 window.SITE_DITHER_CONFIG = Object.freeze({
   blockPx: 3,
   dpr: 1.5,
@@ -165,6 +162,8 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
     orientation: 'vertical',
     gestureOrientation: 'vertical',
     smoothWheel: true,
+    syncTouch: true,
+    syncTouchLerp: 0.075,
     wheelMultiplier: 1,
     touchMultiplier: 2,
     infinite: false,
