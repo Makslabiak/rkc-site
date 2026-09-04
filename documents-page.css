@@ -32,7 +32,6 @@
 .document-section__text li::marker { font-size: .7em; }
 .documents-panel[hidden] { display: none; }
 .documents-footer { background: var(--dark); }
-.documents-footer .footer__background { display: none; }
 
 @media (min-width: 1200px) {
   .documents-page .desktop-nav__group { height: 10.4167vw; }

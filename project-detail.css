@@ -1,0 +1,471 @@
+.project-detail-page {
+  background: var(--light);
+}
+
+@media (min-width: 1200px) {
+  .project-detail-page .site-header::before,
+  .project-detail-page .site-header::after {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    pointer-events: none;
+    background: var(--dark);
+    content: "";
+  }
+
+  .project-detail-page .site-header::before {
+    left: 50.5208vw;
+  }
+
+  .project-detail-page .site-header::after {
+    left: 74.2188vw;
+  }
+}
+
+/* The detail page keeps the site's shared header in the document flow. */
+.project-detail-page .site-header {
+  position: relative;
+  height: 200px;
+  color: var(--dark);
+  background: var(--light);
+  border-bottom: 0;
+}
+
+.project-detail-page .desktop-nav__group {
+  border-left: 0;
+}
+
+.project-detail-page .desktop-nav__group a {
+  color: var(--dark);
+}
+
+.project-detail-page .language-button {
+  color: var(--light);
+  background: var(--dark);
+}
+
+.project-detail__intro {
+  display: grid;
+  grid-template-columns: 50.5729167% 49.4270833%;
+  align-items: start;
+  padding-bottom: 160px;
+  border-top: var(--line);
+  background: var(--light);
+}
+
+.project-detail__lead {
+  display: flex;
+  min-width: 0;
+  height: auto;
+  min-height: 1006px;
+  box-sizing: border-box;
+  flex-direction: column;
+  padding: 32px 60px 64px;
+  border-right: var(--line);
+  border-bottom: var(--line);
+}
+
+.project-detail__back {
+  display: inline-flex;
+  width: fit-content;
+  gap: 10px;
+  align-items: center;
+  color: var(--dark);
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.project-detail__back span:first-child {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.project-detail__heading {
+  display: flex;
+  width: min(770px, 100%);
+  margin-top: 105px;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.project-detail__heading h1 {
+  max-width: 770px;
+  margin: 0;
+  color: var(--dark);
+  font-family: "LT Superior", Arial, sans-serif;
+  font-size: 64px;
+  font-weight: 450;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.project-detail__meta {
+  display: flex;
+  margin: 0;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--muted);
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.project-detail__meta > div {
+  display: flex;
+  min-width: 0;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.project-detail__meta dt,
+.project-detail__meta dd {
+  min-width: 0;
+  margin: 0;
+}
+
+.project-detail__meta dt {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.project-detail__meta dd {
+  flex: 1 1 0;
+  color: var(--dark);
+  overflow-wrap: anywhere;
+}
+
+.project-detail__side {
+  display: flex;
+  min-width: 0;
+  min-height: 1006px;
+  box-sizing: border-box;
+  flex-direction: column;
+  border-top: var(--line);
+  border-bottom: var(--line);
+}
+
+.project-detail__hero {
+  width: 100%;
+  aspect-ratio: 949 / 584;
+  margin: 0;
+}
+
+.project-detail__hero img,
+.project-detail__gallery-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-detail__description {
+  min-height: 0;
+  flex: 1 1 auto;
+  box-sizing: border-box;
+  padding: 80px 60px;
+  color: var(--dark);
+  font-family: "LT Superior", Arial, sans-serif;
+  font-size: 22px;
+  font-weight: 450;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.project-detail__description p {
+  margin: 0;
+}
+
+.project-detail__description p + p {
+  margin-top: 26.4px;
+}
+
+.project-detail__gallery {
+  display: flex;
+  min-width: 0;
+  box-sizing: border-box;
+  flex-direction: column;
+  gap: 80px;
+  align-items: center;
+  padding: 0 60px 160px;
+  background: var(--light);
+}
+
+.project-detail__gallery h2 {
+  width: 100%;
+  margin: 0;
+  color: var(--dark);
+  font-family: "LT Superior", Arial, sans-serif;
+  font-size: 64px;
+  font-weight: 450;
+  line-height: 1.1;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.project-detail__gallery-grid {
+  display: grid;
+  width: 100%;
+  min-height: 500px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.project-detail__gallery-item {
+  width: 100%;
+  aspect-ratio: 587 / 404;
+}
+
+.project-detail__gallery-item:nth-child(2) {
+  transform: translateY(96px);
+}
+
+.project-detail__gallery-item:nth-child(3) {
+  transform: translateY(30px);
+}
+
+@media (min-width: 600px) and (max-width: 1199px) {
+  .project-detail-page .site-header {
+    height: 120px;
+  }
+
+  .project-detail__intro {
+    display: block;
+    padding-bottom: 0;
+    border-top: 0;
+  }
+
+  .project-detail__lead {
+    height: auto;
+    min-height: 410px;
+    padding: 30px calc(4.1667vw - 1px) 53px;
+    border: var(--line);
+  }
+
+  .project-detail__back {
+    gap: 8px;
+    font-size: 12px;
+    line-height: 14.4px;
+  }
+
+  .project-detail__back span:first-child {
+    font-size: 14px;
+  }
+
+  .project-detail__heading {
+    min-height: max-content;
+    margin-top: 54.6px;
+    flex: 1 1 auto;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .project-detail__heading h1 {
+    max-width: none;
+    font-family: "Roboto", Arial, sans-serif;
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 42px;
+  }
+
+  .project-detail__meta {
+    gap: 19px;
+    font-size: 12px;
+    line-height: 14.4px;
+  }
+
+  .project-detail__meta > div {
+    gap: 10px;
+  }
+
+  .project-detail__hero {
+    aspect-ratio: 768 / 460;
+  }
+
+  .project-detail__side {
+    min-height: 0;
+    border: 0;
+  }
+
+  .project-detail__description {
+    min-height: 255px;
+    padding: 38px 4.1667vw 84px;
+    border-bottom: var(--line);
+    font-family: "Roboto", Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18.9px;
+  }
+
+  .project-detail__description p + p {
+    margin-top: 18.9px;
+  }
+
+  .project-detail__gallery {
+    gap: 75px;
+    padding: 52px 4.1667vw 75px;
+  }
+
+  .project-detail__gallery--after {
+    margin-top: 68px;
+    padding-top: 35px;
+  }
+
+  .project-detail__gallery h2 {
+    font-size: 40px;
+    line-height: 40px;
+    text-align: left;
+  }
+
+  .project-detail__gallery-grid {
+    width: 100%;
+    min-height: 535px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: 270px 235px;
+    gap: 30px 20px;
+  }
+
+  .project-detail__gallery-item {
+    aspect-ratio: 342 / 235;
+  }
+
+  .project-detail__gallery-item:nth-child(2) {
+    transform: none;
+    margin-top: 35px;
+  }
+
+  .project-detail__gallery-item:nth-child(3) {
+    width: 342px;
+    max-width: 100%;
+    grid-column: 1 / -1;
+    justify-self: center;
+    transform: none;
+  }
+}
+
+@media (max-width: 599px) {
+  .project-detail-page .site-header {
+    position: fixed;
+    z-index: 110;
+    height: 61px;
+  }
+
+  .project-detail__intro {
+    display: block;
+    padding-top: 61px;
+    padding-bottom: 0;
+    border-top: 0;
+  }
+
+  .project-detail__lead {
+    min-height: 366px;
+    padding: 48px 14px 38px;
+    border: var(--line);
+  }
+
+  .project-detail__back {
+    gap: 6px;
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  .project-detail__back span:first-child {
+    font-size: 12px;
+  }
+
+  .project-detail__heading {
+    min-height: max-content;
+    margin-top: 39px;
+    flex: 1 1 auto;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .project-detail__heading h1 {
+    max-width: none;
+    font-family: "Roboto", Arial, sans-serif;
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 31.5px;
+  }
+
+  .project-detail__meta {
+    gap: 20px;
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  .project-detail__meta > div {
+    gap: 10px;
+  }
+
+  .project-detail__hero {
+    aspect-ratio: 375 / 244;
+  }
+
+  .project-detail__side {
+    min-height: 0;
+    border: 0;
+  }
+
+  .project-detail__description {
+    min-height: 275px;
+    padding: 34px 15px 46px;
+    border-bottom: var(--line);
+    font-family: "Roboto", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16.2px;
+  }
+
+  .project-detail__description p + p {
+    margin-top: 16.2px;
+  }
+
+  .project-detail__gallery {
+    gap: 35px;
+    padding: 41px 15px 36px;
+  }
+
+  .project-detail__gallery--after {
+    margin-top: 12px;
+    padding: 35px 15px 76px;
+  }
+
+  .project-detail__gallery h2 {
+    font-size: 25px;
+    font-weight: 400;
+    line-height: 30px;
+    text-align: center;
+  }
+
+  .project-detail__gallery-grid {
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    gap: 15px;
+  }
+
+  .project-detail__gallery-item,
+  .project-detail__gallery-item:nth-child(2),
+  .project-detail__gallery-item:nth-child(3) {
+    width: 100%;
+    grid-column: auto;
+    aspect-ratio: 345 / 238;
+    transform: none;
+    margin-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-detail__gallery-item img {
+    transition: none;
+  }
+}

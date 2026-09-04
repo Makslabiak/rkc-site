@@ -7,17 +7,18 @@
   <title>РКС-НР — первые в&nbsp;строительстве новой истории</title>
   <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
   <link rel="preload" href="assets/images/figma/home-clean/hero.webp" as="image" fetchpriority="high">
-    <link rel="stylesheet" href="styles.css?v=20260903-58">
+    <link rel="stylesheet" href="styles.css?v=20260904-5">
   <script>document.documentElement.classList.add('has-anim');</script>
-  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js" defer></script>
+  <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
   <script src="assets/vendor/gsap.min.js" defer></script>
   <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
   <script src="assets/vendor/SplitText.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
     <script src="site-header.js?v=20260903-2" defer></script>
-    <script src="script.js?v=20260903-23" defer></script>
-  <script src="services-dither.js?v=20260903-7" defer></script>
-  <script src="animations.js?v=20260903-7" defer></script>
+    <script src="script.js?v=20260904-1" defer></script>
+  <script src="news-home.js?v=20260904-1" defer></script>
+  <script src="services-dither.js?v=20260904-1" defer></script>
+  <script src="animations.js?v=20260904-3" defer></script>
 </head>
 <body data-site-page="home">
   <div class="loader" aria-hidden="true">
@@ -41,7 +42,7 @@
       <div class="hero__line hero__line--bottom"></div>
       <div class="hero__line hero__line--left-bottom"></div>
     </div>
-    <p class="hero__descriptor" data-anim="lineUp" data-anim-duration=".8" data-anim-delay=".4" data-anim-stagger=".14">Восстановление объектов<br>жилищного и&nbsp;социально-бытового<br>назначения в&nbsp;новых регионах России</p>
+    <p class="hero__descriptor" data-anim="lineUp" data-anim-duration=".8" data-anim-delay=".4" data-anim-stagger=".14">Восстановление объектов <br>жилищного и&nbsp;социально-бытового <br>назначения в&nbsp;новых регионах России</p>
     <h1 class="hero__title" data-anim="title" data-anim-start="top 100%">Первые в&nbsp;строительстве новой истории</h1>
   </header>
 
@@ -52,20 +53,20 @@
       <div class="company-intro__steps" aria-hidden="true">
         <span></span><span></span><span></span><span></span>
       </div>
-      <h2 class="company-intro__lead" data-anim="lineUp">Наша компания осуществляет функции генерального подрядчика строительства и&nbsp;восстановления объектов жилищной и&nbsp;социально-культурной сферы в&nbsp;новых регионах Российской Федерации</h2>
+      <h2 class="company-intro__lead" data-anim="lineUp" data-anim-prewarm>Наша компания осуществляет функции генерального подрядчика строительства и&nbsp;восстановления объектов жилищной и&nbsp;социально-культурной сферы в&nbsp;новых регионах Российской Федерации</h2>
       <div class="company-intro__copy">
-        <p data-anim="lineUp">ООО&nbsp;«РКС-НР» было создано в&nbsp;2022&nbsp;году по&nbsp;поручению Министерства строительства и&nbsp;жилищно-коммунального хозяйства Российской Федерации для&nbsp;участия в&nbsp;реализации специального инфраструктурного проекта.</p>
-        <p data-anim="lineUp" data-anim-delay=".15">В&nbsp;марте 2023&nbsp;года Минстроем России было принято решение о&nbsp;расширении деятельности ООО&nbsp;«РКС-НР» по&nbsp;реализации проектов в&nbsp;других регионах Российской Федерации, странах Ближнего Зарубежья и&nbsp;дружественных странах.</p>
+        <p data-anim="lineUp" data-anim-prewarm>ООО&nbsp;«РКС-НР» было создано в&nbsp;2022&nbsp;году по&nbsp;поручению Министерства строительства и&nbsp;жилищно-коммунального хозяйства Российской Федерации для&nbsp;участия в&nbsp;реализации специального инфраструктурного проекта.</p>
+        <p data-anim="lineUp" data-anim-delay=".15" data-anim-prewarm>В&nbsp;марте 2023&nbsp;года Минстроем России было принято решение о&nbsp;расширении деятельности ООО&nbsp;«РКС-НР» по&nbsp;реализации проектов в&nbsp;других регионах Российской Федерации, странах Ближнего Зарубежья и&nbsp;дружественных странах.</p>
       </div>
     </section>
 
     <section class="stats" aria-labelledby="stats-title">
-      <h2 class="stats__title" id="stats-title"><span data-anim="title">Компания</span><span data-anim="title" data-anim-delay=".12">в&nbsp;цифрах</span></h2>
-      <p class="stats__eyebrow" data-anim="lineUp" data-anim-delay=".2">В&nbsp;рамках реализации специального инфраструктурного проекта в&nbsp;сжатые сроки</p>
+      <h2 class="stats__title" id="stats-title"><span data-anim="title" data-anim-prewarm>Компания</span>&nbsp;<span data-anim="title" data-anim-delay=".12" data-anim-prewarm>в&nbsp;цифрах</span></h2>
+      <p class="stats__eyebrow" data-anim="lineUp" data-anim-delay=".2" data-anim-prewarm>В&nbsp;рамках реализации специального инфраструктурного проекта в&nbsp;сжатые сроки</p>
       <div class="stats__image image-tone" data-anim="fadeIn" aria-hidden="true">
         <img src="assets/images/figma/home-clean/stats.webp" alt="">
       </div>
-      <div class="stats__list" data-anim="stats" data-anim-duration=".72" data-anim-stagger=".26">
+      <div class="stats__list">
         <article class="stat-item" tabindex="0">
           <strong>30&nbsp;000</strong>
           <p>Привлечено специалистов в&nbsp;области строительства</p>
@@ -87,40 +88,40 @@
     </section>
 
     <section class="projects" id="projects" aria-labelledby="projects-title">
-      <h2 class="section-title projects__title" id="projects-title" data-anim="title">Реализованные проекты</h2>
+      <h2 class="section-title projects__title" id="projects-title" data-anim="title" data-anim-prewarm>Реализованные проекты</h2>
       <div class="projects__grid">
         <article class="project-card">
-          <span class="project-card__number" data-anim="typeChars">01</span>
-          <h3 data-anim="lineUp">Восстановительные работы</h3>
-          <a class="project-card__media image-tone" href="#" aria-label="Подробнее: Восстановительные работы">
+          <span class="project-card__number" data-anim="typeChars" data-anim-prewarm>01</span>
+          <h3 data-anim="lineUp" data-anim-prewarm>Восстановительные работы</h3>
+            <a class="project-card__media image-tone" data-dither-parallax=".08" href="projects.html" aria-label="Подробнее: Восстановительные работы">
             <img src="assets/images/figma/home-clean/project-restoration.webp" alt="Восстановленный жилой дом">
             <span class="project-card__arrow" aria-hidden="true"><img src="assets/icons/arrow-box.svg" width="90" height="90" alt=""></span>
           </a>
-          <p data-anim="lineUp" data-anim-delay=".1">Ремонтно-восстановительные работы более 1&nbsp;500 объектов жилищного строительства Донецкой Народной Республики</p>
+          <p data-anim="lineUp" data-anim-delay=".1" data-anim-prewarm>Ремонтно-восстановительные работы более 1&nbsp;500 объектов жилищного строительства Донецкой Народной Республики</p>
         </article>
 
         <article class="project-card">
-          <span class="project-card__number" data-anim="typeChars" data-anim-delay=".3">02</span>
-          <h3 data-anim="lineUp" data-anim-delay=".3">Новые жилые дома</h3>
-          <a class="project-card__media image-tone" href="#" aria-label="Подробнее: Новые жилые дома">
+          <span class="project-card__number" data-anim="typeChars" data-anim-delay=".3" data-anim-prewarm>02</span>
+          <h3 data-anim="lineUp" data-anim-delay=".3" data-anim-prewarm>Новые жилые дома</h3>
+            <a class="project-card__media image-tone" data-dither-parallax=".08" href="projects.html" aria-label="Подробнее: Новые жилые дома">
             <img src="assets/images/figma/home-clean/project-houses.webp" alt="Новые жилые дома">
             <span class="project-card__arrow" aria-hidden="true"><img src="assets/icons/arrow-box.svg" width="90" height="90" alt=""></span>
           </a>
-          <p data-anim="lineUp" data-anim-delay=".4">Строительство 45&nbsp;000&nbsp;кв.&nbsp;м жилья в&nbsp;рамках реализации специального инфраструктурного проекта в&nbsp;ДНР</p>
-          <a class="button projects__button projects__button--desktop" href="#" data-anim="fadeUp" data-anim-delay=".5"><span class="button__text button__text--current">Все проекты</span><span class="button__text button__text--hover" aria-hidden="true">Все проекты</span></a>
+          <p data-anim="lineUp" data-anim-delay=".4" data-anim-prewarm>Строительство 45&nbsp;000&nbsp;кв.&nbsp;м жилья в&nbsp;рамках реализации специального инфраструктурного проекта в&nbsp;ДНР</p>
+            <a class="button projects__button projects__button--desktop" href="projects.html" data-anim="fadeUp" data-anim-delay=".5" data-anim-prewarm><span class="button__text button__text--current">Все проекты</span><span class="button__text button__text--hover" aria-hidden="true">Все проекты</span></a>
         </article>
 
         <article class="project-card">
-          <span class="project-card__number" data-anim="typeChars" data-anim-delay=".6">03</span>
-          <h3 data-anim="lineUp" data-anim-delay=".6">Объекты здравоохранения</h3>
-          <a class="project-card__media image-tone" href="#" aria-label="Подробнее: Объекты здравоохранения">
+          <span class="project-card__number" data-anim="typeChars" data-anim-delay=".6" data-anim-prewarm>03</span>
+          <h3 data-anim="lineUp" data-anim-delay=".6" data-anim-prewarm>Объекты здравоохранения</h3>
+            <a class="project-card__media image-tone" data-dither-parallax=".08" href="projects.html" aria-label="Подробнее: Объекты здравоохранения">
             <img src="assets/images/figma/home-clean/project-healthcare.webp" alt="Восстановленный объект здравоохранения">
             <span class="project-card__arrow" aria-hidden="true"><img src="assets/icons/arrow-box.svg" width="90" height="90" alt=""></span>
           </a>
-          <p data-anim="lineUp" data-anim-delay=".7">Восстановительные работы ключевых объектов здравоохранения в&nbsp;городах Мариуполе и&nbsp;Волновахе</p>
+          <p data-anim="lineUp" data-anim-delay=".7" data-anim-prewarm>Восстановительные работы ключевых объектов здравоохранения в&nbsp;городах Мариуполе и&nbsp;Волновахе</p>
         </article>
       </div>
-      <a class="button projects__button projects__button--adaptive" href="#" data-anim="fadeUp"><span class="button__text button__text--current">Все проекты</span><span class="button__text button__text--hover" aria-hidden="true">Все проекты</span></a>
+      <a class="button projects__button projects__button--adaptive" href="projects.html" data-anim="fadeUp" data-anim-prewarm><span class="button__text button__text--current">Все проекты</span><span class="button__text button__text--hover" aria-hidden="true">Все проекты</span></a>
     </section>
 
     <section class="services" id="services" aria-labelledby="services-title">
@@ -191,13 +192,15 @@
 
     <section class="news" id="news" aria-labelledby="news-title">
       <div class="news__header">
-        <h2 class="section-title" id="news-title" data-anim="title">Новости</h2>
-        <a class="text-link" href="news.html" data-anim="typeChars">Все новости</a>
+        <h2 class="section-title" id="news-title">Новости</h2>
+        <a class="text-link" href="news.html">Все новости</a>
       </div>
       <div class="news__layout">
-        <div class="news__image image-tone image-tone--hero" data-anim="fadeIn"><img src="assets/images/figma/home-clean/news.webp" alt="Панорама города ночью"></div>
-        <div class="news__grid" data-anim="fadeUp" data-anim-target=".news-card">
-          <a class="news-card news-card--featured is-active" href="#">
+        <div class="news__image image-tone image-tone--hero"><img src="assets/images/figma/home-clean/news.webp" alt="Панорама города ночью"></div>
+        <!-- Первые 4 карточки синхронизируются с news.html через news-home.js.
+             Разметка ниже — запасной вариант, если fetch недоступен. -->
+        <div class="news__grid" data-news-home>
+          <a class="news-card news-card--featured is-active" href="news.html">
             <time datetime="2026-02-04">04.02.2026</time>
             <span>В&nbsp;доме на&nbsp;проспекте Ленина в&nbsp;Мариуполе выполняется чистовой ремонт квартир.</span>
             <span class="news-card__arrow" aria-hidden="true">→</span>
@@ -207,12 +210,12 @@
             <span>ООО&nbsp;«РКС-НР» совместно с&nbsp;Фондом капитального ремонта Московской области завершили восстановление дома 1993&nbsp;года постройки на&nbsp;проспекте Маршала Жукова</span>
             <span class="news-card__arrow" aria-hidden="true">→</span>
           </a>
-          <a class="news-card" href="#">
+          <a class="news-card" href="news.html">
             <time datetime="2026-01-27">27.01.2026</time>
             <span>В&nbsp;рамках программы «Благоустройство придомовых территорий 2024–2026» завершены работы во&nbsp;дворе дома на&nbsp;улице Кронштадтской в&nbsp;Мариуполе</span>
             <span class="news-card__arrow" aria-hidden="true">→</span>
           </a>
-          <a class="news-card" href="#">
+          <a class="news-card" href="news.html">
             <time datetime="2026-01-23">23.01.2026</time>
             <span>В&nbsp;Мариуполе завершено восстановление дома в&nbsp;Орджоникидзевском районе</span>
             <span class="news-card__arrow" aria-hidden="true">→</span>
@@ -228,7 +231,7 @@
       <nav aria-label="Навигация в подвале" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom">
         <a href="#company">О&nbsp;компании</a>
         <a href="services.html">Услуги</a>
-        <a href="#projects">Проекты</a>
+        <a href="projects.html">Проекты</a>
         <a href="news.html">Новости</a>
         <a href="contacts.html">Контакты</a>
         <a href="#">Охрана труда</a>
@@ -243,6 +246,14 @@
     </div>
     <p class="footer__copyright" data-anim="typeChars" data-anim-start="top bottom">©&nbsp;ООО&nbsp;«РКС-НР», 2026. Все права защищены</p>
   </footer>
-  <script src="annotator-tool%C2%A0%E2%80%94%20%D0%BA%D0%BE%D0%BF%D0%B8%D1%8F/annotator.js"></script>
+  <!-- Инструмент аннотации — только по запросу (?annotate в адресе).
+       Он вешает capture-фазовый scroll-листенер, глобальный mousemove и
+       fixed-слой во весь экран с z-index 2147483647, поэтому участвовать
+       в каждом кадре обычного просмотра ему незачем. -->
+  <script>
+    if (new URLSearchParams(location.search).has('annotate')) {
+      document.write('<script src="annotator-tool%C2%A0%E2%80%94%20%D0%BA%D0%BE%D0%BF%D0%B8%D1%8F/annotator.js"><\/script>');
+    }
+  </script>
 </body>
 </html>

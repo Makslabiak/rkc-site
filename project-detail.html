@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Жилой дом на ул. Артема в историческом центре Мариуполя — проект по восстановлению ООО «РКС-НР»">
+  <title>Жилой дом на ул. Артема — РКС-НР</title>
+  <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=20260904-5">
+  <link rel="stylesheet" href="project-detail.css?v=20260904-3">
+  <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
+  <script src="assets/vendor/gsap.min.js" defer></script>
+  <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
+  <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
+  <script src="site-header.js?v=20260904-1" defer></script>
+  <script src="script.js?v=20260904-1" defer></script>
+  <script src="project-detail.js?v=20260904-2" defer></script>
+  <script src="services-dither.js?v=20260904-1" defer></script>
+  <script src="animations.js?v=20260904-1" defer></script>
+</head>
+<body class="project-detail-page" data-site-page="project-detail">
+  <a class="skip-link" href="#main">Перейти к&nbsp;содержимому</a>
+
+  <header class="site-header" id="top" data-site-header></header>
+  <div data-site-menu></div>
+
+  <main id="main">
+    <section class="project-detail__intro" aria-label="Информация о проекте">
+      <div class="project-detail__lead">
+        <a class="project-detail__back" href="projects.html">
+          <span aria-hidden="true">←</span>
+          <span>Все проекты</span>
+        </a>
+        <div class="project-detail__heading">
+          <h1 data-project-title>Жилой дом на ул. Артема в историческом центре Мариуполя</h1>
+          <dl class="project-detail__meta">
+            <div>
+              <dt>Год постройки</dt>
+            <dd data-project-year>2023 ГОД</dd>
+            </div>
+            <div>
+              <dt>Подрядная организация</dt>
+            <dd data-project-contractor>ООО «ТРАНСЮЖСТРОЙ»</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="project-detail__side">
+        <figure class="project-detail__hero image-tone">
+          <img data-project-hero src="assets/images/projects/project-detail-hero.png" width="500" height="350" alt="Жилой дом на ул. Артема в Мариуполе">
+        </figure>
+        <div class="project-detail__description" data-project-description>
+          <p>Объем повреждений: инженерные системы, несущие конструкции, кровля, дверные и оконные блоки.</p>
+          <p>Выполненные работы: капитальный ремонт наружных и внутренних стен, несущих конструкций кровли, лестниц и балконов. Устранены аварийные участки инженерных систем (отопления, водоснабжения, канализации, электроснабжения). Произведена замена старых оконных и дверных блоков, выполнен ремонт цоколя. Ремонтно-восстановительные мероприятия проведены в строгом соответствии с проектом и под надзором технических экспертов.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="project-detail__gallery project-detail__gallery--before" aria-labelledby="project-before-title">
+      <h2 id="project-before-title">До восстановления</h2>
+      <div class="project-detail__gallery-grid" data-project-gallery="before"></div>
+    </section>
+
+    <section class="project-detail__gallery project-detail__gallery--after" aria-labelledby="project-after-title">
+      <h2 id="project-after-title">После восстановления</h2>
+      <div class="project-detail__gallery-grid" data-project-gallery="after"></div>
+    </section>
+  </main>
+
+  <footer class="footer" id="contacts">
+    <img class="footer__logo" src="assets/icons/logo-footer.svg" width="738" height="147" alt="РКС-НР">
+    <div class="footer__nav">
+      <nav aria-label="Навигация в подвале">
+        <a href="index.html#company">О&nbsp;компании</a>
+        <a href="services.html">Услуги</a>
+        <a href="projects.html" aria-current="page">Проекты</a>
+        <a href="news.html">Новости</a>
+        <a href="contacts.html">Контакты</a>
+        <a href="#">Охрана труда</a>
+        <a href="#">Этика и&nbsp;ответственность</a>
+        <a href="#">Противодействие коррупции</a>
+      </nav>
+      <div class="footer__socials"><a href="#">MAX</a><a href="#">Telegram</a></div>
+    </div>
+    <div class="footer__contacts">
+      <div><a href="tel:+74951472233">+7&nbsp;(495)&nbsp;147-22-33</a><a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a></div>
+      <div class="footer__legal"><a href="documents.html#agreement"><span class="footer__legal-line">Согласие на обработку</span><span class="footer__legal-line">персональных данных</span></a><a href="documents.html#policy"><span class="footer__legal-line">Политика в отношении обработки</span><span class="footer__legal-line">персональных данных</span></a></div>
+    </div>
+    <p class="footer__copyright">©&nbsp;ООО&nbsp;«РКС-НР», 2026. Все права защищены</p>
+  </footer>
+
+  <script type="application/json" id="project-detail-data">
+    {
+      "title": "Жилой дом на ул. Артема в историческом центре Мариуполя",
+      "category": "Восстановление",
+      "year": "2023 ГОД",
+      "contractor": "ООО «ТРАНСЮЖСТРОЙ»",
+      "hero": "assets/images/projects/project-detail-hero.png",
+      "description": [
+        "Объем повреждений: инженерные системы, несущие конструкции, кровля, дверные и оконные блоки.",
+        "Выполненные работы: капитальный ремонт наружных и внутренних стен, несущих конструкций кровли, лестниц и балконов. Устранены аварийные участки инженерных систем (отопления, водоснабжения, канализации, электроснабжения). Произведена замена старых оконных и дверных блоков, выполнен ремонт цоколя. Ремонтно-восстановительные мероприятия проведены в строгом соответствии с проектом и под надзором технических экспертов."
+      ],
+      "before": [
+        {"src":"assets/images/projects/project-detail-before-01.png","alt":"Дом до восстановления, общий вид"},
+        {"src":"assets/images/projects/project-detail-before-02.png","alt":"Дом до восстановления, фасад"},
+        {"src":"assets/images/projects/project-detail-before-03.png","alt":"Дом до восстановления, боковой фасад"}
+      ],
+      "after": [
+        {"src":"assets/images/projects/project-detail-after-01.png","alt":"Восстановленный дом, общий вид"},
+        {"src":"assets/images/projects/project-detail-after-02.png","alt":"Восстановленный дом, фасад"},
+        {"src":"assets/images/projects/project-detail-after-03.png","alt":"Восстановленный дом, боковой фасад"}
+      ]
+    }
+  </script>
+</body>
+</html>

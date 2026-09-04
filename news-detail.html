@@ -6,16 +6,16 @@
   <meta name="description" content="Новости ООО «РКС-НР» — восстановление дома на проспекте Маршала Жукова">
   <title>Восстановление дома на проспекте Маршала Жукова — РКС-НР</title>
   <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="styles.css?v=20260903-58">
-  <link rel="stylesheet" href="news-detail.css?v=20260903-2">
-  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260904-5">
+  <link rel="stylesheet" href="news-detail.css?v=20260904-9">
+  <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
   <script src="assets/vendor/gsap.min.js" defer></script>
   <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
   <script src="site-header.js?v=20260903-2" defer></script>
-  <script src="script.js?v=20260903-23" defer></script>
-  <script src="services-dither.js?v=20260903-7" defer></script>
-  <script src="animations.js?v=20260903-7" defer></script>
+    <script src="script.js?v=20260904-1" defer></script>
+  <script src="services-dither.js?v=20260904-1" defer></script>
+    <script src="animations.js?v=20260904-3" defer></script>
 </head>
 <body class="news-detail-page" data-site-page="news-detail">
   <a class="skip-link" href="#main">Перейти к&nbsp;содержимому</a>
@@ -27,16 +27,18 @@
   <main id="main">
     <section class="news-detail__content" aria-label="Детальная страница новости">
       <div class="news-detail__lead">
-        <a class="news-detail__back" href="news.html"><span aria-hidden="true">←</span> Все новости</a>
-        <div class="news-detail__heading">
-          <h1>ООО «РКС-НР» совместно с Фондом капитального ремонта Московской области завершили восстановление дома 1993 года постройки на проспекте Маршала Жукова</h1>
-          <time datetime="2026-02-02">02.02.2026</time>
+        <div class="news-detail__lead-sticky">
+          <a class="news-detail__back" href="news.html"><span aria-hidden="true">←</span> Все новости</a>
+          <div class="news-detail__heading">
+            <h1>ООО «РКС-НР» совместно с Фондом капитального ремонта Московской области завершили восстановление дома 1993 года постройки на проспекте Маршала Жукова</h1>
+            <time datetime="2026-02-02">02.02.2026</time>
+          </div>
         </div>
       </div>
 
       <article class="news-detail__body">
         <div class="news-detail__hero image-tone">
-          <img src="assets/images/news-detail-hero.png" width="3420" height="2224" alt="Восстановленный дом на проспекте Маршала Жукова">
+          <img src="assets/images/news-detail-hero.webp" width="2048" height="1332" alt="Восстановленный дом на проспекте Маршала Жукова">
         </div>
         <div class="news-detail__copy">
           <p>Компания ООО «РКС-НР» с привлечением подрядной организации ООО «Трансюжстрой» выполнила ремонт многоквартирного жилого дома на Харлампиевской улице в Мариуполе.</p>
@@ -56,10 +58,14 @@
       </article>
     </section>
 
-    <section class="news-detail__video" aria-label="Видео о восстановленном доме">
-      <div class="news-detail__video-frame image-tone">
-        <img src="assets/images/news-detail-gallery.png" width="330" height="220" alt="Восстановленный дом на видео" loading="lazy">
-        <button class="play-button" type="button" aria-label="Воспроизвести видео"><img src="assets/icons/play.svg" width="127" height="127" alt=""></button>
+    <section class="video-section" aria-label="Видео о компании">
+      <div class="video-frame">
+        <div class="video-frame__media image-tone image-tone--hero">
+          <img src="assets/images/news-detail-video.png" alt="Восстановленный дом на видео">
+          <button class="play-button" type="button" aria-label="Воспроизвести видео">
+            <img src="assets/icons/play.svg" width="127" height="127" alt="">
+          </button>
+        </div>
       </div>
     </section>
   </main>
@@ -70,7 +76,7 @@
       <nav aria-label="Навигация в подвале">
         <a href="index.html#company">О компании</a>
         <a href="services.html">Услуги</a>
-        <a href="index.html#projects">Проекты</a>
+        <a href="projects.html">Проекты</a>
         <a href="news.html">Новости</a>
         <a href="contacts.html">Контакты</a>
         <a href="#">Охрана труда</a>

@@ -126,7 +126,12 @@ html::before {
 html.menu-open::before {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
   transition-delay: 110ms, 0s;
+}
+
+html.menu-closing::before {
+  pointer-events: auto;
 }
 
 button,
@@ -174,6 +179,37 @@ img {
 
 .skip-link:focus {
   transform: none;
+}
+
+.page-transition {
+  position: fixed;
+  z-index: 100000;
+  inset: 0;
+  background: var(--light);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 720ms cubic-bezier(.22, 1, .36, 1), visibility 0s linear 720ms;
+}
+
+.page-transition.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 720ms cubic-bezier(.22, 1, .36, 1), visibility 0s linear 0s;
+}
+
+/* Переход на главную: вуаль в цвет лоадера, стык выход→лоадер без скачка. */
+.page-transition.is-to-home {
+  background: var(--dark);
+}
+
+.page-transition.is-entering {
+  transition: opacity 1000ms cubic-bezier(.22, 1, .36, 1), visibility 0s linear 1000ms;
+}
+
+.page-transition.is-visible.is-entering {
+  transition: opacity 1000ms cubic-bezier(.22, 1, .36, 1), visibility 0s linear 0s;
 }
 
 .section-title,
@@ -426,7 +462,10 @@ img {
 
 .site-header {
   position: absolute;
-  z-index: 3;
+  /* Выше слоя контента hero (.hero__lines / .hero__descriptor / .hero__title —
+     z-index 3). Дескриптор идёт в DOM после шапки, и при равном z-index он
+     перекрывал кнопку меню в правой колонке. */
+  z-index: 4;
   top: 0;
   left: 0;
   display: flex;
@@ -435,6 +474,17 @@ img {
   align-items: flex-start;
   justify-content: space-between;
   padding: 14px 15px 0;
+}
+
+/* На iOS Safari абсолютная шапка внутри overflow-контейнера hero может
+   оказаться под следующими секциями во время scroll. Фиксируем сам контейнер
+   шапки на мобильном, а не только его логотип и кнопки: так весь header
+   остаётся в верхнем слое viewport. */
+@media (max-width: 599px) {
+  .site-header {
+    position: fixed;
+    z-index: 110;
+  }
 }
 
 .site-header--light {
@@ -471,7 +521,7 @@ img {
 
 .site-header__actions {
   position: fixed;
-  z-index: 20;
+  z-index: 120;
   top: 14px;
   right: 15px;
   display: flex;
@@ -488,7 +538,12 @@ body.menu-closing .site-header__actions {
 
 body.menu-open .site-header,
 body.menu-closing .site-header {
-  z-index: 110;
+  z-index: 2147483646;
+}
+
+body.menu-open .hero__descriptor,
+body.menu-closing .hero__descriptor {
+  visibility: hidden;
 }
 
 .site-scrollbar {
@@ -523,7 +578,11 @@ body.menu-closing .site-header {
   cursor: pointer;
   touch-action: none;
   user-select: none;
-  will-change: transform, height;
+  /* height здесь был вреден: это не composited-свойство, и объявление
+     держало ползунок в постоянной готовности к layout. Высота теперь
+     пишется только при resize, поэтому на кадрах скролла меняется
+     исключительно transform. */
+  will-change: transform;
 }
 
 .site-scrollbar__thumb:hover {
@@ -594,15 +653,29 @@ body.menu-closing .site-header {
 }
 
 .desktop-nav a,
-.menu-panel__nav a {
+.menu-panel__nav a,
+.menu-panel__contacts-links a {
   transition: color 180ms ease;
 }
 
 .desktop-nav a:hover,
 .desktop-nav a:focus-visible,
 .menu-panel__nav a:hover,
-.menu-panel__nav a:focus-visible {
+.menu-panel__nav a:focus-visible,
+.menu-panel__contacts-links a:hover,
+.menu-panel__contacts-links a:focus-visible {
   color: var(--muted);
+}
+
+.desktop-nav a[aria-current="page"],
+.desktop-nav a[aria-current="page"]:hover,
+.desktop-nav a[aria-current="page"]:focus-visible,
+.menu-panel__nav a[aria-current="page"],
+.menu-panel__nav a[aria-current="page"]:hover,
+.menu-panel__nav a[aria-current="page"]:focus-visible {
+  color: var(--muted);
+  cursor: default;
+  pointer-events: none;
 }
 
 .language-button:hover,
@@ -651,7 +724,7 @@ body.menu-closing .site-header {
   left: 15px;
   width: calc(100% - 30px);
   font-family: "LT Superior", Arial, sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
   line-height: normal;
 }
@@ -672,7 +745,7 @@ body.menu-closing .site-header {
 
 .menu-panel {
   position: fixed;
-  z-index: 100;
+  z-index: 2147483647;
   top: 61px;
   right: 15px;
   bottom: 15px;
@@ -726,6 +799,12 @@ body.menu-closing .site-header {
 .menu-panel--gsap .menu-panel__contacts-title,
 .menu-panel--gsap .menu-panel__contacts-content {
   transition: none !important;
+}
+
+.menu-panel--gsap .menu-panel__nav a {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
 }
 
 .menu-panel--gsap {
@@ -962,7 +1041,7 @@ body.menu-closing .site-header {
 }
 
 .stats__title span + span::before {
-  content: " ";
+  content: none;
 }
 
 .stats__eyebrow {
@@ -1020,7 +1099,6 @@ body.menu-closing .site-header {
   height: 132px;
   border-top: 0;
   color: var(--dark);
-  will-change: transform, opacity;
 }
 
 .stat-item::before,
@@ -1031,9 +1109,8 @@ body.menu-closing .site-header {
   height: 1px;
   content: "";
   background: var(--dark);
-  transform: scaleX(var(--stat-line-progress, 1));
-  transform-origin: left center;
-  will-change: transform;
+  transform: none !important;
+  will-change: auto;
 }
 
 .stat-item::before {
@@ -1060,7 +1137,6 @@ body.menu-closing .site-header {
   font-size: 39.844px;
   font-weight: 700;
   line-height: 1.04;
-  will-change: transform, opacity;
 }
 
 .stat-item p {
@@ -1068,7 +1144,6 @@ body.menu-closing .site-header {
   font-size: 14.063px;
   line-height: 1.35;
   text-transform: uppercase;
-  will-change: transform, opacity;
 }
 
 .stats__button {
@@ -1099,7 +1174,6 @@ body.menu-closing .site-header {
 
 .project-card {
   position: relative;
-  will-change: transform;
 }
 
 .project-card::before {
@@ -1114,8 +1188,8 @@ body.menu-closing .site-header {
     to bottom,
     var(--dark) 0,
     var(--dark) var(--project-line-gap-start, 0px),
-    transparent var(--project-line-gap-start, 0px),
-    transparent var(--project-line-gap-end, 0px),
+    var(--light) var(--project-line-gap-start, 0px),
+    var(--light) var(--project-line-gap-end, 0px),
     var(--dark) var(--project-line-gap-end, 0px),
     var(--dark) 100%
   );
@@ -1139,6 +1213,11 @@ body.menu-closing .site-header {
   display: block;
   width: 100%;
   height: 216px;
+  /* Стрелка должна быть отдельным верхним слоем над общим WebGL-canvas.
+     Изоляция image-tone запирала её внутри stacking context, поэтому на
+     мобильном она исчезала под fixed-дизером. Остальные слои изображения
+     сохраняют порядок через свои z-index. */
+  isolation: auto;
 }
 
 .project-card__media::before {
@@ -1218,7 +1297,8 @@ body.menu-closing .site-header {
 /* Services — mobile */
 .services {
   position: relative;
-  min-height: 2110px;
+  height: 2154px;
+  min-height: 0;
   overflow: hidden;
   padding: 35px 15px 68px;
   background: var(--light);
@@ -1238,7 +1318,7 @@ body.menu-closing .site-header {
 
 .services__list {
   display: grid;
-  gap: 20px;
+  gap: 29px;
   margin-top: 35px;
 }
 
@@ -1300,7 +1380,7 @@ body.menu-closing .site-header {
   min-height: 0;
   flex: 1;
   flex-direction: column;
-  padding: 14px 10px 20px;
+  padding: 20px 10px 20px;
 }
 
 .service-card__head {
@@ -1348,7 +1428,7 @@ body.menu-closing .site-header {
 /* Video — mobile */
 .video-section {
   position: relative;
-  height: 360px;
+  height: 316px;
   overflow: hidden;
   background: var(--light);
 }
@@ -1462,18 +1542,23 @@ body.menu-closing .site-header {
   animation-name: video-ticker-reverse;
 }
 
+/* Запасное значение на случай, если JS не отработал: точную длительность
+   initVideoTicker считает от фактической ширины трека, чтобы скорость не
+   зависела от длины строки. 150s здесь были подогнаны под старый трек в
+   45892px и на нормальном треке дают ползущую строку. */
 .video-frame__ticker--left .video-frame__ticker-track,
 .video-frame__ticker--right .video-frame__ticker-track {
-  animation-duration: 150s;
+  animation-duration: 13s;
 }
 
 @keyframes video-ticker-forward {
-  to { transform: translateX(-50%); }
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
 }
 
 @keyframes video-ticker-reverse {
-  from { transform: translateX(-50%); }
-  to { transform: translateX(0); }
+  from { transform: translate3d(-50%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1750,7 +1835,7 @@ body.menu-closing .site-header {
   .projects__title { width: 55.73vw; margin: 0 auto; font-size: 58.5px; }
   .projects__grid { gap: 0; margin-top: 73px; }
   .project-card { height: 876px; padding-top: 0; border-left: 0; }
-  .project-card::before { display: block; }
+  .project-card::before { z-index: 2; display: block; pointer-events: none; }
   .project-card__number { height: 160px; margin: 0; padding: 0 0 0 18px; font-size: 19px; }
   .project-card h3 { margin: 0 0 30px; padding-left: 0; font-size: 40px; }
   .project-card__media { height: 462px; }
@@ -1813,14 +1898,14 @@ body.menu-closing .site-header {
   .site-header { height: 10.4167vw; padding: 1.5625vw 3.125vw 0; }
   .site-logo { top: 1.5625vw; left: 3.125vw; }
   .site-logo img { width: 7.3958vw; height: 2.8125vw; }
-  .desktop-nav { position: fixed; z-index: 19; inset: 0 0 auto; display: block; height: 10.4167vw; pointer-events: none; }
+  .desktop-nav { position: fixed; z-index: 99999; inset: 0 0 auto; display: block; height: 10.4167vw; pointer-events: none; }
   .desktop-nav__group { position: absolute; top: 0; height: 36.3542vw; padding: 2.0833vw 0 0 1.0417vw; }
   .desktop-nav__group:first-child { left: 50.5208vw; width: 23.6979vw; }
   .desktop-nav__group:last-child { left: 74.2188vw; width: 20vw; height: 17.2917vw; }
   .desktop-nav__group a { display: block; width: fit-content; max-width: 100%; margin-bottom: 9px; color: var(--light); font-size: .8333vw; font-weight: 400; line-height: 1; text-transform: uppercase; }
   .desktop-nav__group a { pointer-events: auto; }
   body.is-scrolled .desktop-nav__group a { pointer-events: none; }
-  .site-header__actions { position: fixed; z-index: 20; top: 1.5625vw; right: 3.125vw; width: 9.8438vw; height: 2.8125vw; overflow: hidden; align-items: center; justify-content: flex-end; border-radius: 3px; pointer-events: none; }
+  .site-header__actions { position: fixed; z-index: 120; top: 1.5625vw; right: 3.125vw; width: 9.8438vw; height: 2.8125vw; overflow: hidden; align-items: center; justify-content: flex-end; border-radius: 3px; pointer-events: auto; }
   .site-header__actions .menu-button { z-index: 0; display: flex; width: 6.9792vw; height: 2.8125vw; flex: 0 0 6.9792vw; align-items: center; justify-content: center; padding: .625vw 1.5625vw; transform: translateX(calc(100% + 5px)); pointer-events: auto; font-size: .8333vw; transition: background-color 180ms ease, transform 420ms cubic-bezier(.22, 1, .36, 1); will-change: transform; }
   body.is-scrolled .site-header__actions .menu-button { transform: translateX(0); }
   .language-button { position: relative; z-index: 1; width: 2.8125vw; height: 2.8125vw; flex: 0 0 2.8125vw; pointer-events: auto; font-size: .8333vw; }
@@ -1832,8 +1917,21 @@ body.menu-closing .site-header {
   .menu-panel__contacts-content { width: 14.7396vw; flex: 0 0 14.7396vw; gap: 1.0417vw; }
   .menu-panel__contacts-links { gap: .3646vw; }
   .hero__line { left: 74.2188vw; }
-  .hero__line--nav-left { top: 0; left: 50.5208vw; display: block; height: 36.3542vw; }
-  .hero__line--nav-right { top: 0; left: 74.2188vw; display: block; height: 17.2917vw; }
+  /* Длина направляющих масштабируется от ширины макета, но на невысоких
+     экранах не доходит до текста. В исходном desktop-кадре зазоры составляют
+     18px до заголовка и 50px до дескриптора — сохраняем их пропорционально. */
+  .hero__line--nav-left {
+    top: 0;
+    left: 50.5208vw;
+    display: block;
+    height: min(36.3542vw, calc(66.2964% - max(8px, .9375vw)));
+  }
+  .hero__line--nav-right {
+    top: 0;
+    left: 74.2188vw;
+    display: block;
+    height: min(17.2917vw, calc(35.3703% - max(14px, 2.6042vw)));
+  }
   .hero__line--top { top: 50%; height: 14.7223%; }
   .hero__line--bottom { top: 92.037%; display: block; height: 7.963%; }
   .hero__line--left-bottom { top: 92.037%; left: 50.5208vw; display: block; height: 7.963%; }
@@ -1858,7 +1956,7 @@ body.menu-closing .site-header {
   .stats__eyebrow { top: 17.1875vw; left: 11.0417vw; width: 26.0938vw; font-size: .9896vw; }
   .stats__image { top: 29.6875vw; left: 13.1771vw; width: 23.0208vw; height: 15.3125vw; }
   .stats__list { top: 20.3125vw; left: 50.5208vw; width: 46.3542vw; }
-  .stats__list::before { position: absolute; top: -17.7083vw; left: -1.0938vw; width: 1px; height: 54.5833vw; content: ""; background: linear-gradient(to bottom, var(--dark) 0, var(--dark) 5.2vw, transparent 5.2vw, transparent 13vw, var(--dark) 13vw, var(--dark) 100%); clip-path: inset(0 0 calc((1 - var(--stats-line-progress, 1)) * 100%) 0); will-change: clip-path; }
+  .stats__list::before { position: absolute; top: -17.7083vw; left: -1.0938vw; width: 1px; height: 54.5833vw; content: ""; background: linear-gradient(to bottom, var(--dark) 0, var(--dark) 5.2vw, transparent 5.2vw, transparent 13vw, var(--dark) 13vw, var(--dark) 100%); transform: none !important; clip-path: none !important; will-change: auto; }
   .stat-item,
   .stat-item:nth-child(3),
   .stat-item:nth-child(4) { display: grid; height: 7.4479vw; align-items: center; grid-template-columns: 14.0625vw 1fr; column-gap: 9.6354vw; opacity: .4; transition: opacity 180ms ease; }
@@ -1869,26 +1967,84 @@ body.menu-closing .site-header {
   .stat-item p { width: 19.6354vw; margin: 0; font-size: .8333vw; }
   .stats__button { width: 100%; margin-top: 20px; }
 
-  .projects { height: 85.5729vw; min-height: 0; padding: 8.3333vw 3.125vw 0; border-bottom: var(--line); }
+  .projects { position: relative; height: 85.5729vw; min-height: 0; padding: 8.3333vw 3.125vw 0; border-bottom: var(--line); }
+  /* Линии проекта принадлежат секции, а не карточкам. Поэтому при
+     параллаксе карточек они остаются неподвижными и доходят до нижней
+     границы блока. Координаты совпадают с тремя колонками сетки. */
+  .projects::before {
+    position: absolute;
+    z-index: 0;
+    top: 23.0208vw;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    display: block;
+    pointer-events: none;
+    background:
+      linear-gradient(var(--dark), var(--dark)) 3.125vw 0 / 1px 100% no-repeat,
+      linear-gradient(var(--dark), var(--dark)) 34.7396vw 0 / 1px 100% no-repeat,
+      linear-gradient(var(--dark), var(--dark)) 66.3542vw 0 / 1px 100% no-repeat;
+    content: "";
+  }
+  .projects__title,
+  .projects__grid,
+  .projects__button { position: relative; z-index: 1; }
   .projects__title { width: 49.4271vw; margin: 0 auto; font-size: 6.7708vw; }
   .projects__grid { display: grid; gap: 3.2813vw; margin-top: 5.2083vw; grid-template-columns: repeat(3, 28.3333vw); }
-  .project-card { height: 58.4375vw; padding-left: .9375vw; border-left: 0; }
-  .project-card::before { bottom: auto; display: block; height: var(--project-line-height, 100%); }
+  .project-card { height: 58.4375vw; padding-left: .9375vw; border-left: 0; isolation: isolate; }
+  .project-card::before { z-index: 2; display: block; pointer-events: none; }
+  .project-card::after { position: absolute; z-index: 3; top: var(--project-line-gap-start); left: -1vw; width: 2vw; height: calc(var(--project-line-gap-end) - var(--project-line-gap-start)); background: var(--light); content: ""; pointer-events: none; }
+  .project-card:nth-child(1) { --project-line-gap-start: 9.8958vw; --project-line-gap-end: 28.9583vw; }
+  .project-card:nth-child(2),
+  .project-card:nth-child(3) { --project-line-gap-start: 13.5416vw; --project-line-gap-end: 32.6041vw; }
+  .project-card:nth-child(3)::before { display: none; }
   .project-card__number { height: 9.8958vw; margin: 0; font-size: .9896vw; }
   .project-card h3 { width: 27.3958vw; min-height: 2.0833vw; margin: 0 0 1.5625vw; font-size: 2.0833vw; white-space: nowrap; }
   .project-card__media { width: 26.0417vw; height: 19.0625vw; }
-  .project-card__arrow { display: block; width: 4.6875vw; height: 4.6875vw; transform: translate(100%, 100%) scale(0); transform-origin: bottom right; transition: transform 500ms cubic-bezier(.22, 1, .36, 1); will-change: transform; }
-  .project-card__arrow > img { transform: scale(0); transform-origin: center; transition: transform 400ms cubic-bezier(.22, 1, .36, 1); transition-delay: 100ms; will-change: transform; }
   .project-card:first-child .project-card__number { height: 6.25vw; }
-  .project-card__media:hover .project-card__arrow,
-  .project-card__media:focus-visible .project-card__arrow { transform: translate(0, 0) scale(1); }
-  .project-card__media:hover .project-card__arrow > img,
-  .project-card__media:focus-visible .project-card__arrow > img { transform: scale(1); }
+
+  /* .project-card из-за transform параллакса — отдельный контекст наложения,
+     поэтому z-index стрелки не может подняться над общим WebGL-дизером
+     (fixed, z-index 2). initProjectsParallax переносит сами узлы стрелок в
+     .projects-arrow-layer на уровне body и держит их по вертикали в такт
+     карточкам. До переноса стрелка в карточке скрыта — там она всё равно
+     под дизером. */
+  .project-card__media .project-card__arrow { display: none; }
+
+  .projects-arrow-layer {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+  }
+  .projects-arrow-layer .project-card__arrow {
+    position: absolute;
+    right: auto;
+    bottom: auto;
+    display: block;
+    width: 4.6875vw;
+    height: 4.6875vw;
+    overflow: hidden;
+  }
+  /* Вылет справа — тайминг и плавность как у .service-accordion__toggle на
+     услугах и .news-page-card__arrow. Переход на transform отыгрывает и
+     обратный выезд, когда курсор уходит с карточки (класс снимает JS). */
+  .projects-arrow-layer .project-card__arrow > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: translateX(100%);
+    transition: transform 380ms cubic-bezier(.4, 0, .2, 1);
+  }
+  .projects-arrow-layer .project-card__arrow.is-visible > img {
+    transform: translateX(0);
+  }
   .project-card p { width: 26.1979vw; margin-top: 1.5625vw; font-size: .8333vw; }
   .projects__button--adaptive { display: none; }
   .projects__button--desktop { position: absolute; top: 42vw; left: 1.0417vw; display: flex; width: 16.5625vw; margin: 0; }
 
-  .services { height: 94.2708vw; min-height: 0; overflow: clip; padding: 8.3333vw 0 0; border-bottom: var(--line); background-image: linear-gradient(to right, transparent 34.7396vw, var(--dark) 34.7396vw, var(--dark) calc(34.7396vw + 1px), transparent calc(34.7396vw + 1px), transparent 66.3542vw, var(--dark) 66.3542vw, var(--dark) calc(66.3542vw + 1px), transparent calc(66.3542vw + 1px)); }
+  .services { height: 94.2708vw; min-height: 0; overflow: clip; padding: 8.3333vw 0 0; border-bottom: var(--line); background-image: linear-gradient(to right, transparent 3.125vw, var(--dark) 3.125vw, var(--dark) calc(3.125vw + 1px), transparent calc(3.125vw + 1px), transparent 34.7396vw, var(--dark) 34.7396vw, var(--dark) calc(34.7396vw + 1px), transparent calc(34.7396vw + 1px), transparent 66.3542vw, var(--dark) 66.3542vw, var(--dark) calc(66.3542vw + 1px), transparent calc(66.3542vw + 1px)); }
   .services__intro-sticky { position: relative; z-index: 2; width: 38vw; height: 77.6042vw; margin-left: 3.125vw; }
   .services__intro { position: sticky; top: 8.3333vw; width: 100%; height: max-content; margin-left: 0; }
   .services__intro .section-title { font-size: 6.7708vw; }
@@ -1925,9 +2081,12 @@ body.menu-closing .site-header {
   .news-card:nth-child(n + 3) { border-bottom: 0; }
   .news-card { overflow: hidden; }
   .news-card > span:not(.news-card__arrow) { margin-top: auto; }
-  .news-card__arrow { position: absolute; z-index: 2; top: 0; right: 0; display: grid; width: 4.6875vw; height: 4.6875vw; place-items: center; color: var(--dark); background: var(--light) url("assets/icons/arrow-box.svg") center / cover no-repeat; font-family: "Roboto", Arial, sans-serif; font-size: 0; opacity: 1; visibility: visible; pointer-events: none; transform-origin: top right; transform: translate(100%, -100%) scale(0); transition: transform 500ms cubic-bezier(.22, 1, .36, 1); will-change: transform; }
+  /* Вылет справа — тайминг и плавность как у стрелок проектов и услуг.
+     Прячется за правым краем карточки (overflow: hidden), выезжает в угол
+     по наведению и уезжает обратно с той же кривой. */
+  .news-card__arrow { position: absolute; z-index: 2; top: 0; right: 0; display: grid; width: 4.6875vw; height: 4.6875vw; place-items: center; color: var(--dark); background: var(--light) url("assets/icons/arrow-box.svg") center / cover no-repeat; font-family: "Roboto", Arial, sans-serif; font-size: 0; opacity: 1; visibility: visible; pointer-events: none; transform-origin: top right; transform: translateX(100%); transition: transform 380ms cubic-bezier(.4, 0, .2, 1); will-change: transform; }
   .news-card:hover .news-card__arrow,
-  .news-card:focus-visible .news-card__arrow { transform: translate(0, 0) scale(1); }
+  .news-card:focus-visible .news-card__arrow { transform: translateX(0); }
   .news-card.is-active { color: var(--light); }
   .news-card--featured { background: transparent; }
 
@@ -2063,10 +2222,9 @@ html.is-loaded .loader {
   margin-bottom: -.1em;
 }
 
-/* Элементы, которым нужен собственный слой для трансформаций */
-.hero__line {
-  will-change: transform;
-}
+/* Линии hero анимируются один раз на входе, дальше стоят неподвижно.
+   Постоянный will-change держал под них пять композиторных слоёв на всю
+   жизнь страницы; GSAP сам поднимает слой на время твина. */
 
 /* Основной пресет фото: оригинал скрывается после готовности дизера,
    поэтому все блоки получают одинаковую обработку без просвечивания цвета. */
@@ -2117,6 +2275,21 @@ body[data-site-page="home"] .dither-photo__canvas {
 .image-tone::before {
   background: rgba(8, 37, 84, 0.70) !important;
   mix-blend-mode: soft-light;
+}
+
+/* Правило выше писалось под старый движок, где canvas лежал ВНУТРИ .image-tone
+   с z-index 2, а ::before накрывал его сверху. У общего WebGL-слоя canvas
+   position: fixed с z-index 2 в корневом контексте, то есть выше и .projects
+   (z-index 1), и .video-section — подняться над ним ::before с z-index 3 уже
+   не может. Эффект не виден, но mix-blend-mode всё равно заставляет браузер
+   на каждом кадре читать backdrop и пересчитывать блендинг. Дороже всего это
+   там, где элемент движется: карточки проектов едут параллаксом, а под ними
+   перерисовывается canvas — простой сдвиг слоя превращается в полный пересчёт.
+   Гасим ровно тогда, когда дизер действительно рисует эту картинку. Если он
+   не работает (нет WebGL, reduced-motion), класс не ставится и soft-light
+   остаётся как раньше — запасной вид не меняется. */
+.image-tone.is-shared-dither-ready::before {
+  display: none;
 }
 
 .hero__lines,

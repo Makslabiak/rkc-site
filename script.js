@@ -7,6 +7,8 @@ window.SITE_DITHER_ENGINE = 'shared-webgl';
 window.SITE_DITHER_CONFIG = Object.freeze({
   blockPx: 3,
   dpr: 1.5,
+  textureMaxEdge: 2048,
+  textureOversample: 1.25,
   bias: 0.16,
   levels: 4,
   exposure: 0.8,
@@ -14,8 +16,142 @@ window.SITE_DITHER_CONFIG = Object.freeze({
   dark: [8, 37, 84],
   light: [215, 240, 255]
 });
+/* Единая настройка для всех scramble-эффектов сайта. */
+window.SITE_SCRAMBLE_CONFIG = Object.freeze({
+  chars: 'ркс-нр',
+  duration: 1.3,
+  speed: 1.2
+});
+window.SITE_SCRAMBLE_CHARS = window.SITE_SCRAMBLE_CONFIG.chars;
 document.documentElement.style.setProperty('--dither-exposure', window.SITE_DITHER_CONFIG.exposure);
 document.documentElement.style.setProperty('--dither-saturation', window.SITE_DITHER_CONFIG.saturation);
+
+/* ---------- Типографика ----------
+   Короткие русские предлоги и союзы не должны отрываться от следующего
+   слова при переносе. Работаем по текстовым узлам после site-header.js,
+   поэтому правило применяется и к динамической шапке/мобильному меню. */
+(function applySiteTypography() {
+  if (!document.body) return;
+
+  const skipTags = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'PRE', 'CODE', 'SVG']);
+  const textNodes = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_TEXT
+  );
+
+  const typograph = (value) => value
+    .replace(/(^|[^А-Яа-яЁё])([А-Яа-яЁё])[\t\n\r ]+(?=[А-Яа-яЁё0-9])/g, '$1$2\u00A0')
+    .replace(/№[\t\n\r ]+(?=\d)/g, '№\u00A0')
+    .replace(/[\t\n\r ]+(?:—|–)[\t\n\r ]+/g, '\u00A0—\u00A0')
+    .replace(/\.\.\./g, '…');
+
+  let node;
+  while ((node = textNodes.nextNode())) {
+    const parent = node.parentElement;
+    if (!parent || skipTags.has(parent.tagName) || parent.closest('script, style, noscript, pre, code, svg')) continue;
+    node.nodeValue = typograph(node.nodeValue);
+  }
+})();
+
+/* ---------- переходы между страницами ----------
+   Один светлый слой закрывает текущую страницу перед навигацией и
+   открывается обратно уже на следующей. Якоря этой же страницы и внешние
+   действия не перехватываем. */
+(function initPageTransitions() {
+  const TRANSITION_KEY = 'rks-page-transition';
+  const TRANSITION_DURATION = 720;
+  const ENTER_DURATION = 1000;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const transition = document.createElement('div');
+  transition.className = 'page-transition';
+  transition.setAttribute('aria-hidden', 'true');
+  document.body.append(transition);
+
+  let mode = null;
+  try {
+    mode = sessionStorage.getItem(TRANSITION_KEY);
+    sessionStorage.removeItem(TRANSITION_KEY);
+  } catch (error) {
+    mode = null;
+  }
+
+  const shouldEnter = mode === 'enter' || mode === 'enter-home';
+  const enterToHome = mode === 'enter-home';
+
+  if (shouldEnter && !reduceMotion) {
+    transition.classList.add('is-visible', 'is-entering');
+    if (enterToHome) transition.classList.add('is-to-home');
+
+    const revealPage = () => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          transition.classList.remove('is-visible');
+          window.setTimeout(
+            () => transition.classList.remove('is-entering', 'is-to-home'),
+            ENTER_DURATION + 180
+          );
+        });
+      });
+    };
+
+    if (enterToHome) {
+      /* На главной за вуалью уже стоит свой лоадер — вскрываем сразу,
+         вуаль просто мягко проявляет пульсирующий логотип. */
+      revealPage();
+    } else {
+      /* «Дёрганье» на входе — это своп шрифтов, проскакивавший сквозь ещё
+         прозрачную вуаль. Держим её до fonts.ready (с потолком, чтобы
+         медленная сеть не заперла занавес), потом открываем. */
+      Promise.race([
+        document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve(),
+        new Promise((resolve) => window.setTimeout(resolve, 600))
+      ]).then(revealPage);
+    }
+  }
+
+  /* Возврат из bfcache восстанавливает DOM «как ушли» — вуаль могла остаться
+     поднятой после клика по ссылке. Снимаем её, иначе назад ведёт на белый
+     (или тёмный) экран. */
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      transition.classList.remove('is-visible', 'is-entering', 'is-to-home');
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey ||
+        event.shiftKey || event.altKey) return;
+
+    const link = event.target.closest('a');
+    if (!link || link.target === '_blank' || link.hasAttribute('download') ||
+        link.dataset.noTransition !== undefined) return;
+
+    const rawHref = link.getAttribute('href');
+    if (!rawHref || rawHref === '#' || /^(?:#|mailto:|tel:|javascript:)/i.test(rawHref)) return;
+
+    const destination = new URL(link.href, window.location.href);
+    if (destination.origin !== window.location.origin ||
+        (destination.pathname === window.location.pathname &&
+         destination.search === window.location.search)) return;
+
+    event.preventDefault();
+    if (reduceMotion) {
+      window.location.href = destination.href;
+      return;
+    }
+
+    const isHome = destination.pathname === '/' || /\/index\.html$/i.test(destination.pathname);
+    try {
+      sessionStorage.setItem(TRANSITION_KEY, isHome ? 'enter-home' : 'enter');
+    } catch (error) { /* no-op */ }
+    transition.classList.remove('is-entering');
+    /* На главную уходим тёмной вуалью в цвет лоадера — стык выход→лоадер
+       без резкого перехода со светлого на тёмное. */
+    if (isHome) transition.classList.add('is-to-home');
+    transition.classList.add('is-visible');
+    window.setTimeout(() => { window.location.href = destination.href; }, TRANSITION_DURATION);
+  });
+})();
 
 /* На обычном reload браузер часто восстанавливает прежнюю позицию скролла.
    Тогда scrub-анимация блока услуг сразу оказывается в финале и выглядит
@@ -136,7 +272,14 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
 
       startHeroZoom();
       window.setTimeout(startHeroAnimations, HERO_ANIMATION_DELAY_MS);
-      window.setTimeout(revealPage, EXIT_MS);
+      window.setTimeout(function () {
+        revealPage();
+        /* opacity: 0 не убирает лоадер из композиции: это fixed-слой во весь
+           viewport, чьи дети держат will-change: transform. Он оставался
+           поверх страницы до конца сессии и участвовал в каждом кадре.
+           Снимаем его совсем, когда переход уже отыграл. */
+        window.setTimeout(function () { loader.remove(); }, 400);
+      }, EXIT_MS);
     });
   }
 
@@ -155,7 +298,6 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
 (function initSmoothScroll() {
   if (typeof window.Lenis !== 'function') return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
   const lenis = new window.Lenis({
     duration: 1.2,
     easing: (time) => Math.min(1, 1.001 - Math.pow(2, -10 * time)),
@@ -202,6 +344,12 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
   let isDragging = false;
   let dragStartY = 0;
   let dragStartScroll = 0;
+  let trackHeight = 0;
+  let thumbHeight = 0;
+  let maxOffset = 0;
+  let metricsDirty = true;
+  let updateFrame = 0;
+  let dragColorFrame = 0;
 
   function getScrollLimit() {
     const pageHeight = Math.max(
@@ -215,19 +363,29 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
     return Math.max(nativeLimit, lenisLimit);
   }
 
-  function updateThumb() {
+  /* Высота ползунка зависит только от размеров страницы и окна, а не от
+     позиции скролла. Раньше она переписывалась на каждом кадре — то есть
+     каждый кадр скролла инвалидировал layout ради значения, которое не
+     менялось. Теперь пересчёт идёт вместе с остальными метриками. */
+  function updateMetrics() {
     limit = getScrollLimit();
-    const trackHeight = track.clientHeight;
-    const thumbHeight = limit > 0
+    trackHeight = track.clientHeight;
+    thumbHeight = limit > 0
       ? Math.max(38, Math.round(window.innerHeight * window.innerHeight / (window.innerHeight + limit) * .8))
       : 0;
-    const maxOffset = Math.max(0, trackHeight - thumbHeight);
+    maxOffset = Math.max(0, trackHeight - thumbHeight);
+    thumb.style.height = `${thumbHeight}px`;
+    metricsDirty = false;
+  }
+
+  function updateThumb() {
+    if (metricsDirty) updateMetrics();
     const currentScroll = window.lenis && typeof window.lenis.animatedScroll === 'number'
       ? window.lenis.animatedScroll
       : window.scrollY;
     const progress = limit > 0 ? Math.min(1, Math.max(0, currentScroll / limit)) : 0;
 
-    thumb.style.height = `${thumbHeight}px`;
+    /* На кадрах скролла меняется только transform — композиторное свойство. */
     thumb.style.transform = `translate3d(-50%, ${Math.round(progress * maxOffset)}px, 0)`;
     track.classList.toggle('is-hidden', limit <= 0);
   }
@@ -273,8 +431,16 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
     return false;
   }
 
+  /* isDarkBackgroundAtThumb делает elementFromPoint и поднимается по
+     предкам с getComputedStyle — это forced layout. Раньше он вызывался
+     на каждый pointermove, из-за чего перетаскивание ползунка дёргалось.
+     Теперь не чаще одного раза за кадр. */
   function updateDragColor() {
-    thumb.classList.toggle('is-over-dark', isDragging && isDarkBackgroundAtThumb());
+    if (dragColorFrame) return;
+    dragColorFrame = window.requestAnimationFrame(() => {
+      dragColorFrame = 0;
+      thumb.classList.toggle('is-over-dark', isDragging && isDarkBackgroundAtThumb());
+    });
   }
 
   function getCurrentScroll() {
@@ -306,8 +472,9 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
 
   thumb.addEventListener('pointermove', (event) => {
     if (!isDragging) return;
-    const maxOffset = Math.max(1, track.clientHeight - thumb.offsetHeight);
-    const scrollDelta = (event.clientY - dragStartY) / maxOffset * limit;
+    /* maxOffset уже посчитан в updateMetrics — читать clientHeight и
+       offsetHeight на каждый move значило форсировать layout. */
+    const scrollDelta = (event.clientY - dragStartY) / Math.max(1, maxOffset) * limit;
     scrollToPosition(dragStartScroll + scrollDelta);
     showScrollbar();
     updateDragColor();
@@ -329,14 +496,34 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
   thumb.addEventListener('pointercancel', stopDragging);
 
   function handleScrollActivity() {
-    updateThumb();
-    showScrollbar();
+    if (updateFrame) return;
+    updateFrame = window.requestAnimationFrame(() => {
+      updateFrame = 0;
+      updateThumb();
+      showScrollbar();
+    });
   }
 
-  window.addEventListener('resize', handleScrollActivity, { passive: true });
-  window.addEventListener('scroll', handleScrollActivity, { passive: true });
-  window.lenis?.on('scroll', handleScrollActivity);
-  window.requestAnimationFrame(handleScrollActivity);
+  function refreshScrollbar() {
+    metricsDirty = true;
+    handleScrollActivity();
+  }
+
+  window.addEventListener('resize', refreshScrollbar, { passive: true });
+  /* То же дублирование, что и у меню: Lenis эмитит scroll на каждом кадре,
+     нативное событие поверх него — лишний проход. */
+  if (window.lenis) {
+    window.lenis.on('scroll', handleScrollActivity);
+  } else {
+    window.addEventListener('scroll', handleScrollActivity, { passive: true });
+  }
+  window.addEventListener('load', refreshScrollbar, { once: true });
+  document.fonts?.ready.then(refreshScrollbar);
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(refreshScrollbar).observe(document.documentElement);
+  }
+  window.__rksScrollbarRefresh = refreshScrollbar;
+  handleScrollActivity();
 })();
 
 const menuButton = document.querySelector('.menu-button');
@@ -345,7 +532,7 @@ const menuPanel = document.querySelector('.menu-panel');
 const menuLinks = document.querySelectorAll('.menu-panel a');
 let menuCloseTimer;
 let menuMotion;
-const MENU_SCRAMBLE_CHARS = 'РКСНРМЕЮАБВГД';
+const MENU_SCRAMBLE_CHARS = window.SITE_SCRAMBLE_CHARS;
 
 function scrambleMenuButtonLabel(targetText) {
   if (!menuButtonLabels?.length) {
@@ -360,11 +547,11 @@ function scrambleMenuButtonLabel(targetText) {
       window.gsap.fromTo(label,
         { scrambleText: { text: label.textContent } },
         {
-          duration: 0.68,
+          duration: window.SITE_SCRAMBLE_CONFIG.duration,
           ease: 'power2.out',
           scrambleText: {
             text: targetText,
-            speed: 2,
+            speed: window.SITE_SCRAMBLE_CONFIG.speed,
             chars: MENU_SCRAMBLE_CHARS
           }
         }
@@ -374,7 +561,7 @@ function scrambleMenuButtonLabel(targetText) {
 
     /* Fallback, если GSAP или ScrambleTextPlugin ещё не загрузились. */
     const startedAt = performance.now();
-    const duration = 680;
+    const duration = window.SITE_SCRAMBLE_CONFIG.duration * 1000;
     const animate = (now) => {
       const progress = Math.min(1, (now - startedAt) / duration);
       const settled = Math.floor(targetText.length * progress);
@@ -399,7 +586,6 @@ function finishMenuClose() {
 if (menuPanel && window.gsap) {
   const gsap = window.gsap;
   const nav = menuPanel.querySelector('.menu-panel__nav');
-  const navLinks = menuPanel.querySelectorAll('.menu-panel__nav a');
   const contacts = menuPanel.querySelector('.menu-panel__contacts');
   const contactsTitle = menuPanel.querySelector('.menu-panel__contacts-title');
   const contactsContent = menuPanel.querySelector('.menu-panel__contacts-content');
@@ -407,7 +593,6 @@ if (menuPanel && window.gsap) {
   menuPanel.classList.add('menu-panel--gsap');
   gsap.set(menuPanel, { '--menu-panel-x': '100%', autoAlpha: 0 });
   gsap.set([nav, contacts], { y: 18, autoAlpha: 0 });
-  gsap.set(navLinks, { yPercent: 100, autoAlpha: 0 });
   gsap.set([contactsTitle, contactsContent], { y: 12, autoAlpha: 0 });
   if (contacts) gsap.set(contacts, { '--menu-line-progress': 0 });
 
@@ -415,7 +600,6 @@ if (menuPanel && window.gsap) {
   menuMotion
     .to(menuPanel, { '--menu-panel-x': '0%', autoAlpha: 1, duration: .5, ease: 'power2.inOut' }, 0)
     .to(nav, { y: 0, autoAlpha: 1, duration: .36, ease: 'power2.out' }, .12)
-    .to(navLinks, { yPercent: 0, autoAlpha: 1, duration: .4, ease: 'power2.out', stagger: .045 }, .18)
     .to(contacts, { y: 0, autoAlpha: 1, duration: .4, ease: 'power2.out' }, .26)
     .to(contacts, { '--menu-line-progress': 1, duration: .42, ease: 'power2.out' }, .31)
     .to(contactsTitle, { y: 0, autoAlpha: 1, duration: .36, ease: 'power2.out' }, .36)
@@ -426,6 +610,15 @@ function setMenu(open) {
   if (!menuPanel || !menuButton) return;
 
   window.clearTimeout(menuCloseTimer);
+
+  const isOpen = menuPanel.classList.contains('is-open');
+  const isClosing = menuPanel.classList.contains('is-closing');
+
+  /* Повторный вызов закрытия во время reverse() разворачивал timeline
+     обратно в сторону открытия. Из-за этого пункты иногда оставались в
+     промежуточном состоянии после wheel/touchmove или клика по overlay. */
+  if (!open && (menuPanel.hidden || isClosing)) return;
+  if (open && isOpen && !isClosing) return;
 
   if (open) {
     menuPanel.hidden = false;
@@ -478,7 +671,27 @@ function setMenu(open) {
 
 menuPanel?.setAttribute('aria-hidden', 'true');
 menuButton?.addEventListener('click', () => setMenu(!menuPanel.classList.contains('is-open')));
-menuLinks.forEach((link) => link.addEventListener('click', () => setMenu(false)));
+menuLinks.forEach((link) => {
+  if (link.matches('[aria-current="page"]')) {
+    link.setAttribute('aria-disabled', 'true');
+    link.setAttribute('tabindex', '-1');
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    });
+    return;
+  }
+  link.addEventListener('click', () => setMenu(false));
+});
+
+document.querySelectorAll('.desktop-nav a[aria-current="page"]').forEach((link) => {
+  link.setAttribute('aria-disabled', 'true');
+  link.setAttribute('tabindex', '-1');
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  });
+});
 
 document.addEventListener('click', (event) => {
   if (!menuPanel || menuPanel.hidden || !menuPanel.classList.contains('is-open')) return;
@@ -494,10 +707,13 @@ function closeMenuOnScrollStart() {
 
 window.addEventListener('wheel', closeMenuOnScrollStart, { passive: true });
 window.addEventListener('touchmove', closeMenuOnScrollStart, { passive: true });
-window.addEventListener('scroll', closeMenuOnScrollStart, { passive: true });
+
+/* matchMedia создаёт новый MediaQueryList на каждый вызов, а syncDesktopMenu
+   срабатывает на каждом кадре скролла. Держим один объект. */
+const desktopQuery = window.matchMedia('(min-width: 1200px)');
 
 function syncDesktopMenu(scrollTop) {
-  const isDesktop = window.matchMedia('(min-width: 1200px)').matches;
+  const isDesktop = desktopQuery.matches;
   const currentScroll = typeof scrollTop === 'number' ? scrollTop : window.scrollY;
   const isVisible = !isDesktop || currentScroll > 24;
   document.body.classList.toggle('is-scrolled', isDesktop && isVisible);
@@ -507,9 +723,14 @@ function syncDesktopMenu(scrollTop) {
   }
 }
 
-window.addEventListener('scroll', syncDesktopMenu, { passive: true });
+/* При живом Lenis нативный scroll дублирует его собственное событие —
+   обработчик отрабатывал дважды за кадр. Подписываемся на что-то одно. */
+if (window.lenis) {
+  window.lenis.on('scroll', ({ animatedScroll }) => syncDesktopMenu(animatedScroll));
+} else {
+  window.addEventListener('scroll', syncDesktopMenu, { passive: true });
+}
 window.addEventListener('resize', syncDesktopMenu);
-window.lenis?.on('scroll', ({ animatedScroll }) => syncDesktopMenu(animatedScroll));
 syncDesktopMenu();
 
 document.addEventListener('keydown', (event) => {
@@ -532,6 +753,11 @@ document.querySelectorAll('.play-button').forEach((playButton) => {
 });
 
 (function initVideoTicker() {
+  /* Скорости соответствуют прежнему виду: верх/низ проезжали 2968px за 24s,
+     бока — 22946px за 150s. */
+  const EDGE_SPEED_PX_PER_SEC = 124;
+  const SIDE_SPEED_PX_PER_SEC = 153;
+
   document.querySelectorAll('.video-frame__ticker').forEach((ticker) => {
     const text = ticker.textContent.trim();
     if (!text) return;
@@ -550,7 +776,14 @@ document.querySelectorAll('.play-button').forEach((playButton) => {
       whiteSpace: 'nowrap'
     });
     ticker.append(measure);
-    const itemWidth = measure.getBoundingClientRect().width;
+    /* Боковые тикеры лежат внутри контейнера с transform: rotate(90deg), а
+       getBoundingClientRect отдаёт размеры в ЭКРАННЫХ координатах, уже с
+       учётом трансформаций предков. Строка шириной 669px, повёрнутая на бок,
+       мерилась как 20px — и вместо 2 повторов получалось 35. Треки боковых
+       строк раздувались до 45892px: два композиторных слоя по 5248 символов,
+       которые GPU держал и бесконечно двигал. offsetWidth даёт размер в
+       собственной системе координат элемента, без поворота. */
+    const itemWidth = measure.offsetWidth;
     measure.remove();
     const tickerWidth = ticker.offsetWidth;
     const repeats = Math.max(1, Math.ceil(tickerWidth / Math.max(itemWidth, 1)) + 1);
@@ -570,17 +803,36 @@ document.querySelectorAll('.play-button').forEach((playButton) => {
     }
 
     ticker.replaceChildren(track);
+
+    /* Длительность раньше была захардкожена в CSS (24s сверху/снизу, 150s по
+       бокам) и подогнана под тогдашнюю ширину трека. Но анимация сдвигает
+       трек на -50% его СОБСТВЕННОЙ ширины, поэтому фиксированная длительность
+       означает скорость, зависящую от длины строки: как только трек стал
+       короче, боковые строки поползли в те же 11 раз медленнее. Считаем
+       длительность от фактической ширины — скорость в пикселях в секунду
+       остаётся той же на любом экране и при любом шрифте. */
+    const isSide = ticker.classList.contains('video-frame__ticker--left')
+      || ticker.classList.contains('video-frame__ticker--right');
+    const speed = isSide ? SIDE_SPEED_PX_PER_SEC : EDGE_SPEED_PX_PER_SEC;
+    const travel = track.offsetWidth / 2;
+    if (travel > 0) {
+      track.style.animationDuration = `${(travel / speed).toFixed(2)}s`;
+    }
   });
 
-  /* Бегущая строка крутится бесконечно даже вне вьюпорта — ставим на паузу,
-     пока блок реально не виден, чтобы не грузить компоузер зря на скролле. */
+  /* Бегущая строка крутится только когда видео действительно вошло в экран.
+     Раньше rootMargin запускал четыре слоя на 200px заранее — одновременно
+     с завершением анимации последней карточки услуг. */
   const videoSection = document.querySelector('.video-section');
   if (videoSection && 'IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        videoSection.classList.toggle('is-ticker-active', entry.isIntersecting);
+        videoSection.classList.toggle(
+          'is-ticker-active',
+          entry.isIntersecting && entry.intersectionRatio >= 0.1
+        );
       });
-    }, { rootMargin: '200px 0px' });
+    }, { threshold: [0, 0.1] });
     observer.observe(videoSection);
   } else {
     videoSection?.classList.add('is-ticker-active');

@@ -30,6 +30,7 @@
 
   fields.forEach((field) => {
     const input = field.querySelector('input, textarea');
+    input?.addEventListener('focus', () => setFieldState(field, false));
     input?.addEventListener('input', () => {
       if (input.value.trim() || input.type === 'email') validateField(field);
       if (status) status.hidden = true;
@@ -37,6 +38,7 @@
     input?.addEventListener('blur', () => validateField(field));
   });
 
+  consentInput?.addEventListener('focus', () => consent?.classList.remove('is-error'));
   consentInput?.addEventListener('change', () => {
     validateConsent();
     if (status) status.hidden = true;

@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Услуги РКС-НР — реализация масштабных проектов жилищного строительства и инфраструктуры">
   <title>Услуги — РКС-НР</title>
-    <link rel="stylesheet" href="styles.css?v=20260903-58">
-  <link rel="stylesheet" href="services-page.css">
-  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260904-5">
+  <link rel="stylesheet" href="services-page.css?v=20260904-3">
+  <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
   <script src="assets/vendor/gsap.min.js" defer></script>
   <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
   <script src="site-header.js?v=20260903-2" defer></script>
-  <script src="script.js?v=20260903-23" defer></script>
-  <script src="services-dither.js?v=20260903-7" defer></script>
-  <script src="services-page.js" defer></script>
-  <script src="animations.js?v=20260903-7" defer></script>
+  <script src="script.js?v=20260904-1" defer></script>
+  <script src="services-dither.js?v=20260904-1" defer></script>
+  <script src="services-page.js?v=20260903-3" defer></script>
+  <script src="animations.js?v=20260904-2" defer></script>
 </head>
 <body class="services-page" data-site-page="services">
   <a class="skip-link" href="#main">Перейти к&nbsp;содержимому</a>
@@ -37,9 +37,11 @@
 
     <section class="services-catalog" aria-labelledby="services-catalog-title">
       <div class="services-catalog__intro">
-        <h2 id="services-catalog-title">Наши услуги</h2>
-        <div class="services-catalog__image image-tone" aria-hidden="true" data-dither-scale="1">
-          <img src="assets/images/services-intro-1.jpg" alt="">
+        <div class="services-catalog__intro-sticky">
+          <h2 id="services-catalog-title">Наши услуги</h2>
+          <div class="services-catalog__image image-tone" aria-hidden="true" data-dither-scale="1">
+            <img src="assets/images/services-intro-1.jpg" alt="">
+          </div>
         </div>
       </div>
 
@@ -47,39 +49,44 @@
         <article class="service-accordion__item" id="service-1">
           <button class="service-accordion__header" type="button" aria-expanded="false" aria-controls="service-panel-1" id="service-button-1">
             <span class="service-accordion__number">01</span>
-            <span class="service-accordion__name">EPCM<br>контракт</span>
-            <span class="service-accordion__description">В&nbsp;случае, когда Заказчик предпочитает самостоятельно контролировать все этапы строительства, мы&nbsp;оказываем услуги в&nbsp;рамках EPCM-контракта.</span>
-            <span class="service-accordion__toggle" aria-hidden="true"><img src="assets/icons/accordion-up.svg" alt=""></span>
+            <span class="service-accordion__name">ЕРСМ<br>контракт</span>
+            <span class="service-accordion__description">В&nbsp;случае, когда Заказчик предпочитает самостоятельно контролировать все этапы строительства, мы&nbsp;оказываем услуги в&nbsp;рамках ЕРСМ-контракта.</span>
+            <span class="service-accordion__toggle" aria-hidden="true"></span>
           </button>
           <div class="service-accordion__panel" id="service-panel-1" role="region" aria-labelledby="service-button-1" hidden>
-            <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
-            <ul>
-              <li>Управление проектированием и&nbsp;согласование проектных решений с&nbsp;Заказчиком.</li>
-              <li>Организация закупок материалов, оборудования и&nbsp;работ.</li>
-              <li>Координация подрядных организаций на&nbsp;всех этапах реализации проекта.</li>
-              <li>Контроль сроков, стоимости и&nbsp;качества строительства.</li>
-            </ul>
+            <div class="service-accordion__panel-inner">
+              <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
+              <ul>
+                <li>Инжиниринг и&nbsp;детальное проектирование на&nbsp;основании выбранной технологии.</li>
+                <li>Управление поставками: контрактация, закупки оборудования и&nbsp;материалов, сопровождение грузов, логистика, приемка.</li>
+                <li>Управление строительными и&nbsp;монтажными работами: организация работ на&nbsp;строительной площадке, контроль за&nbsp;производством работ, контроль охраны труда, контроль экологической ситуации.</li>
+                <li>Подготовка к&nbsp;запуску и&nbsp;ввод в&nbsp;эксплуатацию.</li>
+                <li>Управление и&nbsp;контроль: графики работ, контроль затрат, расчет стоимости работ, прогнозы и&nbsp;анализ рисков, управление качеством, формирование отчетности.</li>
+              </ul>
+            </div>
           </div>
         </article>
 
-        <article class="service-accordion__item is-open" id="service-2">
-          <button class="service-accordion__header" type="button" aria-expanded="true" aria-controls="service-panel-2" id="service-button-2">
+        <article class="service-accordion__item" id="service-2">
+          <button class="service-accordion__header" type="button" aria-expanded="false" aria-controls="service-panel-2" id="service-button-2">
             <span class="service-accordion__number">02</span>
-            <span class="service-accordion__name">EPC<br>контракт</span>
+            <span class="service-accordion__name">ЕРС<br>контракт</span>
             <span class="service-accordion__description">Оказываем услуги генерального подрядчика при реализации проектов строительства, капитального ремонта и&nbsp;реконструкции объектов жилищного строительства и&nbsp;крупных инфраструктурных проектов</span>
-            <span class="service-accordion__toggle" aria-hidden="true"><img src="assets/icons/accordion-up.svg" alt=""></span>
+            <span class="service-accordion__toggle" aria-hidden="true"></span>
           </button>
-          <div class="service-accordion__panel" id="service-panel-2" role="region" aria-labelledby="service-button-2">
-            <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
-            <ul>
-              <li>Разработка технических заданий и&nbsp;проведение закупочных процедур по&nbsp;выбору субподрядчиков по&nbsp;заданным критериям. Проведение технико-экономических, юридических, финансовых и&nbsp;коммерческих экспертиз. Договорная работа.</li>
-              <li>Выполнение проектно-изыскательских работ. Обеспечение субподрядных организаций проектно-сметной документацией, прошедшей экспертизу.</li>
-              <li>Разработка графиков выполнения строительно-монтажных работ, поставок материалов, механизмов и&nbsp;оборудования и&nbsp;контроль их&nbsp;выполнения с&nbsp;предоставлением Заказчику аналитических отчетов по&nbsp;ходу выполнения работ.</li>
-              <li>Разработка детальных бюджетов проектов и&nbsp;контроль их&nbsp;выполнения с&nbsp;предоставлением Заказчику финансовой аналитики.</li>
-              <li>Контроль и&nbsp;координация действий (в&nbsp;штабном режиме) субподрядных организаций в&nbsp;ходе реализации проекта.</li>
-              <li>Обеспечение безопасности труда: планирование и&nbsp;проведение мероприятий по&nbsp;охране окружающей среды.</li>
-              <li>Участие в&nbsp;приемке объекта в&nbsp;эксплуатацию и&nbsp;передача документации по&nbsp;проекту Заказчику.</li>
-            </ul>
+          <div class="service-accordion__panel" id="service-panel-2" role="region" aria-labelledby="service-button-2" hidden>
+            <div class="service-accordion__panel-inner">
+              <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
+              <ul>
+                <li>Разработка технических заданий и&nbsp;проведение закупочных процедур по&nbsp;выбору субподрядчиков по&nbsp;заданным критериям. Проведение технико-экономических, юридических, финансовых и&nbsp;коммерческих экспертиз. Договорная работа.</li>
+                <li>Выполнение проектно-изыскательских работ. Обеспечение субподрядных организаций проектно-сметной документацией, прошедшей экспертизу.</li>
+                <li>Разработка графиков выполнения строительно-монтажных работ, поставок материалов, механизмов и&nbsp;оборудования и&nbsp;контроль их&nbsp;выполнения с&nbsp;предоставлением Заказчику аналитических отчетов по&nbsp;ходу выполнения работ.</li>
+                <li>Разработка детальных бюджетов проектов и&nbsp;контроль их&nbsp;выполнения с&nbsp;предоставлением Заказчику финансовой аналитики.</li>
+                <li>Контроль и&nbsp;координация действий (в&nbsp;штабном режиме) субподрядных организаций в&nbsp;ходе реализации проекта.</li>
+                <li>Обеспечение безопасности труда: планирование и&nbsp;проведение мероприятий по&nbsp;охране окружающей среды.</li>
+                <li>Участие в&nbsp;приемке объекта в&nbsp;эксплуатацию и&nbsp;передача документации по&nbsp;проекту Заказчику.</li>
+              </ul>
+            </div>
           </div>
         </article>
 
@@ -88,16 +95,21 @@
             <span class="service-accordion__number">03</span>
             <span class="service-accordion__name">Технический<br>заказчик</span>
             <span class="service-accordion__description">Заказчик вправе без согласия Подрядчика привлекать инженерную организацию для контроля строительства и&nbsp;принятия решений во&nbsp;взаимоотношениях с&nbsp;Подрядчиком.</span>
-            <span class="service-accordion__toggle" aria-hidden="true"><img src="assets/icons/accordion-up.svg" alt=""></span>
+            <span class="service-accordion__toggle" aria-hidden="true"></span>
           </button>
           <div class="service-accordion__panel" id="service-panel-3" role="region" aria-labelledby="service-button-3" hidden>
-            <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
-            <ul>
-              <li>Получение исходно-разрешительной документации и&nbsp;технических условий.</li>
-              <li>Сопровождение проектирования, экспертизы и&nbsp;согласований.</li>
-              <li>Строительный контроль и&nbsp;координация участников проекта.</li>
-              <li>Организация приемки и&nbsp;ввода объекта в&nbsp;эксплуатацию.</li>
-            </ul>
+            <div class="service-accordion__panel-inner">
+              <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
+              <ul>
+                <li>Разработка технических заданий</li>
+                <li>Содействие Заказчику в&nbsp;проведении закупочных процедур с&nbsp;последующей экспертизой (технической, коммерческой, квалификационной, финансовой, юридической) заявок участников и&nbsp;формированием рекомендаций по&nbsp;выбору победителя</li>
+                <li>Содействие в&nbsp;последующем заключении договоров на&nbsp;выполнение ПИР, СМР, поставку и&nbsp;наладку оборудования</li>
+                <li>Организация координации работ (ПИР, СМР, поставку и&nbsp;наладку оборудования) и&nbsp;эффективного взаимодействия подрядных организаций с&nbsp;систематическим проведением штабов, ведением протоколов и&nbsp;контролем их&nbsp;исполнения</li>
+                <li>Администрирование договорных обязательств, а&nbsp;также систематический контроль соблюдения графика, бюджета и&nbsp;качественного выполнения работ</li>
+                <li>Утверждение проектной документации, осуществление строительного контроля, подписание необходимых документов и&nbsp;разрешений на&nbsp;ввод объекта в&nbsp;эксплуатацию и&nbsp;т.д.</li>
+                <li>Своевременное предоставление Заказчику отчетности о&nbsp;ходе реализации проекта, включая бюджет, сроки и&nbsp;качество, в&nbsp;том числе для представления в&nbsp;курирующие ведомства.</li>
+              </ul>
+            </div>
           </div>
         </article>
 
@@ -106,34 +118,34 @@
             <span class="service-accordion__number">04</span>
             <span class="service-accordion__name">Стоимостной<br>инжиниринг</span>
             <span class="service-accordion__description">Предоставляем услуги стоимостного инжиниринга на&nbsp;всех этапах жизненного цикла с&nbsp;целью оптимизации стоимости проектов</span>
-            <span class="service-accordion__toggle" aria-hidden="true"><img src="assets/icons/accordion-up.svg" alt=""></span>
+            <span class="service-accordion__toggle" aria-hidden="true"></span>
           </button>
           <div class="service-accordion__panel" id="service-panel-4" role="region" aria-labelledby="service-button-4" hidden>
-            <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
-            <ul>
-              <li>Оценка инвестиционной стоимости и&nbsp;формирование бюджета проекта.</li>
-              <li>Сметное нормирование и&nbsp;проверка стоимости работ и&nbsp;материалов.</li>
-              <li>Аудит бюджета, прогнозирование и&nbsp;контроль отклонений.</li>
-              <li>Стоимостная оценка изменений проектных решений.</li>
-            </ul>
+            <div class="service-accordion__panel-inner">
+              <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
+              <ul>
+                <li>Планирование, экономический и&nbsp;финансовый анализ, управление результативностью, изменениями и&nbsp;стоимостными рисками.</li>
+                <li>Разработка технико-экономического обоснования, включающего концептуальное проектирование и&nbsp;финансовое моделирование. Результаты работы могут быть использованы для&nbsp;привлечения проектного финансирования и&nbsp;потенциальных инвесторов проекта.</li>
+              </ul>
+            </div>
           </div>
         </article>
 
         <article class="service-accordion__item" id="service-5">
           <button class="service-accordion__header" type="button" aria-expanded="false" aria-controls="service-panel-5" id="service-button-5">
             <span class="service-accordion__number">05</span>
-            <span class="service-accordion__name">Специализированный<br>застройщик</span>
+            <span class="service-accordion__name"><span class="service-accordion__name-wide">Специализированный<br>застройщик</span><span class="service-accordion__name-mobile">Специализирован-<br>ный застройщик</span></span>
             <span class="service-accordion__description">Являемся экспертами в&nbsp;строительстве жилых домов бизнес- и&nbsp;комфорт-класса, а&nbsp;также активно участвуем в&nbsp;программе льготного кредитования</span>
-            <span class="service-accordion__toggle" aria-hidden="true"><img src="assets/icons/accordion-up.svg" alt=""></span>
+            <span class="service-accordion__toggle" aria-hidden="true"></span>
           </button>
           <div class="service-accordion__panel" id="service-panel-5" role="region" aria-labelledby="service-button-5" hidden>
-            <p class="service-accordion__panel-title">Перечень предоставляемых услуг:</p>
-            <ul>
-              <li>Разработка концепции и&nbsp;подготовка исходно-разрешительной документации.</li>
-              <li>Организация проектирования, строительства и&nbsp;авторского надзора.</li>
-              <li>Финансовое планирование и&nbsp;контроль реализации проекта.</li>
-              <li>Ввод объекта в&nbsp;эксплуатацию и&nbsp;передача готовых помещений.</li>
-            </ul>
+            <div class="service-accordion__panel-inner">
+              <div class="service-accordion__panel-copy">
+                <p>Для нас строительство жилья – основной вид деятельности. Мы работаем в Донецкой Народной Республике, особенно в городе Мариуполь.</p>
+                <p aria-hidden="true">&nbsp;</p>
+                <p class="service-accordion__panel-link">«РКС-Девелопмент»</p>
+              </div>
+            </div>
           </div>
         </article>
       </div>
@@ -162,13 +174,12 @@
   </main>
 
   <footer class="footer" id="contacts">
-    <img class="footer__background" src="assets/images/hero.jpg" alt="">
     <img class="footer__logo" src="assets/icons/logo-footer.svg" width="738" height="147" alt="РКС-НР">
     <div class="footer__nav">
       <nav aria-label="Навигация в подвале">
         <a href="index.html#company">О&nbsp;компании</a>
         <a href="services.html" aria-current="page">Услуги</a>
-        <a href="index.html#projects">Проекты</a>
+        <a href="projects.html">Проекты</a>
         <a href="news.html">Новости</a>
         <a href="contacts.html">Контакты</a>
         <a href="#">Охрана труда</a>
@@ -184,6 +195,14 @@
     <p class="footer__copyright">©&nbsp;ООО&nbsp;«РКС-НР», 2026. Все права защищены</p>
   </footer>
 
-  <script src="annotator-tool%C2%A0%E2%80%94%20%D0%BA%D0%BE%D0%BF%D0%B8%D1%8F/annotator.js"></script>
+  <!-- Инструмент аннотации — только по запросу (?annotate в адресе).
+       Он вешает capture-фазовый scroll-листенер, глобальный mousemove и
+       fixed-слой во весь экран с z-index 2147483647, поэтому участвовать
+       в каждом кадре обычного просмотра ему незачем. -->
+  <script>
+    if (new URLSearchParams(location.search).has('annotate')) {
+      document.write('<script src="annotator-tool%C2%A0%E2%80%94%20%D0%BA%D0%BE%D0%BF%D0%B8%D1%8F/annotator.js"><\/script>');
+    }
+  </script>
 </body>
 </html>

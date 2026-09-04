@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Проекты ООО «РКС-НР» — строительство и восстановление объектов">
+  <title>Проекты — РКС-НР</title>
+  <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=20260904-5">
+  <link rel="stylesheet" href="projects-page.css?v=20260904-1">
+  <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
+  <script src="assets/vendor/gsap.min.js" defer></script>
+  <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
+  <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
+  <script src="site-header.js?v=20260903-2" defer></script>
+  <script src="script.js?v=20260904-1" defer></script>
+  <script src="projects-page.js" defer></script>
+  <script src="services-dither.js?v=20260904-1" defer></script>
+  <script src="animations.js?v=20260904-2" defer></script>
+</head>
+<body class="projects-page" data-site-page="projects">
+  <a class="skip-link" href="#main">Перейти к&nbsp;содержимому</a>
+
+  <header class="projects-cover" id="top">
+    <div class="site-header" data-site-header></div>
+    <h1 class="projects-cover__title">Проекты</h1>
+  </header>
+
+  <div data-site-menu></div>
+
+  <main id="main">
+    <section class="projects-page__catalog" aria-label="Каталог проектов">
+      <aside class="projects-page__filter" aria-label="Фильтр проектов">
+        <div class="projects-page__filter-sticky">
+          <button class="projects-page__filter-button is-active" type="button" data-filter="all" aria-pressed="true">Все</button>
+
+          <div class="projects-page__filter-group">
+            <button class="projects-page__filter-button projects-page__filter-button--group" type="button" data-filter="restoration" aria-pressed="false">Восстановление</button>
+            <div class="projects-page__filter-subgroup">
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" data-filter="restoration-residential" aria-pressed="false">Жилые здания</button>
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" data-filter="restoration-education" aria-pressed="false">Образовательные учреждения</button>
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" data-filter="restoration-medical" aria-pressed="false">Медицинские учреждения</button>
+            </div>
+          </div>
+
+          <div class="projects-page__filter-group">
+            <button class="projects-page__filter-button projects-page__filter-button--group" type="button" data-filter="construction" aria-pressed="false">Строительство</button>
+            <div class="projects-page__filter-subgroup">
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" data-filter="construction-residential" aria-pressed="false">Жилые здания</button>
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" data-filter="construction-infrastructure" aria-pressed="false">Коммунальная инфраструктура</button>
+            </div>
+          </div>
+
+          <button class="projects-page__filter-button projects-page__filter-button--group" type="button" data-filter="international" aria-pressed="false">Международные проекты</button>
+          <button class="projects-page__filter-button projects-page__filter-button--group" type="button" data-filter="demolition" aria-pressed="false">Демонтаж</button>
+        </div>
+      </aside>
+
+      <div class="projects-page__grid" data-projects-grid aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="footer" id="contacts">
+    <img class="footer__logo" src="assets/icons/logo-footer.svg" width="738" height="147" alt="РКС-НР">
+    <div class="footer__nav">
+      <nav aria-label="Навигация в подвале">
+        <a href="index.html#company">О&nbsp;компании</a>
+        <a href="services.html">Услуги</a>
+        <a href="projects.html" aria-current="page">Проекты</a>
+        <a href="news.html">Новости</a>
+        <a href="contacts.html">Контакты</a>
+        <a href="#">Охрана труда</a>
+        <a href="#">Этика и&nbsp;ответственность</a>
+        <a href="#">Противодействие коррупции</a>
+      </nav>
+      <div class="footer__socials"><a href="#">MAX</a><a href="#">Telegram</a></div>
+    </div>
+    <div class="footer__contacts">
+      <div><a href="tel:+74951472233">+7&nbsp;(495)&nbsp;147-22-33</a><a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a></div>
+      <div class="footer__legal"><a href="documents.html#agreement"><span class="footer__legal-line">Согласие на обработку</span><span class="footer__legal-line">персональных данных</span></a><a href="documents.html#policy"><span class="footer__legal-line">Политика в отношении обработки</span><span class="footer__legal-line">персональных данных</span></a></div>
+    </div>
+    <p class="footer__copyright">©&nbsp;ООО&nbsp;«РКС-НР», 2026. Все права защищены</p>
+  </footer>
+
+  <script type="application/json" id="projects-data">
+    [
+      {
+        "id": "mariupol-artema",
+        "title": "Жилой дом на ул. Артема в историческом центре Мариуполя",
+        "category": "restoration",
+        "subcategory": "residential",
+        "categoryLabel": "Восстановление",
+        "url": "project-detail.html",
+        "image": "assets/images/projects/project-01.png",
+        "alt": "Жилой дом с цветным фасадом в Мариуполе"
+      },
+      {
+        "id": "mariupol-zhovtnevy",
+        "title": "Многоквартирный дом в Жовтневом районе города",
+        "category": "restoration",
+        "subcategory": "residential",
+        "categoryLabel": "Восстановление",
+        "url": "project-detail.html",
+        "image": "assets/images/projects/project-02.png",
+        "alt": "Фасад жилого дома с муралом"
+      },
+      {
+        "id": "mariupol-ordzhonikidze",
+        "title": "Многоквартирный дом в Орджоникидзевском районе",
+        "category": "restoration",
+        "subcategory": "residential",
+        "categoryLabel": "Восстановление",
+        "url": "project-detail.html",
+        "image": "assets/images/projects/project-03.png",
+        "alt": "Восстановленный многоквартирный дом"
+      },
+      {
+        "id": "mariupol-lenin",
+        "title": "Многоквартирный дом на проспекте Ленина",
+        "category": "restoration",
+        "subcategory": "residential",
+        "categoryLabel": "Восстановление",
+        "url": "project-detail.html",
+        "image": "assets/images/projects/project-04.png",
+        "alt": "Многоквартирный дом после восстановления"
+      }
+    ]
+  </script>
+</body>
+</html>
