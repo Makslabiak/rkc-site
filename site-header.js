@@ -7,14 +7,15 @@
   const page = document.body.dataset.sitePage || '';
   const isHome = page === 'home';
   const isServices = page === 'services';
+  const isProjects = page === 'projects' || page === 'project-detail';
   const isNews = page === 'news' || page === 'news-detail';
   const isContacts = page === 'contacts';
   const headerTheme = isServices || page === 'news-detail' ? 'dark' : 'light';
 
   const homeUrl = isHome ? '#top' : 'index.html';
   const companyUrl = isHome ? '#company' : 'index.html#company';
-  const projectsUrl = isHome ? '#projects' : 'index.html#projects';
-  const newsUrl = isHome ? '#news' : 'news.html';
+  const projectsUrl = isHome ? '#projects' : 'projects.html';
+  const newsUrl = 'news.html';
 
   const current = (condition) => condition ? ' aria-current="page"' : '';
 
@@ -26,7 +27,7 @@
       <div class="desktop-nav__group">
         <a href="${companyUrl}">О компании</a>
         <a href="services.html"${current(isServices)}>Услуги</a>
-        <a href="${projectsUrl}">Проекты</a>
+        <a href="${projectsUrl}"${current(isProjects)}>Проекты</a>
       </div>
       <div class="desktop-nav__group">
         <a href="${newsUrl}"${current(isNews)}>Новости</a>
@@ -52,7 +53,7 @@
     <nav class="menu-panel__nav" aria-label="Основная навигация">
       <a href="${companyUrl}">О компании</a>
       <a href="services.html"${current(isServices)}>Услуги</a>
-      <a href="${projectsUrl}">Проекты</a>
+      <a href="${projectsUrl}"${current(isProjects)}>Проекты</a>
       <a href="${newsUrl}"${current(isNews)}>Новости</a>
       <a href="contacts.html"${current(isContacts)}>Контакты</a>
     </nav>

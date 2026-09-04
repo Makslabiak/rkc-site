@@ -10,3 +10,9 @@ node_modules/
 # OS/editor files
 .idea/
 .vscode/
+
+# Локальный бэкап исходников перед пережатием (оригиналы есть в git history)
+assets/images/figma/home-clean-original/
+
+# Локальный бэкап крупных исходников перед пережатием (оригиналы есть в git history)
+assets/images/_backup-original/

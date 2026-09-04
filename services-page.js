@@ -3,60 +3,176 @@
   if (!items.length) return;
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const easing = 'cubic-bezier(.4, 0, .2, 1)';
+  const openDuration = 520;
+  const closeDuration = 420;
+  const contentOffset = 'translate3d(0, -48px, 0)';
+  const scrollOffset = 100;
+  let deferredScrollTimer = 0;
+
+  function stopCurrentScroll() {
+    if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+      const currentScroll = Number.isFinite(window.lenis.animatedScroll)
+        ? window.lenis.animatedScroll
+        : window.scrollY;
+      window.lenis.scrollTo(currentScroll, { immediate: true, force: true });
+      return;
+    }
+
+    window.scrollTo({ top: window.scrollY, left: 0, behavior: 'auto' });
+  }
+
+  function getScrollTarget(item) {
+    const currentScroll = window.lenis && Number.isFinite(window.lenis.animatedScroll)
+      ? window.lenis.animatedScroll
+      : window.scrollY;
+    return Math.max(0, item.getBoundingClientRect().top + currentScroll - scrollOffset);
+  }
+
+  function getScrollLimit() {
+    if (window.lenis && Number.isFinite(window.lenis.limit)) return window.lenis.limit;
+    return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  }
+
+  function scrollToItem(item) {
+    const top = getScrollTarget(item);
+
+    if (!reduceMotion && window.lenis && typeof window.lenis.scrollTo === 'function') {
+      window.lenis.scrollTo(top, {
+        duration: 0.8,
+        easing: (time) => 1 - Math.pow(1 - time, 3),
+        lock: true,
+        force: true
+      });
+      return;
+    }
+
+    window.scrollTo({
+      top,
+      left: 0,
+      behavior: reduceMotion ? 'auto' : 'smooth'
+    });
+  }
 
   function setItemState(item, open, animate = true) {
     const button = item.querySelector('.service-accordion__header');
     const panel = item.querySelector('.service-accordion__panel');
-    if (!button || !panel) return;
+    const panelInner = panel?.querySelector('.service-accordion__panel-inner');
+    if (!button || !panel || !panelInner) return;
 
+    const wasHidden = panel.hidden;
+    const currentHeight = wasHidden ? 0 : panel.getBoundingClientRect().height;
+    const currentTransform = getComputedStyle(panelInner).transform;
     panel.getAnimations().forEach((animation) => animation.cancel());
+    panelInner.getAnimations().forEach((animation) => animation.cancel());
     button.setAttribute('aria-expanded', String(open));
     item.classList.toggle('is-open', open);
 
     if (!animate || reduceMotion) {
       panel.hidden = !open;
-      panel.style.removeProperty('height');
-      panel.style.removeProperty('overflow');
+      clearPanelStyles(panel);
       return;
     }
 
+    panel.hidden = false;
+    panel.style.overflow = 'hidden';
+    panel.style.willChange = 'height';
+
     if (open) {
-      panel.hidden = false;
       const targetHeight = panel.scrollHeight;
-      panel.style.overflow = 'hidden';
+      const contentAnimation = panelInner.animate(
+        [
+          { transform: wasHidden || currentTransform === 'none' ? contentOffset : currentTransform },
+          { transform: 'translate3d(0, 0, 0)' }
+        ],
+        { duration: openDuration, easing, fill: 'both' }
+      );
       const animation = panel.animate(
-        [{ height: '0px', opacity: 0 }, { height: `${targetHeight}px`, opacity: 1 }],
-        { duration: 420, easing: 'cubic-bezier(.22, 1, .36, 1)' }
+        [
+          { height: `${currentHeight}px` },
+          { height: `${targetHeight}px` }
+        ],
+        { duration: openDuration, easing }
       );
       animation.addEventListener('finish', () => {
-        panel.style.removeProperty('height');
-        panel.style.removeProperty('overflow');
+        contentAnimation.cancel();
+        clearPanelStyles(panel);
       }, { once: true });
     } else {
-      const startHeight = panel.getBoundingClientRect().height;
-      panel.style.overflow = 'hidden';
+      const contentAnimation = panelInner.animate(
+        [
+          { transform: currentTransform === 'none' ? 'translate3d(0, 0, 0)' : currentTransform },
+          { transform: contentOffset }
+        ],
+        { duration: closeDuration, easing, fill: 'both' }
+      );
       const animation = panel.animate(
-        [{ height: `${startHeight}px`, opacity: 1 }, { height: '0px', opacity: 0 }],
-        { duration: 320, easing: 'cubic-bezier(.4, 0, 1, 1)' }
+        [
+          { height: `${currentHeight}px` },
+          { height: '0px' }
+        ],
+        { duration: closeDuration, easing }
       );
       animation.addEventListener('finish', () => {
         panel.hidden = true;
-        panel.style.removeProperty('height');
-        panel.style.removeProperty('overflow');
+        contentAnimation.cancel();
+        clearPanelStyles(panel);
       }, { once: true });
     }
   }
 
+  function clearPanelStyles(panel) {
+    panel.style.removeProperty('height');
+    panel.style.removeProperty('overflow');
+    panel.style.removeProperty('will-change');
+  }
+
   items.forEach((item) => {
     const button = item.querySelector('.service-accordion__header');
+    let leaveTimer = 0;
+
+    item.addEventListener('mouseleave', () => {
+      if (item.classList.contains('is-open')) return;
+
+      item.classList.add('is-hover-leaving');
+      window.clearTimeout(leaveTimer);
+      leaveTimer = window.setTimeout(() => {
+        item.classList.remove('is-hover-leaving');
+      }, 400);
+    });
+
+    item.addEventListener('mouseenter', () => {
+      window.clearTimeout(leaveTimer);
+      item.classList.remove('is-hover-leaving');
+    });
+
     button?.addEventListener('click', () => {
+      window.clearTimeout(deferredScrollTimer);
+      stopCurrentScroll();
       const willOpen = button.getAttribute('aria-expanded') !== 'true';
+      const hasAnotherOpenItem = items.some((otherItem) => (
+        otherItem !== item && otherItem.classList.contains('is-open')
+      ));
       items.forEach((otherItem) => {
         if (otherItem !== item && otherItem.classList.contains('is-open')) {
           setItemState(otherItem, false);
         }
       });
       setItemState(item, willOpen);
+      if (willOpen) {
+        // The closing panel changes the position of every item below it.
+        // Measure the target only after that collapse has finished.
+        const needsReflowBeforeScroll = hasAnotherOpenItem;
+        if (needsReflowBeforeScroll || getScrollTarget(item) > getScrollLimit()) {
+          deferredScrollTimer = window.setTimeout(() => {
+            if (!item.classList.contains('is-open')) return;
+            window.lenis?.resize?.();
+            scrollToItem(item);
+          }, needsReflowBeforeScroll ? closeDuration + 40 : openDuration + 40);
+        } else {
+          scrollToItem(item);
+        }
+      }
     });
   });
 
@@ -69,4 +185,36 @@
 
   openFromHash();
   window.addEventListener('hashchange', openFromHash);
+
+  const advantageCards = Array.from(document.querySelectorAll('.advantage-card'));
+  const advantagesSection = document.querySelector('.advantages');
+  if (advantageCards.length && advantagesSection && !reduceMotion) {
+    let parallaxFrame = 0;
+
+    const updateAdvantageParallax = () => {
+      parallaxFrame = 0;
+      const viewportCenter = window.innerHeight * 0.5;
+      advantageCards.forEach((card, index) => {
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.top + rect.height * 0.5;
+        const travel = Math.max(window.innerHeight * 0.5, rect.height);
+        const progress = Math.max(-1, Math.min(1, (cardCenter - viewportCenter) / travel));
+        const column = index % 3;
+        const direction = column === 1 ? 1 : -1;
+        card.style.setProperty('--advantage-parallax-y', `${progress * 22 * direction}px`);
+      });
+    };
+
+    const requestAdvantageParallax = () => {
+      if (!parallaxFrame) parallaxFrame = window.requestAnimationFrame(updateAdvantageParallax);
+    };
+
+    if (window.lenis && typeof window.lenis.on === 'function') {
+      window.lenis.on('scroll', requestAdvantageParallax);
+    } else {
+      window.addEventListener('scroll', requestAdvantageParallax, { passive: true });
+    }
+    window.addEventListener('resize', requestAdvantageParallax, { passive: true });
+    requestAdvantageParallax();
+  }
 })();

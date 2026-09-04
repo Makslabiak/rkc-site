@@ -25,20 +25,28 @@
 
 .news-page__content {
   display: grid;
-  height: 1646px;
   grid-template-columns: 343px minmax(0, 1fr);
+  align-items: stretch;
   border-bottom: 1px solid var(--dark);
   background: var(--light);
 }
 
+/* Колонка тянется во всю высоту ленты (grid align-items: stretch), жёсткой
+   высоты нет — фиксация держится сколько длится лента. Прижатую часть держит
+   вложенный .news-page__categories-sticky: отступ сверху 100px, снизу 100px —
+   единообразно со страницами услуг и проектов. */
 .news-page__categories {
-  position: sticky;
-  top: 0;
+  padding: 80px 20px 0 60px;
+}
+
+.news-page__categories-sticky {
   display: flex;
-  height: max-content;
+  position: sticky;
+  top: 100px;
   flex-direction: column;
   gap: 10px;
-  padding: 80px 20px 0 60px;
+  height: max-content;
+  margin-bottom: 100px;
 }
 
 .news-page__category {
@@ -69,6 +77,10 @@
 
 .news-page-card {
   position: relative;
+  /* Стрелка карточки уезжает за пределы блока (translate 100% -100%) и имеет
+     z-index 5. Без своего контекста наложения этот z-index утекал в корень и
+     перекрывал кнопку «Меню» в шапке (z-index 4) у карточек верхнего ряда. */
+  isolation: isolate;
   display: grid;
   width: 100%;
   height: 329px;
@@ -149,23 +161,23 @@
   width: 90px;
   height: 90px;
   background: var(--dark) url("assets/icons/arrow-box-news.svg") center / cover no-repeat;
-  opacity: 0;
-  transform: translate(100%, -100%);
+  transform: translateX(100%);
   transform-origin: top right;
-  transition: opacity 500ms cubic-bezier(.22, 1, .36, 1), transform 500ms cubic-bezier(.22, 1, .36, 1);
-  will-change: opacity, transform;
+  /* Тайминг и плавность — как у .service-accordion__toggle на странице услуг.
+     Переход на transform работает в обе стороны: наведение — въезд справа,
+     уход курсора — обратный выезд с той же кривой. */
+  transition: transform 380ms cubic-bezier(.4, 0, .2, 1);
+  will-change: transform;
 }
 
 .news-page-card:hover .news-page-card__arrow,
 .news-page-card:focus-visible .news-page-card__arrow,
 .news-page-card.is-active .news-page-card__arrow {
-  opacity: 1;
-  transform: translate(0, 0);
+  transform: translateX(0);
 }
 
 .news-page-card:focus-visible { outline-offset: -4px; }
 
-.news-footer .footer__background { display: none; }
 
 @media (min-width: 1200px) {
   .news-page .desktop-nav__group,
@@ -184,6 +196,13 @@
 
   .news-page.is-scrolled .desktop-nav__group::before {
     transform: translateY(-100%);
+  }
+
+  /* Размер стрелки — как у .service-accordion__toggle на странице услуг
+     (и как у стрелок карточек на главной). */
+  .news-page-card__arrow {
+    width: 4.6875vw;
+    height: 4.6875vw;
   }
 }
 
@@ -206,6 +225,8 @@
     padding: 40px 4.1667vw 0;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .news-page__categories-sticky { display: contents; }
 
   .news-page__category { width: 100%; }
 
@@ -241,10 +262,13 @@
     display: flex;
     width: 100%;
     height: 220px;
+    flex-direction: column;
     gap: 10px;
     padding: 30px 0 0;
     border: 0;
   }
+
+  .news-page__categories-sticky { display: contents; }
 
   .news-page__category {
     width: 100%;

@@ -6,17 +6,17 @@
   <meta name="description" content="Контакты ООО «РКС-НР»">
   <title>Контакты — РКС-НР</title>
   <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="styles.css?v=20260903-58">
+    <link rel="stylesheet" href="styles.css?v=20260904-5">
   <link rel="stylesheet" href="contacts-page.css">
-  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js" defer></script>
+  <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
   <script src="assets/vendor/gsap.min.js" defer></script>
   <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
   <script src="site-header.js?v=20260903-2" defer></script>
-  <script src="script.js?v=20260903-23" defer></script>
-  <script src="services-dither.js?v=20260903-7" defer></script>
+    <script src="script.js?v=20260904-1" defer></script>
+  <script src="services-dither.js?v=20260904-1" defer></script>
   <script src="contacts-page.js" defer></script>
-  <script src="animations.js?v=20260903-7" defer></script>
+    <script src="animations.js?v=20260904-2" defer></script>
 </head>
 <body class="contacts-page" data-site-page="contacts">
   <a class="skip-link" href="#main">Перейти к содержимому</a>
@@ -88,11 +88,14 @@
     </section>
 
     <section class="contacts-map-section" aria-label="Адрес на карте">
-      <picture class="contacts-map image-tone">
-        <source media="(max-width: 599px)" srcset="assets/images/contacts-image-mobile.jpg">
-        <source media="(max-width: 1199px)" srcset="assets/images/contacts-image-tablet.jpg">
-        <img src="assets/images/contacts-image.jpg" width="1798" height="558" alt="Карта проезда к офису РКС-НР" loading="lazy">
-      </picture>
+      <div class="contacts-map">
+        <iframe
+          src="https://yandex.ru/map-widget/v1/?ll=37.531199%2C55.798935&z=16&pt=37.531199%2C55.798935%2Cpm2bll&lang=ru_RU"
+          title="Карта проезда к офису РКС-НР"
+          loading="lazy"
+          allowfullscreen="true">
+        </iframe>
+      </div>
     </section>
   </main>
 
@@ -102,7 +105,7 @@
       <nav aria-label="Навигация в подвале" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom">
         <a href="index.html#company">О компании</a>
         <a href="services.html">Услуги</a>
-        <a href="index.html#projects">Проекты</a>
+        <a href="projects.html">Проекты</a>
         <a href="news.html">Новости</a>
         <a href="contacts.html" aria-current="page">Контакты</a>
         <a href="#">Охрана труда</a>
