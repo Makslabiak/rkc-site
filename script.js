@@ -305,12 +305,7 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
     gestureOrientation: 'vertical',
     smoothWheel: true,
     syncTouch: true,
-    /* Мобильный скролл ощущался слишком резким: палец отрывается — контент
-       «выстреливает» и жёстко тормозит. Понижаем и слежение за пальцем
-       (меньший lerp = мягче догоняет), и силу инерции после отрыва
-       (дефолт 35 даёт слишком длинный и хлёсткий бросок). */
-    syncTouchLerp: 0.055,
-    touchInertiaMultiplier: 18,
+    syncTouchLerp: 0.075,
     wheelMultiplier: 1,
     /* При syncTouch значение 2 удваивает каждый жест и делает мобильный
        скролл заметно резче нативного. Единица сохраняет плавность Lenis,
