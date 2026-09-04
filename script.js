@@ -298,9 +298,14 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
 (function initSmoothScroll() {
   if (typeof window.Lenis !== 'function') return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  /* lerp вместо duration+easing: Lenis больше не считает currentTime += delta
+     по кадрам, а просто подтягивает позицию к цели на фиксированную долю
+     каждый кадр. Просадка кадра (WebGL-дизер) тогда даёт чуть больший шаг,
+     а не скачок по кривой easing — это и убирает рывки скролла. Тот же
+     подход у референса (oci.madebybuzzworthy.com): голый Lenis({syncTouch:true})
+     на дефолтном lerp: 0.1. */
   const lenis = new window.Lenis({
-    duration: 1.2,
-    easing: (time) => Math.min(1, 1.001 - Math.pow(2, -10 * time)),
+    lerp: 0.1,
     orientation: 'vertical',
     gestureOrientation: 'vertical',
     smoothWheel: true,
