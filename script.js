@@ -301,16 +301,17 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
   /* lerp вместо duration+easing: Lenis больше не считает currentTime += delta
      по кадрам, а просто подтягивает позицию к цели на фиксированную долю
      каждый кадр. Просадка кадра (WebGL-дизер) тогда даёт чуть больший шаг,
-     а не скачок по кривой easing — это и убирает рывки скролла. Тот же
-     подход у референса (oci.madebybuzzworthy.com): голый Lenis({syncTouch:true})
-     на дефолтном lerp: 0.1. */
+     а не скачок по кривой easing — это и убирает рывки скролла. За основу
+     взят референс (oci.madebybuzzworthy.com): голый Lenis({syncTouch:true})
+     на дефолтном lerp: 0.1 — но по ощущениям после теста снизили лерпы
+     ещё на четверть: та же логика, но мягче и без резкости референса. */
   const lenis = new window.Lenis({
-    lerp: 0.1,
+    lerp: 0.075,
     orientation: 'vertical',
     gestureOrientation: 'vertical',
     smoothWheel: true,
     syncTouch: true,
-    syncTouchLerp: 0.075,
+    syncTouchLerp: 0.056,
     wheelMultiplier: 1,
     /* При syncTouch значение 2 удваивает каждый жест и делает мобильный
        скролл заметно резче нативного. Единица сохраняет плавность Lenis,
