@@ -99,8 +99,16 @@
     if (d.animAxis) o.axis = d.animAxis;
     if (d.animOrigin) o.origin = d.animOrigin;
     if (d.animChars) o.chars = d.animChars;
+    if (d.animAutoSplit !== undefined) o.autoSplit = d.animAutoSplit !== 'false';
+    if (d.animKeepSplit !== undefined) o.keepSplit = d.animKeepSplit !== 'false';
     if (d.animOnLoad !== undefined) o.onLoad = d.animOnLoad !== 'false';
     if (d.animPrewarm !== undefined) o.prewarm = d.animPrewarm !== 'false';
+    if (!o.start && window.matchMedia('(max-width: 599px)').matches && (
+      el.closest('.projects__grid .project-card') ||
+      el.matches('.services__list .service-card .service-card__head > span')
+    )) {
+      o.start = 'top 92%';
+    }
     return o;
   }
 
@@ -201,19 +209,24 @@
   /* ---------- общий запуск ----------
      SplitText для заголовков и многострочного текста готовится заранее после
      загрузки шрифтов. В момент входа в viewport остаётся только play(), а
-     после завершения одноразовой анимации DOM-обёртки освобождаются. */
+     после завершения одноразовой анимации DOM-обёртки сохраняются, чтобы
+     геометрия текста не менялась скачком. */
   function run(el, o, build) {
     var state = { tl: null, split: null, playRequested: false, played: false };
     var built = false;
     var buildPromise = null;
     var st = null;
+    var keepSplit = o.keepSplit !== false;
+    var trigger = el.matches('.services__list .service-card .service-card__head > span')
+      ? (el.closest('.services__list') || el)
+      : el;
 
     function cleanup() {
       if (state.tl) {
         state.tl.kill();
         state.tl = null;
       }
-      if (state.split) {
+      if (state.split && !keepSplit) {
         /* Как на OCI: после одноразового появления возвращаем исходную
            разметку. Так на странице не остаются сотни char/line-обёрток и
            ResizeObserver, созданный autoSplit. */
@@ -286,7 +299,7 @@
     }
 
     st = ScrollTrigger.create({
-      trigger: el,
+      trigger: trigger,
       start: o.start || TRIGGER_START,
       once: true,
       onEnter: activate,
@@ -425,7 +438,7 @@
           state.split = SplitText.create(el, {
             type: 'lines',
             mask: 'lines',
-            autoSplit: true,
+            autoSplit: o.autoSplit !== false,
             /* Не даём SplitText заменить неразрывные пробелы (&nbsp;)
                обычными: иначе короткие предлоги снова повисают в конце
                строки после разбивки текста. Обычные переводы/табы чистим
@@ -813,7 +826,7 @@
       ease: 'power2.out',
       scrollTrigger: {
         trigger: stairs[stairs.length - 1],
-        start: 'top 70%',
+        start: 'top 100%',
         endTrigger: section,
         end: 'bottom 45%',
         scrub: 0.35,
