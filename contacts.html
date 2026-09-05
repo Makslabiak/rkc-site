@@ -90,12 +90,28 @@
     </section>
 
     <section class="contacts-map-section" aria-label="Адрес на карте">
-      <div class="contacts-map">
+      <div class="contacts-map" data-map>
+        <div class="contacts-map__preview" data-map-preview>
+          <img
+            src="assets/images/map-preview.webp"
+            width="1499"
+            height="473"
+            alt="Расположение офиса РКС-НР на карте"
+            loading="lazy"
+            decoding="async">
+          <button class="button contacts-map__toggle" type="button" data-map-toggle aria-expanded="false" aria-controls="contact-map-frame">
+            <span class="button__text button__text--current">Развернуть карту</span>
+            <span class="button__text button__text--hover" aria-hidden="true">Развернуть карту</span>
+          </button>
+        </div>
         <iframe
-          src="https://yandex.ru/map-widget/v1/?ll=37.531199%2C55.798935&z=16&pt=37.531199%2C55.798935%2Cpm2bll&lang=ru_RU"
-          title="Карта проезда к офису РКС-НР"
+          id="contact-map-frame"
+          data-map-frame
+          data-src="https://yandex.ru/map-widget/v1/?ll=37.531199%2C55.798935&z=16&pt=37.531199%2C55.798935%2Cpm2bll&lang=ru_RU"
+          title="Интерактивная карта проезда к офису РКС-НР"
           loading="lazy"
-          allowfullscreen="true">
+          allowfullscreen="true"
+          hidden>
         </iframe>
       </div>
     </section>
