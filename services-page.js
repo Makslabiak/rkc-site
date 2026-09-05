@@ -185,36 +185,4 @@
 
   openFromHash();
   window.addEventListener('hashchange', openFromHash);
-
-  const advantageCards = Array.from(document.querySelectorAll('.advantage-card'));
-  const advantagesSection = document.querySelector('.advantages');
-  if (advantageCards.length && advantagesSection && !reduceMotion) {
-    let parallaxFrame = 0;
-
-    const updateAdvantageParallax = () => {
-      parallaxFrame = 0;
-      const viewportCenter = window.innerHeight * 0.5;
-      advantageCards.forEach((card, index) => {
-        const rect = card.getBoundingClientRect();
-        const cardCenter = rect.top + rect.height * 0.5;
-        const travel = Math.max(window.innerHeight * 0.5, rect.height);
-        const progress = Math.max(-1, Math.min(1, (cardCenter - viewportCenter) / travel));
-        const column = index % 3;
-        const direction = column === 1 ? 1 : -1;
-        card.style.setProperty('--advantage-parallax-y', `${progress * 22 * direction}px`);
-      });
-    };
-
-    const requestAdvantageParallax = () => {
-      if (!parallaxFrame) parallaxFrame = window.requestAnimationFrame(updateAdvantageParallax);
-    };
-
-    if (window.lenis && typeof window.lenis.on === 'function') {
-      window.lenis.on('scroll', requestAdvantageParallax);
-    } else {
-      window.addEventListener('scroll', requestAdvantageParallax, { passive: true });
-    }
-    window.addEventListener('resize', requestAdvantageParallax, { passive: true });
-    requestAdvantageParallax();
-  }
 })();

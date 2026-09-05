@@ -573,7 +573,7 @@
   .advantages__title { position: absolute; top: 8.3333vw; left: 3.125vw; display: block; font-size: 6.7708vw; white-space: nowrap; }
   .advantages__title span:last-child { margin-left: 7.2396vw; }
   .advantages__grid { position: absolute; inset: 0; display: block; margin: 0; }
-  .advantage-card { position: absolute; width: 22.1354vw; height: 22.1354vw; padding: 1.5625vw 2.0833vw 1.5625vw 1.5625vw; transform: translate3d(0, var(--advantage-parallax-y, 0px), 0); }
+  .advantage-card { position: absolute; width: 22.1354vw; height: 22.1354vw; padding: 1.5625vw 2.0833vw 1.5625vw 1.5625vw; }
   .advantage-card::before { position: absolute; z-index: 0; top: -1px; bottom: -1px; left: -1vw; width: 1vw; background: var(--light); content: ""; }
   .advantage-card strong { font-size: 4.1667vw; }
   .advantage-card p { font-size: .8333vw; }
@@ -583,10 +583,6 @@
   .advantage-card:nth-child(4) { top: 50.9896vw; left: 4.0104vw; }
   .advantage-card:nth-child(5) { top: 55.9375vw; left: 35.625vw; }
   .advantage-card:nth-child(6) { top: 52.5521vw; left: 67.1875vw; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .advantage-card { transform: none; }
-  }
 
   .services-cta { height: 36.4583vw; }
   .services-cta__image { width: 34.7396vw; height: 36.4583vw; }

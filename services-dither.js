@@ -29,8 +29,8 @@
   const TRAIL_POINTS = 8;
   /* Насколько быстро каждая точка догоняет предыдущую: меньше — длиннее и
      ленивее хвост. Голова идёт за курсором отдельным, более резким шагом. */
-  const TRAIL_HEAD_LERP = 0.45;
-  const TRAIL_FOLLOW_LERP = 0.28;
+  const TRAIL_HEAD_LERP = 0.315;
+  const TRAIL_FOLLOW_LERP = 0.196;
 
   const canvas = document.createElement('canvas');
   canvas.className = 'site-dither-canvas';
