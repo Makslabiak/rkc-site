@@ -62,3 +62,35 @@
     if (status) status.hidden = false;
   });
 })();
+
+(function initContactMap() {
+  const map = document.querySelector('[data-map]');
+  if (!map) return;
+
+  const preview = map.querySelector('[data-map-preview]');
+  const toggle = map.querySelector('[data-map-toggle]');
+  const frame = map.querySelector('[data-map-frame]');
+  const currentText = toggle?.querySelector('.button__text--current');
+  const hoverText = toggle?.querySelector('.button__text--hover');
+
+  if (!preview || !toggle || !frame) return;
+
+  function setExpanded(expanded) {
+    map.classList.toggle('is-expanded', expanded);
+    preview.hidden = expanded;
+    frame.hidden = !expanded;
+    toggle.setAttribute('aria-expanded', String(expanded));
+
+    if (expanded && !frame.src && frame.dataset.src) {
+      frame.src = frame.dataset.src;
+    }
+
+    const label = expanded ? 'Свернуть карту' : 'Развернуть карту';
+    if (currentText) currentText.textContent = label;
+    if (hoverText) hoverText.textContent = label;
+  }
+
+  toggle.addEventListener('click', () => {
+    setExpanded(toggle.getAttribute('aria-expanded') !== 'true');
+  });
+})();
