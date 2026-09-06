@@ -112,6 +112,24 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 700ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.news-page-card:hover .news-page-card__image > img,
+.news-page-card:focus-visible .news-page-card__image > img {
+  transform: scale(1.025);
+}
+
+.news-page-card__image::before,
+.news-page-card__image::after {
+  transition: opacity 500ms cubic-bezier(.165, .84, .44, 1);
+}
+
+.news-page-card:hover .news-page-card__image::before,
+.news-page-card:hover .news-page-card__image::after,
+.news-page-card:focus-visible .news-page-card__image::before,
+.news-page-card:focus-visible .news-page-card__image::after {
+  opacity: 0;
 }
 
 .news-page-card__image--default::before {
@@ -160,23 +178,45 @@
   display: block;
   width: 90px;
   height: 90px;
-  background: var(--dark) url("assets/icons/arrow-box-news.svg") center / cover no-repeat;
-  transform: translateX(100%);
+  border: 1px solid var(--dark);
+  background: var(--dark);
+  transform: scale(0);
   transform-origin: top right;
-  /* Тайминг и плавность — как у .service-accordion__toggle на странице услуг.
-     Переход на transform работает в обе стороны: наведение — въезд справа,
-     уход курсора — обратный выезд с той же кривой. */
-  transition: transform 380ms cubic-bezier(.4, 0, .2, 1);
+  transition: transform 500ms cubic-bezier(.165, .84, .44, 1);
   will-change: transform;
 }
 
-.news-page-card:hover .news-page-card__arrow,
-.news-page-card:focus-visible .news-page-card__arrow,
-.news-page-card.is-active .news-page-card__arrow {
-  transform: translateX(0);
+.news-page-card__arrow::after {
+  position: absolute;
+  inset: 32%;
+  background: var(--white);
+  content: "";
+  -webkit-mask: url("assets/icons/arrow-back.svg") center / contain no-repeat;
+  mask: url("assets/icons/arrow-back.svg") center / contain no-repeat;
+  transform: scale(0);
+  transform-origin: center;
+  transition: transform 400ms cubic-bezier(.165, .84, .44, 1);
+  will-change: transform;
+}
+
+.news-page-card.is-arrow-active .news-page-card__arrow {
+  transform: scale(1);
+}
+
+.news-page-card.is-arrow-active .news-page-card__arrow::after {
+  transform: scale(1);
+  transition-delay: 100ms;
 }
 
 .news-page-card:focus-visible { outline-offset: -4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .news-page-card__arrow,
+  .news-page-card__arrow::after {
+    transition-duration: 1ms;
+    transition-delay: 0ms;
+  }
+}
 
 
 @media (min-width: 1200px) {
@@ -319,9 +359,10 @@
   }
 
   .news-page-card__arrow {
-    top: 20px;
+    top: 245px;
     right: 15px;
     width: 36px;
     height: 36px;
+    transform: translateX(0);
   }
 }

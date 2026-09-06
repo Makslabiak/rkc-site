@@ -2,54 +2,17 @@
   background: var(--light);
 }
 
+/* Шапка использует общий компонент сайта без локального фона и стилей. */
 @media (min-width: 1200px) {
-  .project-detail-page .site-header::before,
-  .project-detail-page .site-header::after {
-    position: absolute;
-    z-index: 2;
-    top: 0;
-    height: 100%;
-    width: 1px;
-    pointer-events: none;
-    background: var(--dark);
-    content: "";
+  .project-detail-page #main {
+    padding-top: 10.4167vw;
   }
-
-  .project-detail-page .site-header::before {
-    left: 50.5208vw;
-  }
-
-  .project-detail-page .site-header::after {
-    left: 74.2188vw;
-  }
-}
-
-/* The detail page keeps the site's shared header in the document flow. */
-.project-detail-page .site-header {
-  position: relative;
-  height: 200px;
-  color: var(--dark);
-  background: var(--light);
-  border-bottom: 0;
-}
-
-.project-detail-page .desktop-nav__group {
-  border-left: 0;
-}
-
-.project-detail-page .desktop-nav__group a {
-  color: var(--dark);
-}
-
-.project-detail-page .language-button {
-  color: var(--light);
-  background: var(--dark);
 }
 
 .project-detail__intro {
   display: grid;
   grid-template-columns: 50.5729167% 49.4270833%;
-  align-items: start;
+  align-items: stretch;
   padding-bottom: 160px;
   border-top: var(--line);
   background: var(--light);
@@ -58,13 +21,9 @@
 .project-detail__lead {
   display: flex;
   min-width: 0;
-  height: auto;
-  min-height: 1006px;
   box-sizing: border-box;
   flex-direction: column;
   padding: 32px 60px 64px;
-  border-right: var(--line);
-  border-bottom: var(--line);
 }
 
 .project-detail__back {
@@ -78,11 +37,21 @@
   font-weight: 500;
   line-height: 1.2;
   text-transform: uppercase;
+  transition: color 180ms ease;
 }
 
-.project-detail__back span:first-child {
-  font-size: 20px;
-  line-height: 1;
+.project-detail__back:hover,
+.project-detail__back:focus-visible {
+  color: var(--accent);
+}
+
+.project-detail__back img {
+  display: block;
+  width: 13.5px;
+  height: 9.9px;
+  flex: 0 0 13.5px;
+  object-fit: contain;
+  transform: scaleX(-1);
 }
 
 .project-detail__heading {
@@ -144,7 +113,6 @@
 .project-detail__side {
   display: flex;
   min-width: 0;
-  min-height: 1006px;
   box-sizing: border-box;
   flex-direction: column;
   border-top: var(--line);
@@ -165,9 +133,23 @@
   object-fit: cover;
 }
 
+/* При наведении раскрываем исходную фотографию: общий WebGL-слой дизера
+   убирается скриптом, а эти правила остаются резервом для старого рендера. */
+.project-detail-page .image-tone > img:last-of-type,
+.project-detail-page .image-tone > .dither-photo__canvas {
+  transition: opacity 260ms ease;
+}
+
+.project-detail-page .image-tone:hover > img:last-of-type {
+  opacity: 1;
+}
+
+.project-detail-page .image-tone:hover > .dither-photo__canvas {
+  opacity: 0;
+}
+
 .project-detail__description {
-  min-height: 0;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   box-sizing: border-box;
   padding: 80px 60px;
   color: var(--dark);
@@ -212,10 +194,34 @@
 .project-detail__gallery-grid {
   display: grid;
   width: 100%;
-  min-height: 500px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
   align-items: start;
+  grid-auto-rows: auto;
+}
+
+.project-detail__gallery-grid[data-gallery-count="1"] {
+  grid-template-columns: minmax(0, 587px);
+  justify-content: center;
+}
+
+.project-detail__gallery-grid[data-gallery-count="2"] {
+  max-width: 1194px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-content: center;
+  margin-inline: auto;
+}
+
+.project-detail__gallery-grid[data-gallery-count="3"] {
+  padding-bottom: 0;
+}
+
+.project-detail__gallery-grid[data-gallery-count="3"] .project-detail__gallery-item:nth-child(2) {
+  transform: translateY(96px);
+}
+
+.project-detail__gallery-grid[data-gallery-count="3"] .project-detail__gallery-item:nth-child(3) {
+  transform: translateY(30px);
 }
 
 .project-detail__gallery-item {
@@ -223,17 +229,9 @@
   aspect-ratio: 587 / 404;
 }
 
-.project-detail__gallery-item:nth-child(2) {
-  transform: translateY(96px);
-}
-
-.project-detail__gallery-item:nth-child(3) {
-  transform: translateY(30px);
-}
-
 @media (min-width: 600px) and (max-width: 1199px) {
-  .project-detail-page .site-header {
-    height: 120px;
+  .project-detail-page #main {
+    padding-top: 120px;
   }
 
   .project-detail__intro {
@@ -243,10 +241,8 @@
   }
 
   .project-detail__lead {
-    height: auto;
-    min-height: 410px;
     padding: 30px calc(4.1667vw - 1px) 53px;
-    border: var(--line);
+    border: 0;
   }
 
   .project-detail__back {
@@ -255,28 +251,23 @@
     line-height: 14.4px;
   }
 
-  .project-detail__back span:first-child {
-    font-size: 14px;
-  }
-
   .project-detail__heading {
-    min-height: max-content;
     margin-top: 54.6px;
-    flex: 1 1 auto;
-    justify-content: space-between;
-    gap: 0;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    gap: 40px;
   }
 
   .project-detail__heading h1 {
     max-width: none;
-    font-family: "Roboto", Arial, sans-serif;
+    font-family: "LT Superior", Arial, sans-serif;
     font-size: 40px;
     font-weight: 500;
     line-height: 42px;
   }
 
   .project-detail__meta {
-    gap: 19px;
+    gap: 10px;
     font-size: 12px;
     line-height: 14.4px;
   }
@@ -290,22 +281,20 @@
   }
 
   .project-detail__side {
-    min-height: 0;
     border: 0;
   }
 
   .project-detail__description {
-    min-height: 255px;
     padding: 38px 4.1667vw 84px;
     border-bottom: var(--line);
-    font-family: "Roboto", Arial, sans-serif;
-    font-size: 14px;
+    font-family: "LT Superior", Arial, sans-serif;
+    font-size: 18px;
     font-weight: 400;
-    line-height: 18.9px;
+    line-height: 24.3px;
   }
 
   .project-detail__description p + p {
-    margin-top: 18.9px;
+    margin-top: 24.3px;
   }
 
   .project-detail__gallery {
@@ -326,37 +315,44 @@
 
   .project-detail__gallery-grid {
     width: 100%;
-    min-height: 535px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: 270px 235px;
+    grid-template-rows: none;
     gap: 30px 20px;
   }
 
-  .project-detail__gallery-item {
-    aspect-ratio: 342 / 235;
+  .project-detail__gallery-grid[data-gallery-count="1"] {
+    grid-template-columns: minmax(0, 342px);
   }
 
-  .project-detail__gallery-item:nth-child(2) {
-    transform: none;
+  .project-detail__gallery-grid[data-gallery-count="2"] {
+    max-width: 100%;
+  }
+
+  .project-detail__gallery-grid[data-gallery-count="3"] {
+    grid-template-rows: 270px 235px;
+    padding-bottom: 0;
+  }
+
+  .project-detail__gallery-grid[data-gallery-count="3"] .project-detail__gallery-item:nth-child(2) {
     margin-top: 35px;
+    transform: none;
   }
 
-  .project-detail__gallery-item:nth-child(3) {
+  .project-detail__gallery-grid[data-gallery-count="3"] .project-detail__gallery-item:nth-child(3) {
     width: 342px;
     max-width: 100%;
     grid-column: 1 / -1;
     justify-self: center;
     transform: none;
   }
+
+  .project-detail__gallery-item {
+    aspect-ratio: 342 / 235;
+  }
+
 }
 
 @media (max-width: 599px) {
-  .project-detail-page .site-header {
-    position: fixed;
-    z-index: 110;
-    height: 61px;
-  }
-
   .project-detail__intro {
     display: block;
     padding-top: 61px;
@@ -365,40 +361,35 @@
   }
 
   .project-detail__lead {
-    min-height: 366px;
-    padding: 48px 14px 38px;
-    border: var(--line);
+    padding: 36px 14px;
+    border: 0;
   }
 
   .project-detail__back {
     gap: 6px;
-    font-size: 10px;
-    line-height: 12px;
-  }
-
-  .project-detail__back span:first-child {
-    font-size: 12px;
+    font-size: 14px;
+    line-height: 16.8px;
   }
 
   .project-detail__heading {
-    min-height: max-content;
-    margin-top: 39px;
-    flex: 1 1 auto;
-    justify-content: space-between;
-    gap: 0;
+    min-height: 0;
+    margin-top: 34.2px;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    gap: 30px;
   }
 
   .project-detail__heading h1 {
     max-width: none;
-    font-family: "Roboto", Arial, sans-serif;
+    font-family: "LT Superior", Arial, sans-serif;
     font-size: 30px;
     font-weight: 500;
     line-height: 31.5px;
   }
 
   .project-detail__meta {
-    gap: 20px;
-    font-size: 10px;
+    gap: 10px;
+    font-size: 12px;
     line-height: 12px;
   }
 
@@ -411,22 +402,20 @@
   }
 
   .project-detail__side {
-    min-height: 0;
     border: 0;
   }
 
   .project-detail__description {
-    min-height: 275px;
     padding: 34px 15px 46px;
     border-bottom: var(--line);
     font-family: "Roboto", Arial, sans-serif;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 400;
-    line-height: 16.2px;
+    line-height: 21.6px;
   }
 
   .project-detail__description p + p {
-    margin-top: 16.2px;
+    margin-top: 21.6px;
   }
 
   .project-detail__gallery {
@@ -461,6 +450,11 @@
     aspect-ratio: 345 / 238;
     transform: none;
     margin-top: 0;
+  }
+
+  .project-detail__gallery-grid[data-gallery-count="3"] .project-detail__gallery-item:nth-child(2),
+  .project-detail__gallery-grid[data-gallery-count="3"] .project-detail__gallery-item:nth-child(3) {
+    transform: none;
   }
 }
 

@@ -7,18 +7,19 @@
   <title>РКС-НР — первые в&nbsp;строительстве новой истории</title>
   <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
   <link rel="preload" href="assets/images/figma/home-clean/hero.webp" as="image" fetchpriority="high">
-    <link rel="stylesheet" href="styles.css?v=20260904-5">
+    <link rel="stylesheet" href="styles.css?v=20260906-2">
+  <script src="page-entry.js?v=20260906-1"></script>
   <script>document.documentElement.classList.add('has-anim');</script>
   <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
   <script src="assets/vendor/gsap.min.js" defer></script>
   <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
   <script src="assets/vendor/SplitText.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
-    <script src="site-header.js?v=20260903-2" defer></script>
-    <script src="script.js?v=20260904-6" defer></script>
+    <script src="site-header.js?v=20260906-2" defer></script>
+    <script src="script.js?v=20260906-3" defer></script>
   <script src="news-home.js?v=20260904-1" defer></script>
-  <script src="services-dither.js?v=20260904-2" defer></script>
-  <script src="animations.js?v=20260904-16" defer></script>
+  <script src="services-dither.js?v=20260905-6" defer></script>
+    <script src="animations.js?v=20260906-1" defer></script>
 </head>
 <body data-site-page="home">
   <div class="loader" aria-hidden="true">
@@ -83,7 +84,7 @@
           <strong>2&nbsp;275</strong>
           <p>Положительных заключений от&nbsp;Главгосэкспертизы РФ</p>
         </article>
-        <a class="button stats__button" href="#company"><span class="button__text button__text--current">Подробнее о&nbsp;компании</span><span class="button__text button__text--hover" aria-hidden="true">Подробнее о&nbsp;компании</span></a>
+        <a class="button stats__button" href="about.html"><span class="button__text button__text--current">Подробнее о&nbsp;компании</span><span class="button__text button__text--hover" aria-hidden="true">Подробнее о&nbsp;компании</span></a>
       </div>
     </section>
 
@@ -91,8 +92,8 @@
       <h2 class="section-title projects__title" id="projects-title" data-anim="title" data-anim-prewarm>Реализованные проекты</h2>
       <div class="projects__grid">
         <article class="project-card">
-          <span class="project-card__number" data-anim="typeChars" data-anim-prewarm>01</span>
-          <h3 data-anim="lineUp" data-anim-prewarm>Восстановительные работы</h3>
+          <span class="project-card__number">01</span>
+          <h3>Восстановительные работы</h3>
             <a class="project-card__media image-tone" data-dither-parallax=".08" href="projects.html" aria-label="Подробнее: Восстановительные работы">
             <img src="assets/images/figma/home-clean/project-restoration.webp" alt="Восстановленный жилой дом">
             <span class="project-card__arrow" aria-hidden="true"><img src="assets/icons/arrow-box.svg" width="90" height="90" alt=""></span>
@@ -101,8 +102,8 @@
         </article>
 
         <article class="project-card">
-          <span class="project-card__number" data-anim="typeChars" data-anim-delay=".3" data-anim-prewarm>02</span>
-          <h3 data-anim="lineUp" data-anim-delay=".3" data-anim-prewarm>Новые жилые дома</h3>
+          <span class="project-card__number">02</span>
+          <h3>Новые жилые дома</h3>
             <a class="project-card__media image-tone" data-dither-parallax=".08" href="projects.html" aria-label="Подробнее: Новые жилые дома">
             <img src="assets/images/figma/home-clean/project-houses.webp" alt="Новые жилые дома">
             <span class="project-card__arrow" aria-hidden="true"><img src="assets/icons/arrow-box.svg" width="90" height="90" alt=""></span>
@@ -112,8 +113,8 @@
         </article>
 
         <article class="project-card">
-          <span class="project-card__number" data-anim="typeChars" data-anim-delay=".6" data-anim-prewarm>03</span>
-          <h3 data-anim="lineUp" data-anim-delay=".6" data-anim-prewarm>Объекты здравоохранения</h3>
+          <span class="project-card__number">03</span>
+          <h3>Объекты здравоохранения</h3>
             <a class="project-card__media image-tone" data-dither-parallax=".08" href="projects.html" aria-label="Подробнее: Объекты здравоохранения">
             <img src="assets/images/figma/home-clean/project-healthcare.webp" alt="Восстановленный объект здравоохранения">
             <span class="project-card__arrow" aria-hidden="true"><img src="assets/icons/arrow-box.svg" width="90" height="90" alt=""></span>
@@ -133,7 +134,7 @@
       </div>
       <div class="services__list">
         <article class="service-card">
-          <div class="service-card__media image-tone"><img src="assets/images/figma/home-clean/service-epcm.webp" alt="Строительная площадка"></div>
+          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-epcm.webp" alt="Строительная площадка"></div>
           <div class="service-card__content">
             <div class="service-card__head"><h3>ЕРСМ</h3><span data-anim="typeChars">01</span></div>
             <p>Оказываем услуги в&nbsp;рамках ЕРСМ-контракта</p>
@@ -141,7 +142,7 @@
           </div>
         </article>
         <article class="service-card">
-          <div class="service-card__media image-tone"><img src="assets/images/figma/home-clean/service-epc.webp" alt="Строительство высотного здания"></div>
+          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-epc.webp" alt="Строительство высотного здания"></div>
           <div class="service-card__content">
             <div class="service-card__head"><h3>ЕРС</h3><span data-anim="typeChars">02</span></div>
             <p>Ген.&nbsp;подрядчик при&nbsp;строительстве, капитальном ремонте и&nbsp;реконструкции</p>
@@ -149,7 +150,7 @@
           </div>
         </article>
         <article class="service-card">
-          <div class="service-card__media image-tone"><img src="assets/images/figma/home-clean/service-cost.webp" alt="Работа со строительной документацией"></div>
+          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-cost.webp" alt="Работа со строительной документацией"></div>
           <div class="service-card__content">
             <div class="service-card__head"><h3>Стоимостной инжиниринг</h3><span data-anim="typeChars">03</span></div>
             <p>Стоимостный инжиниринг на&nbsp;всех этапах жизненного цикла</p>
@@ -157,7 +158,7 @@
           </div>
         </article>
         <article class="service-card">
-          <div class="service-card__media image-tone"><img src="assets/images/figma/home-clean/service-client.webp" alt="Контроль строительства"></div>
+          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-client.webp" alt="Контроль строительства"></div>
           <div class="service-card__content">
             <div class="service-card__head"><h3>Технический заказчик</h3><span data-anim="typeChars">04</span></div>
             <p>Контроль и&nbsp;надзор за&nbsp;строительством</p>
@@ -165,7 +166,7 @@
           </div>
         </article>
         <article class="service-card">
-          <div class="service-card__media image-tone"><img src="assets/images/figma/home-clean/service-developer.webp" alt="Новый жилой комплекс"></div>
+          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-developer.webp" alt="Новый жилой комплекс"></div>
           <div class="service-card__content">
             <div class="service-card__head"><h3>Специализированный застройщик</h3><span data-anim="typeChars">05</span></div>
             <p>Девелопмент</p>
@@ -229,7 +230,7 @@
     <img class="footer__logo" src="assets/icons/logo-footer.svg" width="738" height="147" alt="РКС-НР">
     <div class="footer__nav">
       <nav aria-label="Навигация в подвале" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom">
-        <a href="#company">О&nbsp;компании</a>
+        <a href="about.html">О&nbsp;компании</a>
         <a href="services.html">Услуги</a>
         <a href="projects.html">Проекты</a>
         <a href="news.html">Новости</a>

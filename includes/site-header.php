@@ -6,7 +6,7 @@
 $sitePage = $sitePage ?? '';
 $siteHomeUrl = $sitePage === 'home' ? '#top' : '/';
 $siteServicesUrl = $sitePage === 'services' ? '/services/' : '/services/';
-$siteProjectsUrl = $sitePage === 'home' ? '#projects' : '/#projects';
+$siteProjectsUrl = 'projects.html';
 $siteNewsUrl = $sitePage === 'home' ? '#news' : '/news/';
 $siteContactsUrl = $sitePage === 'contacts' ? '#contact-form' : '/contacts/';
 $siteHeaderTheme = in_array($sitePage, ['services', 'news-detail'], true) ? 'dark' : 'light';
@@ -18,7 +18,7 @@ $siteHeaderTheme = in_array($sitePage, ['services', 'news-detail'], true) ? 'dar
 
   <nav class="desktop-nav" aria-label="Основная навигация" data-anim="typeChars" data-anim-target="a" data-anim-on-load>
     <div class="desktop-nav__group">
-      <a href="/#company">О компании</a>
+      <a href="/about.html">О компании</a>
       <a href="<?= htmlspecialchars($siteServicesUrl, ENT_QUOTES, 'UTF-8') ?>"<?= $sitePage === 'services' ? ' aria-current="page"' : '' ?>>Услуги</a>
       <a href="<?= htmlspecialchars($siteProjectsUrl, ENT_QUOTES, 'UTF-8') ?>">Проекты</a>
     </div>
@@ -36,7 +36,7 @@ $siteHeaderTheme = in_array($sitePage, ['services', 'news-detail'], true) ? 'dar
 
 <div class="menu-panel" id="mobile-menu" hidden>
   <nav class="menu-panel__nav" aria-label="Основная навигация">
-    <a href="/#company">О компании</a>
+    <a href="/about.html">О компании</a>
     <a href="<?= htmlspecialchars($siteServicesUrl, ENT_QUOTES, 'UTF-8') ?>">Услуги</a>
     <a href="<?= htmlspecialchars($siteProjectsUrl, ENT_QUOTES, 'UTF-8') ?>">Проекты</a>
     <a href="<?= htmlspecialchars($siteNewsUrl, ENT_QUOTES, 'UTF-8') ?>">Новости</a>

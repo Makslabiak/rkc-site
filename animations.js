@@ -53,7 +53,8 @@
   /* Hero готовится заранее под неподвижным лоадером, но его таймлайны
      начинают play только по сигналу закрытия. В критический кадр остаётся
      лишь compositor-анимация — без SplitText и построения ScrollTrigger. */
-  var introStarted = root.classList.contains('is-loaded') || !document.querySelector('.loader');
+  var introStarted = !window.__rksPageEntering &&
+    (root.classList.contains('is-loaded') || !document.querySelector('.loader'));
   var introQueue = [];
 
   if (!introStarted) {
@@ -122,6 +123,10 @@
   var fontsReady = document.fonts && document.fonts.ready
     ? document.fonts.ready
     : Promise.resolve();
+  var resolveAnimationsReady;
+  window.__rksAnimationsReady = new Promise(function (resolve) {
+    resolveAnimationsReady = resolve;
+  });
 
   /* ---------- очередь предварительного разбора ----------
      Prewarm существует, чтобы к моменту входа в viewport оставался только
@@ -152,6 +157,7 @@
     ScrollTrigger.refresh();
     window.__rksDitherRefresh?.();
     window.__rksScrollbarRefresh?.();
+    resolveAnimationsReady();
   }
 
   function drainPrewarm() {
@@ -241,7 +247,7 @@
     }
 
     function play() {
-      if (!introStarted && el.closest('.hero')) {
+      if (!introStarted && (window.__rksPageEntering || el.closest('.hero'))) {
         introQueue.push(play);
         return;
       }
@@ -294,7 +300,10 @@
 
     if (o.onLoad) {
       if (introStarted) activate();
-      else window.addEventListener('site:loaded', activate, { once: true });
+      else {
+        if (window.__rksPageEntering) fontsReady.then(function () { activate(false); });
+        window.addEventListener('site:loaded', activate, { once: true });
+      }
       return;
     }
 
@@ -690,7 +699,9 @@
   }
 
   /* Текстовые ссылки и пункты открытого меню при наведении перебирают буквы
-     тем же ScrambleText-эффектом, что и пункты desktop-навигации. */
+     тем же ScrambleText-эффектом, что и пункты desktop-навигации. Для ссылок
+     с иконкой анимируем только текстовый span, чтобы ScrambleText не заменял
+     содержимое всей ссылки и не удалял стрелку. */
   function initServiceLinksScramble() {
     var links = gsap.utils.toArray([
       '.service-card .text-link',
@@ -698,16 +709,18 @@
       '.menu-panel__nav a',
       '.menu-panel__contacts-links a',
       '.contacts-info__links a',
-      '.news-detail__back'
+      '.news-detail__back',
+      '.project-detail__back'
     ].join(', '));
     if (!links.length || !window.ScrambleTextPlugin) return;
 
     links.forEach(function (link) {
-      var originalText = link.textContent;
+      var target = link.querySelector('[data-scramble-target]') || link;
+      var originalText = target.textContent;
 
       function scramble() {
-        gsap.killTweensOf(link);
-        gsap.to(link, {
+        gsap.killTweensOf(target);
+        gsap.to(target, {
           duration: SCRAMBLE_DURATION,
           ease: 'power4.out',
           scrambleText: {
@@ -973,6 +986,79 @@
     });
   }
 
+  /* ---------- анимация карточек преимуществ ----------
+     Десктоп сохраняет параллакс макета. На мобильном каждая карточка
+     один раз проявляется снизу по обычному ScrollTrigger — без scrub,
+     поворота и дальнейшего движения вместе со скроллом. */
+  function initAdvantagesParallax() {
+    var grid = document.querySelector('.advantages__grid');
+    if (!grid) return;
+
+    var cards = gsap.utils.toArray(grid.querySelectorAll('.advantage-card'));
+    if (!cards.length) return;
+
+    gsap.matchMedia().add({
+      desktop: '(min-width: 1200px)',
+      mobile: '(max-width: 599px)'
+    }, function (context) {
+      var tweens = [];
+
+      if (context.conditions.desktop) {
+        var from = [-6, 10, -4];
+        var to = [14, -10, 16];
+
+        gsap.set(cards, {
+          y: function (i) { return from[i % from.length] + 'vh'; },
+          force3D: true
+        });
+
+        var timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: grid,
+            start: 'top bottom',
+            end: 'bottom bottom',
+            scrub: 1.6,
+            invalidateOnRefresh: true
+          }
+        });
+
+        timeline.to(cards, {
+          y: function (i) { return to[i % to.length] + 'vh'; },
+          force3D: true,
+          ease: 'none'
+        }, 0);
+        tweens.push(timeline);
+      } else if (context.conditions.mobile) {
+        cards.forEach(function (card) {
+          var tween = gsap.from(card, {
+            opacity: 0,
+            y: 30,
+            duration: TWEEN.duration,
+            ease: TWEEN.ease,
+            force3D: true,
+            scrollTrigger: {
+              trigger: card,
+              start: TRIGGER_START,
+              once: true
+            },
+            onComplete: function () {
+              gsap.set(card, { clearProps: 'transform,opacity' });
+            }
+          });
+          tweens.push(tween);
+        });
+      }
+
+      return function () {
+        tweens.forEach(function (tween) {
+          tween.scrollTrigger?.kill();
+          tween.kill();
+        });
+        gsap.set(cards, { clearProps: 'transform,opacity' });
+      };
+    });
+  }
+
   /* ---------- карточки услуг: диагональная scroll-анимация ----------
      Стартовые значения фиксированы, чтобы resize/refresh не меняли рисунок
      и не запускали карточки заново с другим поворотом. */
@@ -1148,6 +1234,7 @@
     initFooterLinksScramble();
     initStairs();
     initProjectsParallax();
+    initAdvantagesParallax();
     initServicesCardsReveal();
     initFooterLogo();
 
@@ -1178,7 +1265,10 @@
        SplitText ещё изменит геометрию. Здесь остаётся страховка для страниц,
        где prewarm-элементов нет вовсе. */
     fontsReady.then(function () {
-      if (!prewarmDraining && !prewarmQueue.length) refreshAnimations();
+      if (!prewarmDraining && !prewarmQueue.length) {
+        refreshAnimations();
+        resolveAnimationsReady();
+      }
     });
     window.addEventListener('load', refreshAnimations);
     window.addEventListener('resize', refreshOnWidthChange, { passive: true });

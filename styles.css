@@ -181,35 +181,29 @@ img {
   transform: none;
 }
 
-.page-transition {
-  position: fixed;
-  z-index: 100000;
-  inset: 0;
-  background: var(--light);
+/* Постоянный фон соединяет два HTML-документа без смены цвета.
+   Прозрачность body включает шапку и canvas, сохраняя fixed-позиционирование. */
+html {
+  background-color: var(--light);
+}
+
+html.is-page-entering:not(.is-page-entering-home) body {
   opacity: 0;
-  visibility: hidden;
+}
+
+html.is-page-leaving-to-home {
+  background-color: var(--dark);
+}
+
+html.is-page-entering body,
+html.is-page-leaving body {
   pointer-events: none;
-  transition: opacity 720ms cubic-bezier(.22, 1, .36, 1), visibility 0s linear 720ms;
 }
 
-.page-transition.is-visible {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transition: opacity 720ms cubic-bezier(.22, 1, .36, 1), visibility 0s linear 0s;
-}
-
-/* Переход на главную: вуаль в цвет лоадера, стык выход→лоадер без скачка. */
-.page-transition.is-to-home {
-  background: var(--dark);
-}
-
-.page-transition.is-entering {
-  transition: opacity 1000ms cubic-bezier(.22, 1, .36, 1), visibility 0s linear 1000ms;
-}
-
-.page-transition.is-visible.is-entering {
-  transition: opacity 1000ms cubic-bezier(.22, 1, .36, 1), visibility 0s linear 0s;
+@media (prefers-reduced-motion: reduce) {
+  html.is-page-entering body {
+    opacity: 1;
+  }
 }
 
 .section-title,
@@ -314,22 +308,26 @@ img {
 }
 
 .button--fill-hover:hover,
-.button--fill-hover:focus-visible {
+.button--fill-hover:focus-visible,
+.menu-button[aria-expanded="true"] {
   color: var(--dark);
 }
 
 .button--fill-hover:hover::before,
-.button--fill-hover:focus-visible::before {
+.button--fill-hover:focus-visible::before,
+.menu-button[aria-expanded="true"]::before {
   transform: translate(-50%, -100%);
 }
 
 .button--fill-hover:hover .button__text--current,
-.button--fill-hover:focus-visible .button__text--current {
+.button--fill-hover:focus-visible .button__text--current,
+.menu-button[aria-expanded="true"] .button__text--current {
   transform: translateY(-100%);
 }
 
 .button--fill-hover:hover .button__text--hover,
-.button--fill-hover:focus-visible .button__text--hover {
+.button--fill-hover:focus-visible .button__text--hover,
+.menu-button[aria-expanded="true"] .button__text--hover {
   transform: translateY(0);
 }
 
@@ -501,6 +499,34 @@ img {
 
 .site-header--dark .desktop-nav__group a {
   color: var(--dark);
+}
+
+/* Детальные страницы используют общий header; эти линии — часть сетки экрана,
+   а не локальный фон или отдельная версия шапки. */
+@media (min-width: 1200px) {
+  body[data-site-page="project-detail"] .site-header::before,
+  body[data-site-page="project-detail"] .site-header::after,
+  body[data-site-page="news-detail"] .site-header::before,
+  body[data-site-page="news-detail"] .site-header::after {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    pointer-events: none;
+    background: var(--dark);
+    content: "";
+  }
+
+  body[data-site-page="project-detail"] .site-header::before,
+  body[data-site-page="news-detail"] .site-header::before {
+    left: 50.5208vw;
+  }
+
+  body[data-site-page="project-detail"] .site-header::after,
+  body[data-site-page="news-detail"] .site-header::after {
+    left: 74.2188vw;
+  }
 }
 
 .site-logo {
@@ -2026,19 +2052,41 @@ body.menu-closing .hero__descriptor {
     width: 4.6875vw;
     height: 4.6875vw;
     overflow: hidden;
+    border: 0;
+    background: transparent;
   }
-  /* Вылет справа — тайминг и плавность как у .service-accordion__toggle на
-     услугах и .news-page-card__arrow. Переход на transform отыгрывает и
-     обратный выезд, когда курсор уходит с карточки (класс снимает JS). */
-  .projects-arrow-layer .project-card__arrow > img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    transform: translateX(100%);
-    transition: transform 380ms cubic-bezier(.4, 0, .2, 1);
+  /* Та же двухфазная hover-анимация, что у новостей, но раскрытие идёт из
+     нижнего правого угла карточки проекта. Основной transform элемента
+     остаётся за scroll-параллаксом, поэтому анимируем псевдоэлементы. */
+  .projects-arrow-layer .project-card__arrow > img { display: none; }
+  .projects-arrow-layer .project-card__arrow::before {
+    position: absolute;
+    inset: 0;
+    background: var(--light);
+    content: "";
+    transform: scale(0);
+    transform-origin: bottom right;
+    transition: transform 500ms cubic-bezier(.165, .84, .44, 1);
+    will-change: transform;
   }
-  .projects-arrow-layer .project-card__arrow.is-visible > img {
-    transform: translateX(0);
+  .projects-arrow-layer .project-card__arrow::after {
+    position: absolute;
+    inset: 32%;
+    background: var(--dark);
+    content: "";
+    -webkit-mask: url("assets/icons/arrow-back.svg") center / contain no-repeat;
+    mask: url("assets/icons/arrow-back.svg") center / contain no-repeat;
+    transform: scale(0);
+    transform-origin: center;
+    transition: transform 400ms cubic-bezier(.165, .84, .44, 1);
+    will-change: transform;
+  }
+  .projects-arrow-layer .project-card__arrow.is-visible::before,
+  .projects-arrow-layer .project-card__arrow.is-visible::after {
+    transform: scale(1);
+  }
+  .projects-arrow-layer .project-card__arrow.is-visible::after {
+    transition-delay: 100ms;
   }
   .project-card p { width: 26.1979vw; margin-top: 1.5625vw; font-size: .8333vw; }
   .projects__button--adaptive { display: none; }
@@ -2081,12 +2129,14 @@ body.menu-closing .hero__descriptor {
   .news-card:nth-child(n + 3) { border-bottom: 0; }
   .news-card { overflow: hidden; }
   .news-card > span:not(.news-card__arrow) { margin-top: auto; }
-  /* Вылет справа — тайминг и плавность как у стрелок проектов и услуг.
-     Прячется за правым краем карточки (overflow: hidden), выезжает в угол
-     по наведению и уезжает обратно с той же кривой. */
-  .news-card__arrow { position: absolute; z-index: 2; top: 0; right: 0; display: grid; width: 4.6875vw; height: 4.6875vw; place-items: center; color: var(--dark); background: var(--light) url("assets/icons/arrow-box.svg") center / cover no-repeat; font-family: "Roboto", Arial, sans-serif; font-size: 0; opacity: 1; visibility: visible; pointer-events: none; transform-origin: top right; transform: translateX(100%); transition: transform 380ms cubic-bezier(.4, 0, .2, 1); will-change: transform; }
+  /* Как в Latest News у OCI: сначала из правого верхнего угла раскрывается
+     квадрат кнопки, затем с небольшой задержкой масштабируется стрелка. */
+  .news-card__arrow { position: absolute; z-index: 2; top: 0; right: 0; display: grid; width: 4.6875vw; height: 4.6875vw; border: var(--line); place-items: center; color: var(--dark); background: var(--light); font-family: "Roboto", Arial, sans-serif; font-size: 0; opacity: 1; visibility: visible; pointer-events: none; transform: scale(0); transform-origin: top right; transition: transform 500ms cubic-bezier(.165, .84, .44, 1); will-change: transform; }
+  .news-card__arrow::after { position: absolute; inset: 32%; background: var(--dark); content: ""; -webkit-mask: url("assets/icons/arrow-back.svg") center / contain no-repeat; mask: url("assets/icons/arrow-back.svg") center / contain no-repeat; transform: scale(0); transform-origin: center; transition: transform 400ms cubic-bezier(.165, .84, .44, 1); will-change: transform; }
   .news-card:hover .news-card__arrow,
-  .news-card:focus-visible .news-card__arrow { transform: translateX(0); }
+  .news-card:focus-visible .news-card__arrow { transform: scale(1); }
+  .news-card:hover .news-card__arrow::after,
+  .news-card:focus-visible .news-card__arrow::after { transform: scale(1); transition-delay: 100ms; }
   .news-card.is-active { color: var(--light); }
   .news-card--featured { background: transparent; }
 

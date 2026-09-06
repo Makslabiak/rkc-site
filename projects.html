@@ -6,8 +6,9 @@
   <meta name="description" content="Проекты ООО «РКС-НР» — строительство и восстановление объектов">
   <title>Проекты — РКС-НР</title>
   <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=20260904-5">
-  <link rel="stylesheet" href="projects-page.css?v=20260904-1">
+  <link rel="stylesheet" href="styles.css?v=20260906-1">
+  <link rel="stylesheet" href="projects-page.css?v=20260906-2">
+  <script src="page-entry.js?v=20260906-1"></script>
   <script>document.documentElement.classList.add('has-anim');</script>
   <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
   <script src="assets/vendor/gsap.min.js" defer></script>
@@ -15,10 +16,10 @@
   <script src="assets/vendor/SplitText.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
   <script src="site-header.js?v=20260903-2" defer></script>
-  <script src="script.js?v=20260904-6" defer></script>
-  <script src="projects-page.js" defer></script>
-  <script src="services-dither.js?v=20260904-2" defer></script>
-  <script src="animations.js?v=20260904-16" defer></script>
+  <script src="script.js?v=20260906-3" defer></script>
+  <script src="projects-page.js?v=20260906-2" defer></script>
+  <script src="services-dither.js?v=20260906-2" defer></script>
+  <script src="animations.js?v=20260905-6" defer></script>
 </head>
 <body class="projects-page" data-site-page="projects">
   <a class="skip-link" href="#main">Перейти к&nbsp;содержимому</a>
@@ -34,31 +35,32 @@
     <section class="projects-page__catalog" aria-label="Каталог проектов">
       <aside class="projects-page__filter" aria-label="Фильтр проектов">
         <div class="projects-page__filter-sticky">
-          <button class="projects-page__filter-button is-active" type="button" data-filter="all" aria-pressed="true">Все</button>
+          <button class="projects-page__filter-button is-active" type="button" aria-controls="projects-grid" data-filter="all" aria-pressed="true">Все</button>
 
           <div class="projects-page__filter-group">
-            <button class="projects-page__filter-button projects-page__filter-button--group" type="button" data-filter="restoration" aria-pressed="false">Восстановление</button>
+            <button class="projects-page__filter-button projects-page__filter-button--group" type="button" aria-controls="projects-grid" data-filter="restoration" aria-pressed="false">Восстановление</button>
             <div class="projects-page__filter-subgroup">
-              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" data-filter="restoration-residential" aria-pressed="false">Жилые здания</button>
-              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" data-filter="restoration-education" aria-pressed="false">Образовательные учреждения</button>
-              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" data-filter="restoration-medical" aria-pressed="false">Медицинские учреждения</button>
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" aria-controls="projects-grid" data-filter="restoration-residential" aria-pressed="false">Жилые здания</button>
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" aria-controls="projects-grid" data-filter="restoration-education" aria-pressed="false">Образовательные учреждения</button>
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" aria-controls="projects-grid" data-filter="restoration-medical" aria-pressed="false">Медицинские учреждения</button>
             </div>
           </div>
 
           <div class="projects-page__filter-group">
-            <button class="projects-page__filter-button projects-page__filter-button--group" type="button" data-filter="construction" aria-pressed="false">Строительство</button>
+            <button class="projects-page__filter-button projects-page__filter-button--group" type="button" aria-controls="projects-grid" data-filter="construction" aria-pressed="false">Строительство</button>
             <div class="projects-page__filter-subgroup">
-              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" data-filter="construction-residential" aria-pressed="false">Жилые здания</button>
-              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" data-filter="construction-infrastructure" aria-pressed="false">Коммунальная инфраструктура</button>
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" aria-controls="projects-grid" data-filter="construction-residential" aria-pressed="false">Жилые здания</button>
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" aria-controls="projects-grid" data-filter="construction-infrastructure" aria-pressed="false">Коммунальная инфраструктура</button>
             </div>
           </div>
 
-          <button class="projects-page__filter-button projects-page__filter-button--group" type="button" data-filter="international" aria-pressed="false">Международные проекты</button>
-          <button class="projects-page__filter-button projects-page__filter-button--group" type="button" data-filter="demolition" aria-pressed="false">Демонтаж</button>
+          <button class="projects-page__filter-button projects-page__filter-button--group" type="button" aria-controls="projects-grid" data-filter="international" aria-pressed="false">Международные проекты</button>
+          <button class="projects-page__filter-button projects-page__filter-button--group" type="button" aria-controls="projects-grid" data-filter="demolition" aria-pressed="false">Демонтаж</button>
         </div>
       </aside>
 
-      <div class="projects-page__grid" data-projects-grid aria-live="polite"></div>
+      <div class="projects-page__grid" data-projects-grid id="projects-grid"></div>
+      <p class="visually-hidden" data-projects-status role="status" aria-live="polite" aria-atomic="true"></p>
     </section>
   </main>
 
@@ -66,7 +68,7 @@
     <img class="footer__logo" src="assets/icons/logo-footer.svg" width="738" height="147" alt="РКС-НР">
     <div class="footer__nav">
       <nav aria-label="Навигация в подвале">
-        <a href="index.html#company">О&nbsp;компании</a>
+        <a href="about.html">О&nbsp;компании</a>
         <a href="services.html">Услуги</a>
         <a href="projects.html" aria-current="page">Проекты</a>
         <a href="news.html">Новости</a>

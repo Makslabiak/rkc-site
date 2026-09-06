@@ -6,19 +6,20 @@
   <meta name="description" content="Жилой дом на ул. Артема в историческом центре Мариуполя — проект по восстановлению ООО «РКС-НР»">
   <title>Жилой дом на ул. Артема — РКС-НР</title>
   <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=20260904-5">
-  <link rel="stylesheet" href="project-detail.css?v=20260904-3">
+  <link rel="stylesheet" href="styles.css?v=20260906-1">
+  <link rel="stylesheet" href="project-detail.css?v=20260905-10">
+  <script src="page-entry.js?v=20260906-1"></script>
   <script>document.documentElement.classList.add('has-anim');</script>
   <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
   <script src="assets/vendor/gsap.min.js" defer></script>
   <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
   <script src="assets/vendor/SplitText.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
-  <script src="site-header.js?v=20260904-1" defer></script>
-  <script src="script.js?v=20260904-6" defer></script>
-  <script src="project-detail.js?v=20260904-2" defer></script>
-  <script src="services-dither.js?v=20260904-2" defer></script>
-  <script src="animations.js?v=20260904-16" defer></script>
+  <script src="site-header.js?v=20260906-1" defer></script>
+  <script src="script.js?v=20260906-3" defer></script>
+  <script src="project-detail.js?v=20260905-6" defer></script>
+  <script src="services-dither.js?v=20260905-6" defer></script>
+  <script src="animations.js?v=20260906-3" defer></script>
 </head>
 <body class="project-detail-page" data-site-page="project-detail">
   <a class="skip-link" href="#main">Перейти к&nbsp;содержимому</a>
@@ -29,10 +30,7 @@
   <main id="main">
     <section class="project-detail__intro" aria-label="Информация о проекте">
       <div class="project-detail__lead">
-        <a class="project-detail__back" href="projects.html">
-          <span aria-hidden="true">←</span>
-          <span>Все проекты</span>
-        </a>
+        <a class="project-detail__back" href="projects.html"><img src="assets/icons/arrow-back.svg" width="13.5" height="9.9" alt="" aria-hidden="true"><span data-scramble-target>Все проекты</span></a>
         <div class="project-detail__heading">
           <h1 data-project-title data-anim="title">Жилой дом на ул. Артема в историческом центре Мариуполя</h1>
           <dl class="project-detail__meta">
@@ -49,7 +47,7 @@
       </div>
 
       <div class="project-detail__side">
-        <figure class="project-detail__hero image-tone">
+        <figure class="project-detail__hero image-tone" data-dither-parallax=".08">
           <img data-project-hero src="assets/images/projects/project-detail-hero.png" width="500" height="350" alt="Жилой дом на ул. Артема в Мариуполе">
         </figure>
         <div class="project-detail__description" data-project-description>
@@ -74,7 +72,7 @@
     <img class="footer__logo" src="assets/icons/logo-footer.svg" width="738" height="147" alt="РКС-НР">
     <div class="footer__nav">
       <nav aria-label="Навигация в подвале">
-        <a href="index.html#company">О&nbsp;компании</a>
+        <a href="about.html">О&nbsp;компании</a>
         <a href="services.html">Услуги</a>
         <a href="projects.html" aria-current="page">Проекты</a>
         <a href="news.html">Новости</a>

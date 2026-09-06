@@ -23,47 +23,11 @@
   transform: scale(1.025);
 }
 
+/* Шапка использует общий компонент сайта без локального фона и стилей. */
 @media (min-width: 1200px) {
-  .news-detail-page .site-header::before,
-  .news-detail-page .site-header::after {
-    position: absolute;
-    z-index: 2;
-    top: 0;
-    height: 100%;
-    width: 1px;
-    pointer-events: none;
-    background: var(--dark);
-    content: "";
+  .news-detail-page #main {
+    padding-top: 10.4167vw;
   }
-
-  .news-detail-page .site-header::before {
-    left: 50.5208vw;
-  }
-
-  .news-detail-page .site-header::after {
-    left: 74.2188vw;
-  }
-}
-
-.news-detail-page .site-header {
-  position: relative;
-  height: 200px;
-  color: var(--dark);
-  background: var(--light);
-  border-bottom: 0;
-}
-
-.news-detail-page .desktop-nav__group {
-  border-left: 0;
-}
-
-.news-detail-page .desktop-nav__group a {
-  color: var(--dark);
-}
-
-.news-detail-page .language-button {
-  color: var(--light);
-  background: var(--dark);
 }
 
 .news-detail__content {
@@ -104,9 +68,13 @@
   color: var(--accent);
 }
 
-.news-detail__back span {
-  font-size: 20px;
-  line-height: 1;
+.news-detail__back img {
+  display: block;
+  width: 13.5px;
+  height: 9.9px;
+  flex: 0 0 13.5px;
+  object-fit: contain;
+  transform: scaleX(-1);
 }
 
 .news-detail__heading {
@@ -162,10 +130,16 @@
 }
 
 .news-detail__gallery {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-flow: row;
   gap: 20px;
   padding: 0 60px 60px;
+}
+
+.news-detail__gallery[hidden],
+.news-detail__gallery > [hidden] {
+  display: none;
 }
 
 .news-detail__gallery .image-tone {
@@ -179,19 +153,53 @@
   object-fit: cover;
 }
 
+@media (max-width: 1199px) {
+  .news-detail__gallery {
+    position: relative;
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    align-items: center;
+    cursor: grab;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    touch-action: pan-x pan-y pinch-zoom;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .news-detail__gallery::-webkit-scrollbar {
+    display: none;
+  }
+
+  .news-detail__gallery.is-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    user-select: none;
+  }
+
+  .news-detail__gallery .image-tone {
+    width: auto;
+    min-width: 0;
+    flex: 0 0 calc(100vw - 136px);
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .news-detail__gallery img {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+}
+
 .news-detail-footer {
   height: 439px;
 }
 
 @media (min-width: 1200px) {
-  .news-detail-page .site-header {
-    height: 10.4167vw;
-  }
-
-  .news-detail-page .desktop-nav__group {
-    height: 10.4167vw;
-  }
-
   .news-detail__content {
     grid-template-columns: 50.5208vw calc(100% - 50.5208vw);
   }
@@ -216,10 +224,6 @@
   .news-detail__back {
     gap: .5208vw;
     font-size: .8333vw;
-  }
-
-  .news-detail__back span {
-    font-size: 1.0417vw;
   }
 
   .news-detail__heading {
@@ -271,8 +275,8 @@
 }
 
 @media (min-width: 600px) and (max-width: 1199px) {
-  .news-detail-page .site-header {
-    height: 120px;
+  .news-detail-page #main {
+    padding-top: 120px;
   }
 
   .news-detail__content {
@@ -311,7 +315,9 @@
   }
 
   .news-detail__gallery {
-    padding: 0 4.1667vw 80px;
+    gap: 16px;
+    padding: 0 4.1667vw 60px;
+    scroll-padding-inline: 4.1667vw;
   }
 
   .news-detail-footer {
@@ -320,19 +326,13 @@
 }
 
 @media (max-width: 599px) {
-  .news-detail-page .site-header {
-    position: fixed;
-    z-index: 110;
-    height: 61px;
-  }
-
   .news-detail-page .news-detail__content {
     padding-top: 61px;
   }
 
   .news-detail__content {
     display: block;
-    padding-bottom: 160px;
+    padding-bottom: 60px;
   }
 
   .news-detail__lead {
@@ -377,7 +377,12 @@
 
   .news-detail__gallery {
     gap: 15px;
-    padding: 0 15px 45px;
+    padding: 0 15px 60px;
+    scroll-padding-inline: 15px;
+  }
+
+  .news-detail__gallery .image-tone {
+    flex-basis: calc(100vw - 66px);
   }
 
   .news-detail-footer {

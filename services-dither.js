@@ -250,22 +250,31 @@
     return false;
   }
 
-  const items = mediaElements.map((element) => ({
-    element,
-    image: element.querySelector(':scope > img:last-of-type'),
-    motionRoot: element.closest('.service-card, .project-card'),
-    sticky: hasStickyAncestor(element),
-    texture: null,
-    width: 1,
-    height: 1,
-    visible: true,
-    bounds: null,
-    motionOrigin: null,
-    parallax: Number.parseFloat(element.dataset.ditherParallax || '0') || 0,
-    ditherAmount: 1,
-    ditherTarget: 1,
-    objectPosition: [0.5, 0.5]
-  })).filter((item) => item.image);
+  function needsLiveGeometry(node) {
+    return hasStickyAncestor(node) || Boolean(node.closest('[data-news-gallery]'));
+  }
+
+  const items = mediaElements.map((element) => {
+    const configuredParallax = Number.parseFloat(element.dataset.ditherParallax);
+    return {
+      element,
+      image: element.querySelector(':scope > img:last-of-type'),
+      motionRoot: element.closest('.service-card, .project-card'),
+      sticky: needsLiveGeometry(element),
+      texture: null,
+      width: 1,
+      height: 1,
+      visible: true,
+      bounds: null,
+      motionOrigin: null,
+      // Весь контентный фотоконтур получает общий внутренний параллакс.
+      // data-dither-parallax="0" оставляет возможность отключить его точечно.
+      parallax: Number.isFinite(configuredParallax) ? configuredParallax : 0.08,
+      ditherAmount: 1,
+      ditherTarget: 1,
+      objectPosition: [0.5, 0.5]
+    };
+  }).filter((item) => item.image);
 
   if (!items.length) return;
   /* Общий слой видит и hero выше main, и контент ниже него. */
@@ -318,8 +327,9 @@
      момент уже трансформирована GSAP, восстанавливаем её базовые координаты
      обратным поворотом вокруг центра. На scroll-кадрах layout не читается. */
   function measureItem(item) {
-    /* Пересматриваем на resize: sticky включается только на десктопе. */
-    item.sticky = hasStickyAncestor(item.element);
+    /* Пересматриваем на resize: sticky и горизонтальная галерея меняют
+       экранные координаты независимо от основного scrollY. */
+    item.sticky = needsLiveGeometry(item.element);
     const rect = item.element.getBoundingClientRect();
     const width = item.element.offsetWidth || rect.width;
     const height = item.element.offsetHeight || rect.height;
@@ -378,10 +388,12 @@
   /* Возвращает экранный AABB из сохранённой document-space геометрии и
      числового состояния GSAP. Это только арифметика — без style/layout read. */
   function getRenderGeometry(item, scrollX, scrollY) {
+    // Filtered cards retain their textures but must never paint stale bounds.
+    if (!item.element.isConnected || item.element.closest('[hidden]')) return null;
     const bounds = item.bounds;
     if (!bounds) return null;
 
-    if (item.sticky) {
+    if (item.sticky || item.element.closest('[data-projects-grid]')) {
       const live = item.element.getBoundingClientRect();
       if (!live.width || !live.height) return null;
       return {
@@ -557,11 +569,12 @@
 
   items.forEach((item) => {
     uploadWhenDecoded(item);
-    const hasHoverAction = item.element.matches('.projects-page-card__media, .news-detail-page .image-tone')
+    const hasHoverAction = item.element.matches('.projects-page-card__media, .news-page-card__image, .news-detail-page .image-tone, .project-detail-page .image-tone, .about-leadership__photo')
       || item.element.querySelector(':scope > button, :scope > .project-card__arrow');
     if (hasHoverAction) {
-      item.element.addEventListener('pointerenter', () => { item.ditherTarget = 0; });
-      item.element.addEventListener('pointerleave', () => { item.ditherTarget = 1; });
+      const hoverTarget = item.element.closest('.news-page-card') || item.element;
+      hoverTarget.addEventListener('pointerenter', () => { item.ditherTarget = 0; });
+      hoverTarget.addEventListener('pointerleave', () => { item.ditherTarget = 1; });
     }
   });
 
