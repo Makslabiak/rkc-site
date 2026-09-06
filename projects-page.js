@@ -16,6 +16,7 @@
   const makeCard = (project) => {
     const card = document.createElement('article');
     card.className = 'projects-page-card';
+    card.dataset.projectId = project.id || '';
     card.dataset.category = project.category || '';
     card.dataset.subcategory = project.subcategory || '';
 
@@ -38,39 +39,45 @@
     category.textContent = project.categoryLabel || project.category || '';
     info.append(title, category);
 
-    card.append(media, info);
     if (project.url) {
-      card.classList.add('is-link');
-      card.tabIndex = 0;
-      card.addEventListener('click', () => { window.location.href = project.url; });
-      card.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          window.location.href = project.url;
-        }
-      });
+      const link = document.createElement('a');
+      link.className = 'projects-page-card__link';
+      link.href = project.url;
+      link.append(media, info);
+      card.append(link);
+    } else {
+      card.append(media, info);
     }
     return card;
   };
 
-  const render = (filter = 'all') => {
-    const fragment = document.createDocumentFragment();
-    const visibleProjects = projects.filter((project) => {
-      if (filter === 'all') return true;
-      if (filter === project.category) return true;
-      return filter === `${project.category}-${project.subcategory}`;
-    });
+  // Keep DOM images and their GPU textures alive across filter changes.
+  const cards = projects.map(makeCard);
+  const empty = document.createElement('p');
+  empty.className = 'projects-page__empty';
+  empty.textContent = 'Проектов в этой категории пока нет';
+  empty.hidden = true;
+  grid.append(...cards, empty);
+  let activeFilter;
 
-    visibleProjects.forEach((project) => fragment.append(makeCard(project)));
-    grid.replaceChildren(fragment);
-    grid.classList.toggle('is-empty', visibleProjects.length === 0);
-    if (!visibleProjects.length) {
-      const empty = document.createElement('p');
-      empty.className = 'projects-page__empty';
-      empty.textContent = 'Проектов в этой категории пока нет';
-      grid.append(empty);
-    }
+  const render = (filter = 'all') => {
+    if (filter === activeFilter) return;
+    activeFilter = filter;
+    let count = 0;
+    projects.forEach((project, index) => {
+      const visible = filter === 'all' || filter === project.category
+        || filter === `${project.category}-${project.subcategory}`;
+      cards[index].hidden = !visible;
+      if (visible) count += 1;
+    });
+    empty.hidden = count > 0;
+    grid.classList.toggle('is-empty', count === 0);
+    document.querySelector('[data-projects-status]').textContent = count
+      ? `Найдено проектов: ${count}` : empty.textContent;
+    window.lenis?.resize();
+    window.ScrollTrigger?.refresh();
     window.__rksDitherRefresh?.();
+    window.__rksScrollbarRefresh?.();
   };
 
   filters.forEach((filter) => {

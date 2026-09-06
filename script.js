@@ -53,103 +53,182 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
   }
 })();
 
-/* ---------- переходы между страницами ----------
-   Один светлый слой закрывает текущую страницу перед навигацией и
-   открывается обратно уже на следующей. Якоря этой же страницы и внешние
-   действия не перехватываем. */
+/* ---------- единый переход страницы и общей шапки ----------
+   Сохраняем обычную HTML-навигацию для Битрикса. Весь экран исчезает
+   с ускорением, а подготовленная страница проявляется с замедлением. */
 (function initPageTransitions() {
-  const TRANSITION_KEY = 'rks-page-transition';
-  const TRANSITION_DURATION = 720;
-  const ENTER_DURATION = 1000;
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const transition = document.createElement('div');
-  transition.className = 'page-transition';
-  transition.setAttribute('aria-hidden', 'true');
-  document.body.append(transition);
+  const root = document.documentElement;
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const ENTER_MS = 800;
+  const EXIT_MS = 600;
+  const easeOut = 'cubic-bezier(.215, .61, .355, 1)';
+  const easeIn = 'cubic-bezier(.55, .055, .675, .19)';
+  const animations = new Set();
+  let leaving = false;
+  let exitTimer;
+  let releaseTimer;
+  let readinessTimer;
+  const useEntryLoader = window.__rksPageEntering && document.querySelector('.loader');
 
-  let mode = null;
-  try {
-    mode = sessionStorage.getItem(TRANSITION_KEY);
-    sessionStorage.removeItem(TRANSITION_KEY);
-  } catch (error) {
-    mode = null;
+  function animate(element, frames, duration, easing) {
+    if (!element.animate || motion.matches) return Promise.resolve();
+    const animation = element.animate(frames, { duration, easing, fill: 'both' });
+    animations.add(animation);
+    return animation.finished.catch(() => {});
   }
 
-  const shouldEnter = mode === 'enter' || mode === 'enter-home';
-  const enterToHome = mode === 'enter-home';
+  function release() {
+    window.clearTimeout(window.__rksPageEntryFallback);
+    window.clearTimeout(readinessTimer);
+    window.__rksPageEntering = false;
+    window.__rksPageEnteringHome = false;
+    root.classList.remove(
+      'is-page-entering',
+      'is-page-entering-home',
+      'is-page-leaving',
+      'is-page-leaving-to-home'
+    );
+    root.classList.add('is-loaded');
+    animations.forEach((animation) => animation.cancel());
+    animations.clear();
+    document.body.inert = false;
+    window.lenis?.start();
+  }
 
-  if (shouldEnter && !reduceMotion) {
-    transition.classList.add('is-visible', 'is-entering');
-    if (enterToHome) transition.classList.add('is-to-home');
-
-    const revealPage = () => {
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => {
-          transition.classList.remove('is-visible');
-          window.setTimeout(
-            () => transition.classList.remove('is-entering', 'is-to-home'),
-            ENTER_DURATION + 180
-          );
-        });
+  function reveal() {
+    if (!window.__rksPageEntering || leaving) return;
+    window.clearTimeout(window.__rksPageEntryFallback);
+    window.clearTimeout(readinessTimer);
+    window.__rksPageEntering = false;
+    root.classList.add('is-loaded', 'is-hero-zoom-started');
+    window.dispatchEvent(new CustomEvent('site:hero-zoom'));
+    window.dispatchEvent(new CustomEvent('site:loaded'));
+    const effects = [
+      animate(document.body, [{ opacity: 0 }, { opacity: 1 }], ENTER_MS, easeOut)
+    ];
+    if (window.matchMedia('(max-width: 599px)').matches) {
+      document.querySelectorAll('.site-logo, .site-header__actions').forEach((part) => {
+        effects.push(animate(part, [
+          { transform: 'translateY(16px)' }, { transform: 'translateY(0)' }
+        ], ENTER_MS, easeOut));
       });
-    };
+    }
+    // Не оставляем заблокированный экран, если вкладка ушла в фон.
+    releaseTimer = window.setTimeout(release, ENTER_MS + 200);
+    Promise.all(effects).then(() => {
+      if (leaving) return;
+      window.clearTimeout(releaseTimer);
+      release();
+    });
+  }
 
-    if (enterToHome) {
-      /* На главной за вуалью уже стоит свой лоадер — вскрываем сразу,
-         вуаль просто мягко проявляет пульсирующий логотип. */
-      revealPage();
+  async function prepareEntry() {
+    if (!window.__rksPageEntering) return;
+    document.body.inert = true;
+    window.lenis?.stop();
+    const inViewport = (element) => {
+      const rect = element.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 &&
+        rect.bottom > 0 && rect.top < window.innerHeight;
+    };
+    const images = Array.from(document.images).filter(inViewport);
+    const imageReady = images.map((img) => {
+      img.loading = 'eager';
+      return img.decode ? img.decode().catch(() => {}) : Promise.resolve();
+    });
+    const ditherReady = new Promise((resolve) => {
+      const targets = Array.from(document.querySelectorAll(
+        '.image-tone, .hero__media[data-dither-src]'
+      )).filter(inViewport);
+      const observer = new MutationObserver(check);
+      const timeout = window.setTimeout(done, 1500);
+      function done() {
+        window.clearTimeout(timeout);
+        observer.disconnect();
+        resolve();
+      }
+      function check() {
+        if (targets.every((el) => el.classList.contains('is-shared-dither-ready'))) done();
+      }
+      targets.forEach((el) => observer.observe(el, { attributes: true, attributeFilter: ['class'] }));
+      check();
+    });
+    const ready = Promise.all([
+      document.fonts?.ready,
+      window.__rksAnimationsReady,
+      ...imageReady,
+      ditherReady
+    ]);
+    await Promise.race([
+      ready,
+      new Promise((resolve) => { readinessTimer = window.setTimeout(resolve, 2000); })
+    ]);
+    window.clearTimeout(readinessTimer);
+    window.ScrollTrigger?.refresh();
+    // После измерений и загрузки текстур отдаём браузеру кадр на композицию.
+    requestAnimationFrame(() => requestAnimationFrame(reveal));
+  }
+
+  if (window.__rksPageEntering && !useEntryLoader) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', prepareEntry, { once: true });
     } else {
-      /* «Дёрганье» на входе — это своп шрифтов, проскакивавший сквозь ещё
-         прозрачную вуаль. Держим её до fonts.ready (с потолком, чтобы
-         медленная сеть не заперла занавес), потом открываем. */
-      Promise.race([
-        document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve(),
-        new Promise((resolve) => window.setTimeout(resolve, 600))
-      ]).then(revealPage);
+      prepareEntry();
     }
   }
 
-  /* Возврат из bfcache восстанавливает DOM «как ушли» — вуаль могла остаться
-     поднятой после клика по ссылке. Снимаем её, иначе назад ведёт на белый
-     (или тёмный) экран. */
   window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-      transition.classList.remove('is-visible', 'is-entering', 'is-to-home');
-    }
+    if (!event.persisted) return;
+    window.clearTimeout(exitTimer);
+    window.clearTimeout(releaseTimer);
+    leaving = false;
+    release();
+    try { sessionStorage.removeItem('rks-page-transition'); } catch (error) { /* no-op */ }
   });
 
   document.addEventListener('click', (event) => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey ||
         event.shiftKey || event.altKey) return;
-
     const link = event.target.closest('a');
-    if (!link || link.target === '_blank' || link.hasAttribute('download') ||
-        link.dataset.noTransition !== undefined) return;
-
-    const rawHref = link.getAttribute('href');
-    if (!rawHref || rawHref === '#' || /^(?:#|mailto:|tel:|javascript:)/i.test(rawHref)) return;
-
-    const destination = new URL(link.href, window.location.href);
-    if (destination.origin !== window.location.origin ||
-        (destination.pathname === window.location.pathname &&
-         destination.search === window.location.search)) return;
+    if (!link || (link.target && link.target !== '_self') ||
+        link.hasAttribute('download') || link.dataset.noTransition !== undefined) return;
+    const destination = new URL(link.href, location.href);
+    if (!/^https?:$/.test(destination.protocol) || destination.origin !== location.origin ||
+        (destination.pathname === location.pathname && destination.search === location.search) ||
+        !/(?:\/|\.html)$/.test(destination.pathname)) return;
+    if (motion.matches || !document.body.animate) return;
 
     event.preventDefault();
-    if (reduceMotion) {
-      window.location.href = destination.href;
-      return;
-    }
-
-    const isHome = destination.pathname === '/' || /\/index\.html$/i.test(destination.pathname);
+    if (leaving) return;
+    leaving = true;
+    window.clearTimeout(releaseTimer);
+    window.clearTimeout(window.__rksPageEntryFallback);
+    const opacity = getComputedStyle(document.body).opacity;
+    animations.forEach((animation) => animation.cancel());
+    animations.clear();
+    root.classList.remove('is-page-entering');
+    root.classList.add('is-page-leaving');
+    const isHomeDestination = destination.pathname === '/' ||
+      /(?:^|\/)index\.html$/i.test(destination.pathname);
+    root.classList.toggle('is-page-leaving-to-home', isHomeDestination);
+    document.body.inert = true;
+    window.lenis?.stop();
     try {
-      sessionStorage.setItem(TRANSITION_KEY, isHome ? 'enter-home' : 'enter');
-    } catch (error) { /* no-op */ }
-    transition.classList.remove('is-entering');
-    /* На главную уходим тёмной вуалью в цвет лоадера — стык выход→лоадер
-       без резкого перехода со светлого на тёмное. */
-    if (isHome) transition.classList.add('is-to-home');
-    transition.classList.add('is-visible');
-    window.setTimeout(() => { window.location.href = destination.href; }, TRANSITION_DURATION);
+      sessionStorage.setItem('rks-page-transition', JSON.stringify({
+        url: destination.pathname + destination.search,
+        time: Date.now(),
+        home: isHomeDestination
+      }));
+    } catch (error) { /* Обычная навигация доступна без хранилища. */ }
+    let navigated = false;
+    const navigate = () => {
+      if (navigated) return;
+      navigated = true;
+      window.clearTimeout(exitTimer);
+      location.assign(destination.href);
+    };
+    animate(document.body, [{ opacity }, { opacity: 0 }], EXIT_MS, easeIn).then(navigate);
+    exitTimer = window.setTimeout(navigate, EXIT_MS + 150);
   });
 })();
 
@@ -184,6 +263,9 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
   const root = document.documentElement;
   const hasHero = !!document.querySelector('.hero__media[data-dither-src]');
   const loader = document.querySelector('.loader');
+  // Внутренние страницы без лоадера раскрывает общий переход выше. На
+  // главной лоадер остаётся видимым и выполняет штатный FLIP-переход.
+  if (window.__rksPageEntering && !loader) return;
   const loaderBackdrop = loader?.querySelector('.loader__backdrop');
   const loaderLogo = loader?.querySelector('.loader__logo');
   const heroLogo = document.querySelector('.site-logo img');
@@ -218,7 +300,13 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
   }
 
   function revealPage() {
+    window.clearTimeout(window.__rksPageEntryFallback);
+    window.__rksPageEntering = false;
+    window.__rksPageEnteringHome = false;
+    root.classList.remove('is-page-entering', 'is-page-entering-home');
     root.classList.add('is-loaded');
+    document.body.inert = false;
+    window.lenis?.start();
   }
 
   let done = false;
@@ -536,50 +624,17 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
 const menuButton = document.querySelector('.menu-button');
 const menuButtonLabels = menuButton?.querySelectorAll('.button__text');
 const menuPanel = document.querySelector('.menu-panel');
-const menuLinks = document.querySelectorAll('.menu-panel a');
+const menuLinks = document.querySelectorAll('.menu-panel__nav a');
 let menuCloseTimer;
 let menuMotion;
-const MENU_SCRAMBLE_CHARS = window.SITE_SCRAMBLE_CHARS;
-
-function scrambleMenuButtonLabel(targetText) {
+function setMenuButtonLabels(open) {
   if (!menuButtonLabels?.length) {
-    menuButton.textContent = targetText;
+    menuButton.textContent = 'Меню';
     return;
   }
 
-  menuButtonLabels.forEach((label) => {
-    if (window.gsap && window.ScrambleTextPlugin) {
-      window.gsap.registerPlugin(window.ScrambleTextPlugin);
-      window.gsap.killTweensOf(label);
-      window.gsap.fromTo(label,
-        { scrambleText: { text: label.textContent } },
-        {
-          duration: window.SITE_SCRAMBLE_CONFIG.duration,
-          ease: 'power2.out',
-          scrambleText: {
-            text: targetText,
-            speed: window.SITE_SCRAMBLE_CONFIG.speed,
-            chars: MENU_SCRAMBLE_CHARS
-          }
-        }
-      );
-      return;
-    }
-
-    /* Fallback, если GSAP или ScrambleTextPlugin ещё не загрузились. */
-    const startedAt = performance.now();
-    const duration = window.SITE_SCRAMBLE_CONFIG.duration * 1000;
-    const animate = (now) => {
-      const progress = Math.min(1, (now - startedAt) / duration);
-      const settled = Math.floor(targetText.length * progress);
-      label.textContent = Array.from(targetText, (character, index) => {
-        if (index < settled || character === ' ') return character;
-        return MENU_SCRAMBLE_CHARS[Math.floor(Math.random() * MENU_SCRAMBLE_CHARS.length)];
-      }).join('');
-      if (progress < 1) window.requestAnimationFrame(animate);
-    };
-    window.requestAnimationFrame(animate);
-  });
+  menuButtonLabels[0].textContent = 'Меню';
+  menuButtonLabels[1].textContent = open ? 'Закрыть' : 'Меню';
 }
 
 function finishMenuClose() {
@@ -659,7 +714,7 @@ function setMenu(open) {
 
   menuButton.setAttribute('aria-expanded', String(open));
   menuButton.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
-  scrambleMenuButtonLabel(open ? 'Закрыть' : 'Меню');
+  setMenuButtonLabels(open);
   if (open) {
     document.body.classList.add('menu-open');
     document.body.classList.remove('menu-closing');
@@ -764,6 +819,7 @@ document.querySelectorAll('.play-button').forEach((playButton) => {
      бока — 22946px за 150s. */
   const EDGE_SPEED_PX_PER_SEC = 124;
   const SIDE_SPEED_PX_PER_SEC = 153;
+  const isMobile = window.matchMedia('(max-width: 599px)').matches;
 
   document.querySelectorAll('.video-frame__ticker').forEach((ticker) => {
     const text = ticker.textContent.trim();
@@ -820,7 +876,9 @@ document.querySelectorAll('.play-button').forEach((playButton) => {
        остаётся той же на любом экране и при любом шрифте. */
     const isSide = ticker.classList.contains('video-frame__ticker--left')
       || ticker.classList.contains('video-frame__ticker--right');
-    const speed = isSide ? SIDE_SPEED_PX_PER_SEC : EDGE_SPEED_PX_PER_SEC;
+    const mobileSpeedMultiplier = isSide ? 0.4 : 0.5;
+    const speed = (isSide ? SIDE_SPEED_PX_PER_SEC : EDGE_SPEED_PX_PER_SEC)
+      * (isMobile ? mobileSpeedMultiplier : 1);
     const travel = track.offsetWidth / 2;
     if (travel > 0) {
       track.style.animationDuration = `${(travel / speed).toFixed(2)}s`;

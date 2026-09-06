@@ -7,6 +7,7 @@
 .documents-cover__title { position: absolute; top: 375px; left: 3.125vw; margin: 0; font-family: "LT Superior", Arial, sans-serif; font-size: 6.7708vw; font-weight: 450; line-height: 1; }
 .documents-content { --documents-inner-height: 9736px; position: relative; display: grid; grid-template-columns: 34.7917vw 1fr; min-height: 9896px; border-bottom: 1px solid var(--dark); background: var(--light); }
 .documents-contact { padding: 33px 3.125vw 0; border-right: 1px solid var(--dark); color: var(--dark); }
+.documents-contact__sticky { position: sticky; top: 100px; height: max-content; margin-bottom: 100px; }
 .documents-contact__eyebrow { font-size: 16px; line-height: 1.4; text-transform: uppercase; }
 .documents-contact h2 { max-width: 543px; margin-top: 105px; font-family: "LT Superior", Arial, sans-serif; font-size: 40px; font-weight: 450; line-height: 1; }
 .documents-contact__details { display: flex; flex-direction: column; gap: 40px; margin-top: 105px; font-size: 19px; line-height: 1.4; text-transform: uppercase; }
@@ -73,6 +74,7 @@
   .documents-cover__title { top: 280px; left: 4.1667vw; font-size: 7.7865vw; }
   .documents-content { display: block; min-height: 0; }
   .documents-contact { height: 430px; padding: 32px 4.1667vw 0; border-right: 0; border-bottom: 1px solid var(--dark); }
+  .documents-contact__sticky { display: contents; }
   .documents-contact h2 { margin-top: 51px; font-size: 40px; }
   .documents-contact__details { display: grid; grid-template-columns: 1fr 1fr; gap: 0 62px; margin-top: 50px; font-size: 16px; }
   .documents-contact__details > p { margin: 0; }
@@ -114,6 +116,7 @@
   .documents-cover__title { top: 215px; left: 15px; font-size: 60px; }
   .documents-content { display: block; min-height: 0; }
   .documents-contact { height: 452px; padding: 44px 15px 0; border-right: 0; border-bottom: 1px solid var(--dark); }
+  .documents-contact__sticky { display: contents; }
   .documents-contact__eyebrow { font-size: 16px; }
   .documents-contact h2 { margin-top: 33px; font-size: 30px; }
   .documents-contact__details { gap: 16px; margin-top: 33px; font-size: 19px; }

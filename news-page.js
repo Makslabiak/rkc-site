@@ -11,16 +11,39 @@
     cards.forEach((item) => item.classList.toggle('is-active', item === card));
   };
 
-  cards.forEach((card) => {
-    card.addEventListener('pointerenter', () => activate(card));
-    card.addEventListener('focus', () => activate(card));
-  });
+  const activateArrow = (card) => {
+    cards.forEach((item) => item.classList.toggle('is-arrow-active', item === card));
+  };
 
   const defaultCard = cards[0];
-  list.addEventListener('pointerleave', () => activate(defaultCard));
+
+  cards.forEach((card) => {
+    card.addEventListener('pointerenter', () => {
+      activate(card);
+      activateArrow(card);
+    });
+    card.addEventListener('pointerleave', () => {
+      if (document.activeElement !== card) {
+        activateArrow(null);
+        activate(defaultCard);
+      }
+    });
+    card.addEventListener('focus', () => {
+      activate(card);
+      activateArrow(card);
+    });
+  });
+
+  list.addEventListener('pointerleave', () => {
+    activateArrow(null);
+    activate(defaultCard);
+  });
   list.addEventListener('focusout', () => {
     window.requestAnimationFrame(() => {
-      if (!list.contains(document.activeElement)) activate(defaultCard);
+      if (!list.contains(document.activeElement)) {
+        activateArrow(null);
+        activate(defaultCard);
+      }
     });
   });
 
@@ -38,6 +61,7 @@
         card.hidden = !visible;
         return visible;
       });
+      activateArrow(null);
       activate(visibleCards[0] || cards[0]);
     });
   });

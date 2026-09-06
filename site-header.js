@@ -6,15 +6,16 @@
 
   const page = document.body.dataset.sitePage || '';
   const isHome = page === 'home';
+  const isAbout = page === 'about';
   const isServices = page === 'services';
   const isProjects = page === 'projects' || page === 'project-detail';
   const isNews = page === 'news' || page === 'news-detail';
   const isContacts = page === 'contacts';
-  const headerTheme = isServices || page === 'news-detail' ? 'dark' : 'light';
+  const headerTheme = isAbout || isServices || page === 'news-detail' || page === 'project-detail' ? 'dark' : 'light';
 
   const homeUrl = isHome ? '#top' : 'index.html';
-  const companyUrl = isHome ? '#company' : 'index.html#company';
-  const projectsUrl = isHome ? '#projects' : 'projects.html';
+  const companyUrl = 'about.html';
+  const projectsUrl = 'projects.html';
   const newsUrl = 'news.html';
 
   const current = (condition) => condition ? ' aria-current="page"' : '';
@@ -25,7 +26,7 @@
     </a>
     <nav class="desktop-nav" aria-label="Основная навигация" data-anim="typeChars" data-anim-target="a" data-anim-on-load>
       <div class="desktop-nav__group">
-        <a href="${companyUrl}">О компании</a>
+        <a href="${companyUrl}"${current(isAbout)}>О компании</a>
         <a href="services.html"${current(isServices)}>Услуги</a>
         <a href="${projectsUrl}"${current(isProjects)}>Проекты</a>
       </div>
@@ -51,7 +52,7 @@
   menu.hidden = true;
   menu.innerHTML = `
     <nav class="menu-panel__nav" aria-label="Основная навигация">
-      <a href="${companyUrl}">О компании</a>
+      <a href="${companyUrl}"${current(isAbout)}>О компании</a>
       <a href="services.html"${current(isServices)}>Услуги</a>
       <a href="${projectsUrl}"${current(isProjects)}>Проекты</a>
       <a href="${newsUrl}"${current(isNews)}>Новости</a>

@@ -46,10 +46,12 @@
     const container = document.querySelector(`[data-project-gallery="${name}"]`);
     if (!container) return;
     container.replaceChildren();
+    let renderedItems = 0;
     (Array.isArray(items) ? items : []).forEach((item) => {
       if (!item?.src) return;
       const media = document.createElement('div');
       media.className = 'project-detail__gallery-item image-tone';
+      media.dataset.ditherParallax = '.08';
       const image = document.createElement('img');
       image.src = item.src;
       image.alt = item.alt || project.title;
@@ -57,7 +59,11 @@
       image.decoding = 'async';
       media.append(image);
       container.append(media);
+      renderedItems += 1;
     });
+    container.dataset.galleryCount = String(renderedItems);
+    const section = container.closest('.project-detail__gallery');
+    if (section) section.hidden = renderedItems === 0;
   };
 
   renderGallery('before', project.before);
