@@ -2298,8 +2298,7 @@ body.menu-closing .hero__descriptor {
   gap: 16px;
 }
 
-.footer__nav a,
-.footer__nav-pending {
+.footer__nav a {
   width: fit-content;
   max-width: 100%;
   font-size: 16px;
@@ -2308,8 +2307,7 @@ body.menu-closing .hero__descriptor {
 }
 
 .footer a:hover,
-.footer a:focus-visible,
-.footer__nav-pending:hover {
+.footer a:focus-visible {
   color: var(--muted);
 }
 
@@ -2548,8 +2546,7 @@ body.menu-closing .hero__descriptor {
   .footer__logo { grid-area: 1 / 2 / 2 / 6; width: 91.6667vw; height: 140px; margin: 0; }
   .footer__nav { grid-area: 2 / 2 / 3 / 3; align-self: start; width: auto; min-height: 555px; margin: 118px 0 0; padding: 20px 0 0 20px; border-left: 1px solid var(--light); }
   .footer__nav nav { gap: 7px; }
-  .footer__nav a,
-  .footer__nav-pending { font-size: 21px; line-height: normal; }
+  .footer__nav a { font-size: 21px; line-height: normal; }
   .footer__socials { gap: 15px; margin-top: 100px; }
   .footer__contacts { grid-area: 2 / 4 / 3 / 5; align-self: start; width: auto; min-height: 555px; margin: 118px 0 0; justify-content: space-between; padding: 20px 0 20px 20px; border-top: 0; border-left: 1px solid var(--light); }
   .footer__contacts > div:first-child { gap: 10px; font-size: 21px; }
@@ -2872,7 +2869,6 @@ body.menu-closing .hero__descriptor {
   .footer__contacts > div:first-child { align-items: flex-start; }
   .footer__nav nav { gap: 7px; }
   .footer__nav a,
-  .footer__nav-pending,
   .footer__socials a,
   .footer__contacts > div:first-child a { width: fit-content; max-width: 100%; font-size: .8333vw; line-height: 1; }
   .footer__socials { gap: .3646vw; margin-top: auto; transform: translateY(6.2vw); }

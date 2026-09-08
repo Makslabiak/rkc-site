@@ -699,9 +699,7 @@
   /* Все ссылки футера получают тот же scramble-hover и не меняют свою
      геометрию при переборе символов. */
   function initFooterLinksScramble() {
-    /* Пункты без собственной страницы размечены span'ом (см. footer__nav-pending),
-       но перебор символов при наведении у них тот же. */
-    var links = gsap.utils.toArray('.footer a, .footer .footer__nav-pending');
+    var links = gsap.utils.toArray('.footer a');
     if (!links.length || !window.ScrambleTextPlugin) return;
 
     links.forEach(function (link) {

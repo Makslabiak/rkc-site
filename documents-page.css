@@ -130,8 +130,7 @@
      В потоке остаются только реальные просветы макета. */
   .documents-footer .footer__nav { width: calc(100% - 30px); margin-top: 52px; padding: 0; border: 0; }
   .documents-footer .footer__nav nav { gap: 7px; }
-  .documents-footer .footer__nav a,
-  .documents-footer .footer__nav .footer__nav-pending { font-size: 16px; line-height: 1; }
+  .documents-footer .footer__nav a { font-size: 16px; line-height: 1; }
   .documents-footer .footer__socials { gap: 15px; margin-top: 67px; }
   .documents-footer .footer__contacts { width: 100%; margin-top: 113px; padding: 22px 15px 0; border-top: 1px solid rgba(240,250,255,.3); border-left: 0; }
   .documents-footer .footer__contacts > div:first-child { gap: 10px; font-size: 18.75px; line-height: 1.4; }

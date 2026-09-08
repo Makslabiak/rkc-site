@@ -33,6 +33,19 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+  <!-- Карточки новости и проекта — по одному демонстрационному экземпляру.
+       В Bitrix на их месте будут динамические адреса детальных страниц, и
+       карта станет генерируемой. -->
+  <url>
+    <loc>https://rks-nr.ru/news-detail.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://rks-nr.ru/project-detail.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
   <url>
     <loc>https://rks-nr.ru/documents.html</loc>
     <changefreq>yearly</changefreq>

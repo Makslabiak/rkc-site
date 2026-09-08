@@ -32,7 +32,7 @@
   <link rel="preload" href="assets/images/figma/home-clean/hero.webp" as="image" fetchpriority="high">
   <link rel="preload" href="assets/fonts/LTSuperior-Medium.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/Roboto-Variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260908-31">
+  <link rel="stylesheet" href="styles.css?v=20260908-32">
   <script src="page-entry.js?v=20260906-1"></script>
   <script>document.documentElement.classList.add('has-anim');</script>
   <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
@@ -45,7 +45,7 @@
   <script src="video-player.js?v=20260908-4" defer></script>
   <script src="news-home.js?v=20260904-1" defer></script>
   <script src="services-dither.js?v=20260908-3" defer></script>
-    <script src="animations.js?v=20260908-1" defer></script>
+    <script src="animations.js?v=20260908-2" defer></script>
 </head>
 <body data-site-page="home">
   <div class="loader" aria-hidden="true">
@@ -292,7 +292,7 @@
   <footer class="footer" id="contacts">
     <img class="footer__logo" src="assets/icons/logo-footer.svg" width="738" height="147" alt="РКС-НР">
     <div class="footer__nav">
-      <nav aria-label="Навигация в подвале" data-anim="typeChars" data-anim-target="a, .footer__nav-pending" data-anim-start="top bottom">
+      <nav aria-label="Навигация в подвале" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom">
         <a href="about.html">О&nbsp;компании</a>
         <a href="services.html">Услуги</a>
         <a href="projects.html">Проекты</a>
@@ -310,17 +310,6 @@
     </div>
     <p class="footer__copyright" data-anim="typeChars" data-anim-start="top bottom">©&nbsp;ООО&nbsp;«РКС-НР», 2026. Все права защищены</p>
   </footer>
-  <!-- Инструмент аннотации — только по запросу (?annotate в адресе).
-       Он вешает capture-фазовый scroll-листенер, глобальный mousemove и
-       fixed-слой во весь экран с z-index 2147483647, поэтому участвовать
-       в каждом кадре обычного просмотра ему незачем. -->
-  <script>
-    if (new URLSearchParams(location.search).has('annotate')) {
-      var annotator = document.createElement('script');
-      annotator.src = 'annotator-tool%C2%A0%E2%80%94%20%D0%BA%D0%BE%D0%BF%D0%B8%D1%8F/annotator.js';
-      document.body.appendChild(annotator);
-    }
-  </script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
