@@ -1013,18 +1013,19 @@ body.menu-closing .hero__descriptor {
 .company-intro__steps span:nth-child(4) { top: 430px; left: 164px; height: 115px; }
 
 .company-intro__lead {
-  position: absolute;
-  top: 42px;
-  left: 15px;
   width: calc(100% - 44px);
+  margin-left: 15px;
   font-size: 23.438px;
   line-height: 1.3;
 }
 
+/* Зазор под лидом вместо координаты: на 375 px лид занимает четыре строки, и
+   текст начинался на 352. Дальше расстояние держится само — поменяется длина
+   лида, двигать это число не нужно. В 58 входят 2 px, которые SplitText
+   забирает отрицательным нижним полем последней строки (см. README). */
 .company-intro__copy {
-  position: absolute;
-  inset: 352px 15px auto;
   display: grid;
+  margin: 58px 15px 0;
   gap: 47px;
   text-transform: uppercase;
 }
@@ -2405,11 +2406,6 @@ body.menu-closing .hero__descriptor {
     padding-top: var(--mobile-section-padding);
   }
 
-  .company-intro__lead {
-    position: relative;
-    top: auto;
-  }
-
   .stats {
     height: 1079px;
     padding-block: var(--mobile-section-padding);
@@ -2492,8 +2488,10 @@ body.menu-closing .hero__descriptor {
   .company-intro__steps span:nth-child(2) { top: 220px; left: 11.07vw; height: 170px; }
   .company-intro__steps span:nth-child(3) { top: 390px; left: 26.23vw; height: 170px; }
   .company-intro__steps span:nth-child(4) { top: 560px; left: 43.83vw; height: 150px; }
-  .company-intro__lead { position: relative; top: auto; left: 4.1667vw; width: 80.34vw; font-size: 28.08px; line-height: 1.2; }
-  .company-intro__copy { inset: 318px 4.1667vw auto; grid-template-columns: 1fr 1fr; gap: 26px; }
+  .company-intro__lead { width: 80.34vw; margin-left: 4.1667vw; font-size: 28.08px; line-height: 1.2; }
+  /* То же, что на мобильном: на 768 px лид занимает пять строк, текст
+     начинался на 318; 3 px из 70 съедает нижнее поле последней строки. */
+  .company-intro__copy { margin: 70px 4.1667vw 0; grid-template-columns: 1fr 1fr; gap: 26px; }
   .company-intro__copy p { max-width: 336px; font-size: 16px; }
 
   .stats { min-height: 1114px; }
@@ -2666,8 +2664,8 @@ body.menu-closing .hero__descriptor {
   .company-intro__steps span:nth-child(2) { top: 17.8195%; left: 5.9323vw; height: 38.5695%; }
   .company-intro__steps span:nth-child(3) { top: 39.8547%; left: 22.8438vw; height: 38.5695%; }
   .company-intro__steps span:nth-child(4) { top: 61.4300%; left: 49.4271vw; height: 38.5695%; }
-  .company-intro__lead { position: static; grid-area: 1 / 2 / 2 / 4; inset: auto; width: 70.3125vw; margin: 0; font-size: 2.8125vw; line-height: 1.2; }
-  .company-intro__copy { position: static; grid-area: 2 / 3 / 3 / 4; inset: auto; width: auto; grid-template-columns: 1fr 1fr; gap: 3.5417vw; }
+  .company-intro__lead { grid-area: 1 / 2 / 2 / 4; width: 70.3125vw; margin: 0; font-size: 2.8125vw; line-height: 1.2; }
+  .company-intro__copy { grid-area: 2 / 3 / 3 / 4; width: auto; margin: 0; grid-template-columns: 1fr 1fr; gap: 3.5417vw; }
   .company-intro__copy p { width: 19.6354vw; font-size: .8333vw; }
 
   /* Заголовок на всю ширину, под ним две независимые колонки: слева
