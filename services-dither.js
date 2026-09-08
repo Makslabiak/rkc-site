@@ -81,6 +81,7 @@
     'uniform float uPixelRatio;',
     'uniform float uTime;',
     'uniform float uDitherAmount;',
+    'uniform float uOpacity;',
     'uniform vec3 uColorDark;',
     'uniform vec3 uColorLight;',
     '',
@@ -176,7 +177,7 @@
     '  float threshold = bayer4(gl_FragCoord.xy) + animatedBias;',
     '  vec3 dithered = mix(uColorDark, uColorLight, step(threshold, luminance));',
     '  vec3 color = mix(original, dithered, uDitherAmount);',
-    '  gl_FragColor = vec4(color, 1.0);',
+    '  gl_FragColor = vec4(color, uOpacity);',
     '}'
   ].join('\n');
 
@@ -225,6 +226,7 @@
     pixelRatio: gl.getUniformLocation(program, 'uPixelRatio'),
     time: gl.getUniformLocation(program, 'uTime'),
     ditherAmount: gl.getUniformLocation(program, 'uDitherAmount'),
+    opacity: gl.getUniformLocation(program, 'uOpacity'),
     colorDark: gl.getUniformLocation(program, 'uColorDark'),
     colorLight: gl.getUniformLocation(program, 'uColorLight')
   };
@@ -236,6 +238,8 @@
   gl.uniform3f(locations.colorDark, ditherConfig.dark[0] / 255, ditherConfig.dark[1] / 255, ditherConfig.dark[2] / 255);
   gl.uniform3f(locations.colorLight, ditherConfig.light[0] / 255, ditherConfig.light[1] / 255, ditherConfig.light[2] / 255);
   gl.disable(gl.DEPTH_TEST);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   gl.enable(gl.SCISSOR_TEST);
 
   /* Sticky-элемент не едет по документу линейно: как только он «прилипает»,
@@ -259,8 +263,10 @@
     return {
       element,
       image: element.querySelector(':scope > img:last-of-type'),
-      motionRoot: element.closest('.service-card, .project-card'),
+      motionRoot: element.closest('.project-card__body, .service-card, .project-card'),
       sticky: needsLiveGeometry(element),
+      inProjectsGrid: Boolean(element.closest('[data-projects-grid]')),
+      hidden: Boolean(element.closest('[hidden]')),
       texture: null,
       width: 1,
       height: 1,
@@ -272,6 +278,7 @@
       parallax: Number.isFinite(configuredParallax) ? configuredParallax : 0.08,
       ditherAmount: 1,
       ditherTarget: 1,
+      opacity: Number.parseFloat(element.dataset.ditherOpacity ?? '1'),
       objectPosition: [0.5, 0.5]
     };
   }).filter((item) => item.image);
@@ -330,6 +337,10 @@
     /* Пересматриваем на resize: sticky и горизонтальная галерея меняют
        экранные координаты независимо от основного scrollY. */
     item.sticky = needsLiveGeometry(item.element);
+    /* closest() в рендер-цикле — это обход дерева вверх до корня на каждый
+       элемент на каждом кадре. Признак галереи меняется только вместе с
+       раскладкой, поэтому считается здесь, а не 60 раз в секунду. */
+    item.inProjectsGrid = Boolean(item.element.closest('[data-projects-grid]'));
     const rect = item.element.getBoundingClientRect();
     const width = item.element.offsetWidth || rect.width;
     const height = item.element.offsetHeight || rect.height;
@@ -388,12 +399,14 @@
   /* Возвращает экранный AABB из сохранённой document-space геометрии и
      числового состояния GSAP. Это только арифметика — без style/layout read. */
   function getRenderGeometry(item, scrollX, scrollY) {
-    // Filtered cards retain their textures but must never paint stale bounds.
-    if (!item.element.isConnected || item.element.closest('[hidden]')) return null;
+    /* Отфильтрованные карточки сохраняют текстуры, но не должны рисоваться
+       по устаревшей геометрии. Скрытость пересчитывается по событию (см.
+       hiddenObserver ниже), а не поиском предка на каждом кадре. */
+    if (!item.element.isConnected || item.hidden) return null;
     const bounds = item.bounds;
     if (!bounds) return null;
 
-    if (item.sticky || item.element.closest('[data-projects-grid]')) {
+    if (item.sticky || item.inProjectsGrid) {
       const live = item.element.getBoundingClientRect();
       if (!live.width || !live.height) return null;
       return {
@@ -530,6 +543,7 @@
 
   function upload(item) {
     const textureSource = getTextureSource(item);
+    if (item.texture) gl.deleteTexture(item.texture);
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -569,14 +583,82 @@
 
   items.forEach((item) => {
     uploadWhenDecoded(item);
-    const hasHoverAction = item.element.matches('.projects-page-card__media, .news-page-card__image, .news-detail-page .image-tone, .project-detail-page .image-tone, .about-leadership__photo')
-      || item.element.querySelector(':scope > button, :scope > .project-card__arrow');
+    item.image.addEventListener('load', () => {
+      if (item.texture) uploadWhenDecoded(item);
+    });
+    const hasHoverAction = !item.element.matches('.video-frame__media') && (
+      item.element.matches('.projects-page-card__media, .news-page-card__image, .news-detail-page .image-tone, .project-detail-page .image-tone, .about-leadership__photo')
+      || item.element.querySelector(':scope > button, :scope > .project-card__arrow')
+    );
     if (hasHoverAction) {
       const hoverTarget = item.element.closest('.news-page-card') || item.element;
       hoverTarget.addEventListener('pointerenter', () => { item.ditherTarget = 0; });
       hoverTarget.addEventListener('pointerleave', () => { item.ditherTarget = 1; });
     }
   });
+
+  window.__rksDitherSetOpacity = function (element, opacity, duration = 0.8) {
+    const item = items.find((candidate) => candidate.element === element);
+    if (!item) return false;
+    const value = Math.max(0, Math.min(1, Number(opacity)));
+    if (window.gsap) {
+      window.gsap.to(item, {
+        opacity: value,
+        duration,
+        ease: 'power4.inOut',
+        overwrite: true
+      });
+    } else {
+      item.opacity = value;
+    }
+    return true;
+  };
+
+  /* Перекрывающий crossfade для нескольких фотографий в одном контейнере.
+     Новый слой проявляется поверх полностью непрозрачного предыдущего, поэтому
+     в середине перехода сквозь изображения не проступает фон. */
+  window.__rksDitherCrossfade = function (elements, targetElement, duration = 0.8) {
+    const group = Array.from(elements || [])
+      .map((element) => items.find((candidate) => candidate.element === element))
+      .filter(Boolean);
+    const target = group.find((item) => item.element === targetElement);
+    if (!target || !target.texture) return false;
+
+    const targetIndex = items.indexOf(target);
+    if (targetIndex >= 0) {
+      items.splice(targetIndex, 1);
+      items.push(target);
+    }
+
+    const previous = group
+      .filter((item) => item !== target)
+      .sort((a, b) => b.opacity - a.opacity)[0];
+
+    if (!window.gsap) {
+      group.forEach((item) => { item.opacity = item === target ? 1 : 0; });
+      return true;
+    }
+
+    window.gsap.killTweensOf(group);
+
+    /* Даже при быстром движении курсора под новым кадром всегда остаётся
+       непрозрачная база. Незавершённый переход продолжится без белой вспышки. */
+    if (previous && previous.opacity < 1) previous.opacity = 1;
+    target.opacity = 0;
+
+    window.gsap.to(target, {
+      opacity: 1,
+      duration,
+      ease: 'power2.inOut',
+      overwrite: true,
+      onComplete: () => {
+        group.forEach((item) => {
+          if (item !== target) item.opacity = 0;
+        });
+      }
+    });
+    return true;
+  };
 
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
@@ -679,6 +761,7 @@
       gl.uniform2f(locations.planeSize, planeWidth, planeHeight);
       gl.uniform2f(locations.objectPosition, positionX, positionY);
       gl.uniform1f(locations.ditherAmount, item.ditherAmount);
+      gl.uniform1f(locations.opacity, item.opacity);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     });
 
@@ -749,6 +832,22 @@
     canvas.hidden = true;
     items.forEach((item) => item.element.classList.remove('is-shared-dither-ready'));
   });
+
+  /* Фильтр проектов переключает [hidden] на карточках — единственный
+     сценарий, в котором скрытость меняется без перестройки раскладки.
+     MutationObserver отрабатывает в микротаске до отрисовки, поэтому
+     кадров со старой геометрией не остаётся, а рендер-цикл читает готовый
+     флаг вместо обхода дерева. */
+  if ('MutationObserver' in window) {
+    const hiddenObserver = new MutationObserver(() => {
+      items.forEach((item) => { item.hidden = Boolean(item.element.closest('[hidden]')); });
+    });
+    hiddenObserver.observe(document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['hidden']
+    });
+  }
 
   document.addEventListener('visibilitychange', setVisibility);
   reduceMotion.addEventListener?.('change', setVisibility);

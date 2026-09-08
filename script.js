@@ -312,6 +312,22 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
   let done = false;
   function finish() {
     if (done) return;
+
+    /* Скрытая вкладка (открытие в фоне, восстановленная сессия) не выполняет
+       requestAnimationFrame, а именно в его колбэке ниже живёт и FLIP-переход,
+       и снятие лоадера. Без этой проверки страница, открытая в фоне, оставалась
+       под заставкой до самого переключения на вкладку. Ждём момент, когда на
+       неё действительно посмотрят: тогда и переход отыграет по актуальным
+       координатам, а не по измеренным несколько минут назад. */
+    if (document.hidden) {
+      document.addEventListener('visibilitychange', function onVisible() {
+        if (document.hidden) return;
+        document.removeEventListener('visibilitychange', onVisible);
+        finish();
+      });
+      return;
+    }
+
     done = true;
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -715,6 +731,7 @@ function setMenu(open) {
   menuButton.setAttribute('aria-expanded', String(open));
   menuButton.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
   setMenuButtonLabels(open);
+  syncMenuFocus(open);
   if (open) {
     document.body.classList.add('menu-open');
     document.body.classList.remove('menu-closing');
@@ -731,7 +748,53 @@ function setMenu(open) {
   }
 }
 
+/* Клавиатура в открытом меню.
+
+   Панель перекрывает страницу целиком, но фокус оставался снаружи: Tab уходил
+   по ссылкам под ней — пользователь клавиатуры «бродил» по невидимому
+   контенту. Уводим фокус внутрь при открытии, замыкаем Tab внутри панели и
+   возвращаем фокус на кнопку при закрытии. */
+const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function menuFocusable() {
+  if (!menuPanel) return [];
+  return Array.from(menuPanel.querySelectorAll(FOCUSABLE))
+    .filter((element) => element.getAttribute('aria-disabled') !== 'true' && element.offsetParent !== null);
+}
+
+function syncMenuFocus(open) {
+  if (!menuPanel) return;
+  if (open) {
+    /* Панель показывается анимацией; фокус ставим в следующем кадре, когда
+       элементы уже участвуют в раскладке и offsetParent не null. */
+    window.requestAnimationFrame(() => {
+      if (!menuPanel.classList.contains('is-open')) return;
+      (menuFocusable()[0] || menuPanel).focus({ preventScroll: true });
+    });
+  } else if (menuPanel.contains(document.activeElement)) {
+    menuButton?.focus({ preventScroll: true });
+  }
+}
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Tab' || !menuPanel || menuPanel.hidden ||
+      !menuPanel.classList.contains('is-open')) return;
+  const items = menuFocusable();
+  if (!items.length) return;
+  const first = items[0];
+  const last = items[items.length - 1];
+  const active = document.activeElement;
+  if (event.shiftKey && (active === first || !menuPanel.contains(active))) {
+    event.preventDefault();
+    last.focus({ preventScroll: true });
+  } else if (!event.shiftKey && (active === last || !menuPanel.contains(active))) {
+    event.preventDefault();
+    first.focus({ preventScroll: true });
+  }
+});
+
 menuPanel?.setAttribute('aria-hidden', 'true');
+menuPanel?.setAttribute('tabindex', '-1');
 menuButton?.addEventListener('click', () => setMenu(!menuPanel.classList.contains('is-open')));
 menuLinks.forEach((link) => {
   if (link.matches('[aria-current="page"]')) {
@@ -761,23 +824,23 @@ document.addEventListener('click', (event) => {
   setMenu(false);
 }, true);
 
-function closeMenuOnScrollStart() {
-  if (menuPanel && !menuPanel.hidden && menuPanel.classList.contains('is-open')) {
-    setMenu(false);
-  }
-}
-
-window.addEventListener('wheel', closeMenuOnScrollStart, { passive: true });
-window.addEventListener('touchmove', closeMenuOnScrollStart, { passive: true });
-
 /* matchMedia создаёт новый MediaQueryList на каждый вызов, а syncDesktopMenu
    срабатывает на каждом кадре скролла. Держим один объект. */
 const desktopQuery = window.matchMedia('(min-width: 1200px)');
 
+/* Функция вызывается на каждом кадре скролла. Раньше она безусловно писала
+   tabIndex и aria-hidden — то есть 60-120 раз в секунду грязнила стиль шапки
+   значением, которое почти никогда не меняется. Пишем только на переходе. */
+let desktopMenuState = '';
 function syncDesktopMenu(scrollTop) {
   const isDesktop = desktopQuery.matches;
   const currentScroll = typeof scrollTop === 'number' ? scrollTop : window.scrollY;
   const isVisible = !isDesktop || currentScroll > 24;
+  /* Класс is-scrolled зависит и от брейкпоинта: при одном и том же isVisible
+     переход десктоп/адаптив его меняет. Поэтому в ключе оба флага. */
+  const state = `${isDesktop}:${isVisible}`;
+  if (state === desktopMenuState) return;
+  desktopMenuState = state;
   document.body.classList.toggle('is-scrolled', isDesktop && isVisible);
   if (menuButton) {
     menuButton.tabIndex = isVisible ? 0 : -1;
@@ -788,30 +851,94 @@ function syncDesktopMenu(scrollTop) {
 /* При живом Lenis нативный scroll дублирует его собственное событие —
    обработчик отрабатывал дважды за кадр. Подписываемся на что-то одно. */
 if (window.lenis) {
-  window.lenis.on('scroll', ({ animatedScroll }) => syncDesktopMenu(animatedScroll));
+  window.lenis.on('scroll', ({ targetScroll }) => syncDesktopMenu(targetScroll));
 } else {
   window.addEventListener('scroll', syncDesktopMenu, { passive: true });
 }
 window.addEventListener('resize', syncDesktopMenu);
 syncDesktopMenu();
 
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && !menuPanel.hidden) {
-    setMenu(false);
-    menuButton.focus();
+/* Как в аккордеоне OCI Our Services: все фото загружены заранее отдельными
+   плоскостями и переключаются одновременным crossfade без пустого кадра. */
+(function initStatsImageHover() {
+  const layers = Array.from(document.querySelectorAll('.stats__image-layer'));
+  const items = Array.from(document.querySelectorAll('.stat-item[data-stats-index]'));
+  if (!layers.length || !items.length) return;
+
+  let activeIndex = 0;
+  let activeLayer = layers.find((layer) => layer.classList.contains('is-active')) || layers[0];
+  let imageTransitionId = 0;
+
+  function showItemImage(item) {
+    const nextIndex = Number.parseInt(item?.dataset.statsIndex || '0', 10);
+    if (nextIndex === activeIndex || !layers[nextIndex]) return;
+    const nextLayer = layers[nextIndex];
+    const previousLayer = activeLayer;
+    activeIndex = nextIndex;
+    activeLayer = nextLayer;
+
+    window.__rksDitherCrossfade?.(layers, nextLayer, 0.7);
+
+    const transitionId = ++imageTransitionId;
+    layers.forEach((layer) => layer.classList.remove('is-front'));
+    previousLayer?.classList.add('is-active');
+    nextLayer.classList.add('is-active', 'is-front');
+
+    window.setTimeout(() => {
+      if (transitionId !== imageTransitionId) return;
+      layers.forEach((layer) => {
+        layer.classList.toggle('is-active', layer === nextLayer);
+        layer.classList.remove('is-front');
+      });
+    }, 700);
   }
-});
 
-document.querySelectorAll('.play-button').forEach((playButton) => {
-  playButton.addEventListener('click', (event) => {
-    event.currentTarget.classList.toggle('is-active');
+  items.forEach((item) => {
+    item.addEventListener('pointerenter', () => showItemImage(item));
+    item.addEventListener('focus', () => showItemImage(item));
   });
 
-  const videoMedia = playButton.closest('.video-frame__media');
-  videoMedia?.addEventListener('click', (event) => {
-    if (event.target.closest('.play-button')) return;
-    playButton.click();
+  document.querySelector('.stats__list')?.addEventListener('pointerleave', () => {
+    const focusedItem = document.activeElement?.closest?.('.stat-item[data-stats-index]');
+    showItemImage(focusedItem || items[0]);
   });
+})();
+
+(function initTabletHeroLines() {
+  const hero = document.querySelector('.hero');
+  const descriptor = hero?.querySelector('.hero__descriptor');
+  if (!hero || !descriptor) return;
+
+  let frameId = 0;
+  const sync = () => {
+    frameId = 0;
+    const heroRect = hero.getBoundingClientRect();
+    const descriptorRect = descriptor.getBoundingClientRect();
+    hero.style.setProperty('--hero-descriptor-top', `${descriptorRect.top - heroRect.top}px`);
+    hero.style.setProperty('--hero-descriptor-bottom', `${descriptorRect.bottom - heroRect.top}px`);
+  };
+
+  const scheduleSync = () => {
+    if (frameId) return;
+    frameId = requestAnimationFrame(sync);
+  };
+
+  scheduleSync();
+  window.addEventListener('load', scheduleSync);
+  window.addEventListener('resize', scheduleSync);
+  document.fonts?.ready.then(scheduleSync);
+
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(scheduleSync).observe(descriptor);
+  }
+})();
+
+document.addEventListener('keydown', (event) => {
+  /* Страница без общей шапки (например, стенд плеера) подключает тот же
+     script.js — без проверки обработчик падал на каждое нажатие клавиши. */
+  if (event.key !== 'Escape' || !menuPanel || menuPanel.hidden) return;
+  setMenu(false);
+  menuButton?.focus();
 });
 
 (function initVideoTicker() {
@@ -888,19 +1015,19 @@ document.querySelectorAll('.play-button').forEach((playButton) => {
   /* Бегущая строка крутится только когда видео действительно вошло в экран.
      Раньше rootMargin запускал четыре слоя на 200px заранее — одновременно
      с завершением анимации последней карточки услуг. */
-  const videoSection = document.querySelector('.video-section');
-  if (videoSection && 'IntersectionObserver' in window) {
+  const videoSections = document.querySelectorAll('.video-section');
+  if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        videoSection.classList.toggle(
+        entry.target.classList.toggle(
           'is-ticker-active',
           entry.isIntersecting && entry.intersectionRatio >= 0.1
         );
       });
     }, { threshold: [0, 0.1] });
-    observer.observe(videoSection);
+    videoSections.forEach((section) => observer.observe(section));
   } else {
-    videoSection?.classList.add('is-ticker-active');
+    videoSections.forEach((section) => section.classList.add('is-ticker-active'));
   }
 })();
 
@@ -909,7 +1036,10 @@ document.querySelectorAll('.play-button').forEach((playButton) => {
   if (!grid) return;
 
   const cards = Array.from(grid.querySelectorAll('.news-card'));
+  const imageLayers = Array.from(document.querySelectorAll('.news__image-layer'));
   const defaultCard = cards[0] || grid.querySelector('.news-card--featured') || cards[1];
+  let activeLayer = imageLayers.find((layer) => layer.classList.contains('is-active')) || null;
+  let imageTransitionId = 0;
 
   const activate = (card) => {
     const index = cards.indexOf(card);
@@ -918,6 +1048,32 @@ document.querySelectorAll('.play-button').forEach((playButton) => {
     const column = index % 2;
     const row = Math.floor(index / 2);
     cards.forEach((item) => item.classList.toggle('is-active', item === card));
+    const nextLayer = imageLayers[index];
+    const changed = nextLayer && nextLayer !== activeLayer;
+    if (changed) {
+      window.__rksDitherCrossfade?.(imageLayers, nextLayer, 0.7);
+    }
+
+    if (changed && nextLayer) {
+      const previousLayer = activeLayer;
+      const transitionId = ++imageTransitionId;
+      imageLayers.forEach((layer) => layer.classList.remove('is-front'));
+      previousLayer?.classList.add('is-active');
+      nextLayer.classList.add('is-active', 'is-front');
+
+      window.setTimeout(() => {
+        if (transitionId !== imageTransitionId) return;
+        imageLayers.forEach((layer) => {
+          layer.classList.toggle('is-active', layer === nextLayer);
+          layer.classList.remove('is-front');
+        });
+      }, 700);
+    } else {
+      imageLayers.forEach((layer, layerIndex) => {
+        layer.classList.toggle('is-active', layerIndex === index);
+      });
+    }
+    activeLayer = nextLayer || activeLayer;
     grid.style.setProperty('--news-indicator-x', `${column * 100}%`);
     grid.style.setProperty('--news-indicator-y', `${row * 100}%`);
     grid.style.setProperty('--news-button-right', `${column === 0 ? 50 : 0}%`);
@@ -943,22 +1099,55 @@ document.querySelectorAll('.play-button').forEach((playButton) => {
   const cards = document.querySelectorAll('.project-card');
   if (!cards.length) return;
 
+  const section = cards[0].closest('.projects');
+  /* matchMedia создавал новый MediaQueryList на каждую карточку на каждом
+     кадре скролла. Один объект на всю функцию. */
+  const tabletQuery = window.matchMedia('(min-width: 600px) and (max-width: 1199px)');
+  /* Ссылки на заголовок и описание не меняются — querySelector в цикле
+     каждого кадра был лишним обходом DOM. */
+  const parts = Array.from(cards, (card) => ({
+    card,
+    heading: card.querySelector('.project-card__body > h3'),
+    description: card.querySelector('.project-card__body > p')
+  }));
+
   let frameId = 0;
   const sync = () => {
     frameId = 0;
-    cards.forEach((card) => {
-      const heading = card.querySelector(':scope > h3');
-      const description = card.querySelector(':scope > p');
-      if (!heading || !description) return;
 
+    /* Сначала ВСЕ чтения, потом ВСЕ записи.
+
+       Раньше цикл чередовал getBoundingClientRect и setProperty. Запись
+       кастомного свойства инвалидирует стиль, поэтому следующее чтение
+       форсировало полный пересчёт раскладки — и так дважды за кадр. А кадр
+       здесь не редкий: sync вызывается из onUpdate параллакса, то есть на
+       каждом кадре прокрутки, пока сетка проектов в экране. */
+    const sectionRect = section?.getBoundingClientRect();
+    const lineClearance = tabletQuery.matches ? 30 : 0;
+    const measurements = parts.map(({ card, heading, description }) => {
       const cardRect = card.getBoundingClientRect();
-      const headingRect = heading.getBoundingClientRect();
-      const descriptionRect = description.getBoundingClientRect();
-      const sectionRect = card.closest('.projects')?.getBoundingClientRect();
-      card.style.setProperty('--project-line-gap-start', `${headingRect.top - cardRect.top}px`);
-      card.style.setProperty('--project-line-gap-end', `${descriptionRect.bottom - cardRect.top}px`);
-      if (sectionRect) {
-        card.style.setProperty('--project-line-height', `${sectionRect.bottom - cardRect.top}px`);
+      const hasBody = Boolean(heading && description);
+      return {
+        card,
+        hasBody,
+        headingTop: hasBody ? heading.getBoundingClientRect().top : 0,
+        descriptionBottom: hasBody ? description.getBoundingClientRect().bottom : 0,
+        cardTop: cardRect.top,
+        cardLeft: cardRect.left
+      };
+    });
+
+    measurements.forEach((measurement, index) => {
+      const style = measurement.card.style;
+      if (measurement.hasBody) {
+        style.setProperty('--project-line-gap-start', `${measurement.headingTop - measurement.cardTop - lineClearance}px`);
+        style.setProperty('--project-line-gap-end', `${measurement.descriptionBottom - measurement.cardTop + lineClearance}px`);
+        if (sectionRect) {
+          style.setProperty('--project-line-height', `${sectionRect.bottom - measurement.cardTop}px`);
+        }
+      }
+      if (section && sectionRect) {
+        section.style.setProperty(`--projects-line-${index + 1}-x`, `${measurement.cardLeft - sectionRect.left}px`);
       }
     });
   };
@@ -967,6 +1156,11 @@ document.querySelectorAll('.play-button').forEach((playButton) => {
     if (frameId) return;
     frameId = window.requestAnimationFrame(sync);
   };
+
+  /* Параллакс двигает .project-card__body через transform, поэтому обычный
+     ResizeObserver этого не видит. Анимация вызывает этот лёгкий rAF-sync,
+     и разрывы вертикальных линий всё время следуют за заголовком и текстом. */
+  window.__rksSyncProjectLines = scheduleSync;
 
   scheduleSync();
   window.addEventListener('load', scheduleSync);
@@ -979,522 +1173,7 @@ document.querySelectorAll('.play-button').forEach((playButton) => {
   }
 })();
 
-(function initDitherEffect() {
-  /* Основным является новый общий WebGL-движок из services-dither.js. */
-  if (window.SITE_DITHER_ENGINE === 'shared-webgl') return;
-
-  const BAYER_2 = [[0, 2], [3, 1]];
-  const BAYER_4 = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
-  const BAYER_8 = [
-    [0, 32, 8, 40, 2, 34, 10, 42],
-    [48, 16, 56, 24, 50, 18, 58, 26],
-    [12, 44, 4, 36, 14, 46, 6, 38],
-    [60, 28, 52, 20, 62, 30, 54, 22],
-    [3, 35, 11, 43, 1, 33, 9, 41],
-    [51, 19, 59, 27, 49, 17, 57, 25],
-    [15, 47, 7, 39, 13, 45, 5, 37],
-    [63, 31, 55, 23, 61, 29, 53, 21]
-  ];
-
-  const MATRIX_SIZE = 8;
-
-  /* Единый размер блока дизера для всех фотографий — такой же, как у hero.
-     Больше значение — крупнее зерно; от разрешения исходника результат
-     больше не зависит. */
-  const DITHER_CONFIG = window.SITE_DITHER_CONFIG;
-  const DITHER_BLOCK_PX = DITHER_CONFIG.blockPx;
-
-  /* Единое количество уровней яркости — hero использует 4. */
-  const DITHER_LEVELS = DITHER_CONFIG.levels;
-
-  const DPR = Math.min(window.devicePixelRatio || 1, DITHER_CONFIG.dpr);
-  /* Базовый порог текущего пресета: в среднем около 70% точек остаются
-     тёмно-синими, при этом результат всё ещё зависит от яркости фото. */
-  const LIGHT_POINT_BIAS = DITHER_CONFIG.bias;
-  const FG_COLOR = DITHER_CONFIG.dark;
-  const BG_COLOR = DITHER_CONFIG.light;
-  const queue = [];
-  let queueIsRunning = false;
-
-  function getMatrix(size) {
-    if (size === 2) return { matrix: BAYER_2, count: 4 };
-    if (size === 8) return { matrix: BAYER_8, count: 64 };
-    return { matrix: BAYER_4, count: 16 };
-  }
-
-  /* ---------- GPU-путь: порог Байера считается во фрагментном шейдере ----------
-     Один общий WebGL-контекст на все картинки — не упираемся в лимит браузера
-     (обычно 8–16 живых контекстов на страницу). Матрица Байера передаётся не
-     как uniform-массив (в GLSL ES 1.00 с этим есть проблемы совместимости),
-     а как маленькая 8×8-текстура — стандартный приём lookup-таблицы. */
-  function createGLDitherer() {
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl', {
-      premultipliedAlpha: false,
-      preserveDrawingBuffer: true,
-      antialias: false
-    });
-    if (!gl) return null;
-
-    function compile(type, source) {
-      const shader = gl.createShader(type);
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        gl.deleteShader(shader);
-        return null;
-      }
-      return shader;
-    }
-
-    const vertexSource = [
-      'attribute vec2 aPosition;',
-      'varying vec2 vUv;',
-      'void main() {',
-      '  vUv = aPosition * 0.5 + 0.5;',
-      '  gl_Position = vec4(aPosition, 0.0, 1.0);',
-      '}'
-    ].join('\n');
-
-    const fragmentSource = [
-      'precision mediump float;',
-      'varying vec2 vUv;',
-      'uniform sampler2D uImage;',
-      'uniform sampler2D uBayer;',
-      'uniform vec3 uInk;',
-      'uniform vec3 uPaper;',
-      'uniform float uBias;',
-      'uniform float uZoom;',
-      'uniform vec2 uGridSize;',
-      'uniform float uLevels;',
-      'void main() {',
-      '  vec2 zoomedUv = (vUv - 0.5) / uZoom + 0.5;',
-      '  vec3 rgb = texture2D(uImage, zoomedUv).rgb;',
-      '  float luma = dot(rgb, vec3(0.2126, 0.7152, 0.0722));',
-      '  vec2 cellIndex = mod(floor(vUv * uGridSize), 8.0);',
-      '  vec2 cellUv = (cellIndex + 0.5) / 8.0;',
-      '  float threshold = texture2D(uBayer, cellUv).r;',
-      '  float levels = max(uLevels, 2.0);',
-      '  float scaledLum = luma * (levels - 1.0);',
-      '  float lowerLevel = floor(scaledLum);',
-      '  float upperLevel = ceil(scaledLum);',
-      '  float frac = scaledLum - lowerLevel;',
-      '  float ditheredLevel = lowerLevel;',
-      '  if (frac + uBias > threshold) { ditheredLevel = upperLevel; }',
-      '  float ditheredLum = ditheredLevel / (levels - 1.0);',
-      '  gl_FragColor = vec4(mix(uInk, uPaper, ditheredLum), 1.0);',
-      '}'
-    ].join('\n');
-
-    const vertexShader = compile(gl.VERTEX_SHADER, vertexSource);
-    const fragmentShader = compile(gl.FRAGMENT_SHADER, fragmentSource);
-    if (!vertexShader || !fragmentShader) return null;
-
-    const program = gl.createProgram();
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return null;
-    gl.useProgram(program);
-
-    /* полноэкранный квад — два треугольника через TRIANGLE_STRIP */
-    const quadBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, quadBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-    const positionLoc = gl.getAttribLocation(program, 'aPosition');
-    gl.enableVertexAttribArray(positionLoc);
-    gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
-
-    /* матрица Байера как 8×8 lookup-текстура — те же сырые значения matrix/64,
-       что и в шейдере Figma (без сдвига +0.5), и та же формула, что в CPU-версии */
-    const matrixBytes = new Uint8Array(64);
-    for (let y = 0; y < 8; y += 1) {
-      for (let x = 0; x < 8; x += 1) {
-        matrixBytes[y * 8 + x] = Math.round((BAYER_8[y][x] / 64) * 255);
-      }
-    }
-    const bayerTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, bayerTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, 8, 8, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, matrixBytes);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-    const sourceTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, sourceTexture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    /* исходник грузится «сверху вниз», как в 2D canvas — переворачиваем,
-       чтобы совпасть с системой координат WebGL */
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
-    const uImage = gl.getUniformLocation(program, 'uImage');
-    const uBayer = gl.getUniformLocation(program, 'uBayer');
-    const uInk = gl.getUniformLocation(program, 'uInk');
-    const uPaper = gl.getUniformLocation(program, 'uPaper');
-    const uBias = gl.getUniformLocation(program, 'uBias');
-    const uZoom = gl.getUniformLocation(program, 'uZoom');
-    const uGridSize = gl.getUniformLocation(program, 'uGridSize');
-    const uLevels = gl.getUniformLocation(program, 'uLevels');
-
-    let lost = false;
-    canvas.addEventListener('webglcontextlost', (event) => {
-      event.preventDefault();
-      lost = true;
-    });
-
-    /* Повторная заливка текстуры на GPU — не бесплатная операция (браузеру
-       нужно прочитать пиксели канваса и передать в видеопамять). При live-
-       перерисовке (hover, любая будущая покадровая анимация) картинка не
-       меняется — меняются только числовые uniform'ы, так что грузим текстуру
-       заново только когда реально сменился источник. */
-    let uploadedSource = null;
-
-    return {
-      render(sourceCanvas, fg, bg, bias, zoom, levels) {
-        if (lost) return null;
-
-        const width = sourceCanvas.width;
-        const height = sourceCanvas.height;
-        if (canvas.width !== width || canvas.height !== height) {
-          canvas.width = width;
-          canvas.height = height;
-        }
-        gl.viewport(0, 0, width, height);
-
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, sourceTexture);
-        if (uploadedSource !== sourceCanvas) {
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sourceCanvas);
-          uploadedSource = sourceCanvas;
-        }
-
-        gl.activeTexture(gl.TEXTURE1);
-        gl.bindTexture(gl.TEXTURE_2D, bayerTexture);
-
-        gl.useProgram(program);
-        gl.uniform1i(uImage, 0);
-        gl.uniform1i(uBayer, 1);
-        gl.uniform3f(uInk, fg[0] / 255, fg[1] / 255, fg[2] / 255);
-        gl.uniform3f(uPaper, bg[0] / 255, bg[1] / 255, bg[2] / 255);
-        gl.uniform1f(uBias, bias);
-        gl.uniform1f(uZoom, zoom || 1);
-        gl.uniform2f(uGridSize, width, height);
-        gl.uniform1f(uLevels, levels || DITHER_LEVELS);
-
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-        return lost ? null : canvas;
-      }
-    };
-  }
-
-  let glDitherer;
-  try {
-    glDitherer = createGLDitherer();
-  } catch (error) {
-    glDitherer = null;
-  }
-
-  /* ---------- CPU-путь: запасной вариант, если WebGL недоступен ---------- */
-  function ditherImageCPU(context, source, gridWidth, gridHeight, bias, levels) {
-    const biasValue = bias !== undefined ? bias : LIGHT_POINT_BIAS;
-    const levelsValue = Math.max(2, levels || DITHER_LEVELS);
-    const output = context.createImageData(gridWidth, gridHeight);
-    const pixels = output.data;
-
-    for (let gridY = 0; gridY < gridHeight; gridY += 1) {
-      for (let gridX = 0; gridX < gridWidth; gridX += 1) {
-        const index = (gridY * gridWidth + gridX) * 4;
-        const red = source[index];
-        const green = source[index + 1];
-        const blue = source[index + 2];
-        const luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255;
-        const threshold = BAYER_8[gridY % 8][gridX % 8] / 64;
-        const scaledLum = luminance * (levelsValue - 1);
-        const lowerLevel = Math.floor(scaledLum);
-        const upperLevel = Math.ceil(scaledLum);
-        const frac = scaledLum - lowerLevel;
-        const ditheredLevel = (frac + biasValue > threshold) ? upperLevel : lowerLevel;
-        const ditheredLum = ditheredLevel / (levelsValue - 1);
-
-        pixels[index] = FG_COLOR[0] + (BG_COLOR[0] - FG_COLOR[0]) * ditheredLum;
-        pixels[index + 1] = FG_COLOR[1] + (BG_COLOR[1] - FG_COLOR[1]) * ditheredLum;
-        pixels[index + 2] = FG_COLOR[2] + (BG_COLOR[2] - FG_COLOR[2]) * ditheredLum;
-        pixels[index + 3] = 255;
-      }
-    }
-
-    context.putImageData(output, 0, 0);
-  }
-
-  /* ---------- лёгкий tween без зависимости от GSAP ----------
-     Нужен для hover-реакции карточек: script.js подключён раньше GSAP
-     в <head>, порядок специально не меняем. */
-  function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
-
-  function tween(duration, ease, onUpdate) {
-    const start = performance.now();
-    let cancelled = false;
-    function frame(now) {
-      if (cancelled) return;
-      const t = Math.min(1, (now - start) / duration);
-      onUpdate(ease(t));
-      if (t < 1) window.requestAnimationFrame(frame);
-    }
-    window.requestAnimationFrame(frame);
-    return () => { cancelled = true; };
-  }
-
-  /* Сетка выводится из размера блока на экране, а не из разрешения файла.
-     Картинка выводится с object-fit: cover, поэтому сначала считаем,
-     какого размера она реально отрисуется, и уже это делим на размер блока */
-  function getGridSize(image, container, blockPx) {
-    const naturalWidth = image.naturalWidth;
-    const naturalHeight = image.naturalHeight;
-    const rect = container.getBoundingClientRect();
-
-    let gridWidth;
-    if (rect.width > 0 && rect.height > 0) {
-      const cover = Math.max(rect.width / naturalWidth, rect.height / naturalHeight);
-      gridWidth = Math.round(naturalWidth * cover * DPR / blockPx);
-    } else {
-      gridWidth = Math.round(naturalWidth / blockPx);
-    }
-
-    /* не мельчим сверх детализации исходника и не уходим в вырожденный размер */
-    gridWidth = Math.max(16, Math.min(gridWidth, naturalWidth));
-    const gridHeight = Math.max(16, Math.round(gridWidth * naturalHeight / naturalWidth));
-    return { gridWidth, gridHeight };
-  }
-
-  function ditherImage(image, container, objectPosition, blockPx, biasOverride, levelsOverride) {
-    const { gridWidth, gridHeight } = getGridSize(image, container, blockPx);
-
-    const sourceCanvas = document.createElement('canvas');
-    sourceCanvas.width = gridWidth;
-    sourceCanvas.height = gridHeight;
-    const sourceContext = sourceCanvas.getContext('2d', { willReadFrequently: true });
-    if (!sourceContext) return null;
-    sourceContext.drawImage(image, 0, 0, gridWidth, gridHeight);
-
-    const canvas = document.createElement('canvas');
-    canvas.className = 'dither-photo__canvas';
-    canvas.setAttribute('aria-hidden', 'true');
-    canvas.width = gridWidth;
-    canvas.height = gridHeight;
-    canvas.style.objectPosition = objectPosition;
-    /* блоки должны остаться с резкими краями, иначе зерно размоется в градиент */
-    canvas.style.imageRendering = 'pixelated';
-
-    const context = canvas.getContext('2d');
-    if (!context) return null;
-
-    /* текущие параметры живут в замыкании — rerender() дальше меняет
-       только их и перерисовывает, не трогая остальной DOM/CSS */
-    const state = { bias: biasOverride !== undefined ? biasOverride : LIGHT_POINT_BIAS, zoom: 1, levels: levelsOverride !== undefined ? levelsOverride : DITHER_LEVELS };
-
-    function paint() {
-      const glResult = glDitherer && glDitherer.render(sourceCanvas, FG_COLOR, BG_COLOR, state.bias, state.zoom, state.levels);
-      if (glResult) {
-        context.drawImage(glResult, 0, 0);
-        return true;
-      }
-      return false;
-    }
-
-    if (!paint()) {
-      glDitherer = null; /* GPU однажды подвела — дальше на этой странице работаем на CPU */
-      const source = sourceContext.getImageData(0, 0, gridWidth, gridHeight).data;
-      ditherImageCPU(context, source, gridWidth, gridHeight, state.bias, state.levels);
-    }
-
-    container.querySelector(':scope > .dither-photo__canvas')?.remove();
-    container.append(canvas);
-    container.classList.add('is-dithered');
-
-    /* live-параметры (зум, порог) доступны только на GPU-пути: перерисовка
-       на CPU за кадр обошлась бы слишком дорого для 60 fps-анимаций */
-    return {
-      supportsLive: !!glDitherer,
-      rerender(bias, zoom) {
-        if (!glDitherer) return;
-        if (bias !== undefined) state.bias = bias;
-        if (zoom !== undefined) state.zoom = zoom;
-        paint();
-      }
-    };
-  }
-
-  function runQueue() {
-    if (queueIsRunning || queue.length === 0) return;
-    queueIsRunning = true;
-    const job = queue.shift();
-
-    window.setTimeout(() => {
-      job();
-      queueIsRunning = false;
-      runQueue();
-    }, 0);
-  }
-
-  function enqueue(job) {
-    queue.push(job);
-    runQueue();
-  }
-
-  function prepare(container, source, getObjectPosition, blockPx, onFirstRender, biasOverride, levelsOverride) {
-    let image = null;
-    let firstRenderDone = false;
-
-    const render = () => {
-      const handle = ditherImage(image, container, getObjectPosition(), blockPx, biasOverride, levelsOverride);
-      if (!handle) return;
-      container.__ditherHandle = handle;
-      if (!firstRenderDone) {
-        firstRenderDone = true;
-        if (onFirstRender) {
-          const canvasEl = container.querySelector(':scope > .dither-photo__canvas');
-          onFirstRender(handle, canvasEl);
-        }
-      }
-    };
-
-    const load = () => {
-      image = new Image();
-      image.crossOrigin = 'anonymous';
-      image.onload = () => {
-        enqueue(render);
-        watchResize();
-      };
-      image.src = source;
-    };
-
-    /* Сетка привязана к размеру блока на экране, поэтому при смене
-       брейкпоинта картинку нужно пересобрать */
-    let lastWidth = 0;
-    const watchResize = () => {
-      lastWidth = container.getBoundingClientRect().width;
-      let timer = 0;
-      window.addEventListener('resize', () => {
-        window.clearTimeout(timer);
-        timer = window.setTimeout(() => {
-          const width = container.getBoundingClientRect().width;
-          if (!width || Math.abs(width - lastWidth) / lastWidth < 0.15) return;
-          lastWidth = width;
-          enqueue(render);
-        }, 300);
-      });
-    };
-
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver((entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return;
-        observer.disconnect();
-        load();
-      }, { rootMargin: '200px 0px' });
-      observer.observe(container);
-    } else {
-      load();
-    }
-  }
-
-  const HERO_ZOOM_MS = 1330;
-  const HERO_ZOOM_EASE = 'cubic-bezier(0.65, 0, 0.35, 1)';
-
-  const hero = document.querySelector('.hero__media[data-dither-src]');
-  if (hero) {
-    prepare(
-      hero,
-      hero.dataset.ditherSrc,
-      () => `${getComputedStyle(hero).getPropertyValue('--dither-position-x').trim() || '50%'} 50%`,
-      DITHER_BLOCK_PX,
-      (handle, canvasEl) => {
-        /* «Наезд» камеры — compositor-переход готового канваса, без JS на
-           каждом кадре. Первая отрисовка даёт лоадеру сигнал готовности,
-           а zoom стартует вместе с его закрытием. */
-        if (window.__resolveHeroReady) window.__resolveHeroReady();
-        if (!canvasEl) return;
-
-        const play = () => {
-          canvasEl.style.willChange = 'transform';
-          canvasEl.style.transform = 'scale3d(1.2, 1.2, 1)';
-          // форсируем применение стартового состояния до начала перехода
-          void canvasEl.offsetWidth;
-          canvasEl.style.transition = `transform ${HERO_ZOOM_MS}ms ${HERO_ZOOM_EASE}`;
-          window.requestAnimationFrame(() => {
-            canvasEl.style.transform = 'scale3d(1, 1, 1)';
-          });
-          canvasEl.addEventListener('transitionend', () => {
-            canvasEl.style.transition = '';
-            canvasEl.style.transform = '';
-            canvasEl.style.willChange = '';
-          }, { once: true });
-        };
-
-        if (document.documentElement.classList.contains('is-hero-zoom-started') ||
-            document.documentElement.classList.contains('is-loaded')) {
-          play();
-        } else {
-          window.addEventListener('site:hero-zoom', play, { once: true });
-        }
-      },
-      undefined,
-      4
-    );
-  }
-
-  document.querySelectorAll('.image-tone').forEach((container) => {
-    const sourceImage = container.querySelector(':scope > img:last-of-type');
-    if (!sourceImage || sourceImage.classList.contains('project-card__arrow')) return;
-    const requested = Number(container.dataset.ditherBlock);
-    const blockPx = Number.isFinite(requested) && requested > 0
-      ? requested
-      : DITHER_BLOCK_PX;
-    const requestedBias = Number(container.dataset.ditherBias);
-    const biasOverride = Number.isFinite(requestedBias) ? requestedBias : undefined;
-    const requestedLevels = Number(container.dataset.ditherLevels);
-    const levelsOverride = Number.isFinite(requestedLevels) && requestedLevels >= 2 ? requestedLevels : undefined;
-    prepare(
-      container,
-      sourceImage.currentSrc || sourceImage.src,
-      () => getComputedStyle(sourceImage).objectPosition,
-      blockPx,
-      undefined,
-      biasOverride,
-      levelsOverride
-    );
-  });
-
-  /* ---------- реакция дизера на наведение: только интерактивные фото ----------
-     Порог (bias) плавно растёт — паттерн «разрежается», приоткрывая исходное
-     фото, вместо резкой подмены прозрачности. Идёт поверх уже существующего
-     CSS-перехода (canvas тоже подтухает через opacity) — эффекты складываются. */
-  const HOVER_BIAS = 0.34;
-
-  Array.from(document.querySelectorAll('.project-card__media, .video-frame__media'))
-    .filter((container) => container.querySelector(':scope > button, :scope > .project-card__arrow'))
-    .forEach((container) => {
-    let currentBias = LIGHT_POINT_BIAS;
-    let cancelTween = null;
-
-    const animateTo = (target) => {
-      const handle = container.__ditherHandle;
-      if (!handle || !handle.supportsLive) return;
-      if (cancelTween) cancelTween();
-      const from = currentBias;
-      cancelTween = tween(320, easeOutQuart, (t) => {
-        currentBias = from + (target - from) * t;
-        handle.rerender(currentBias);
-      });
-    };
-
-    container.addEventListener('pointerenter', () => animateTo(HOVER_BIAS));
-    container.addEventListener('pointerleave', () => animateTo(LIGHT_POINT_BIAS));
-    container.addEventListener('focusin', () => animateTo(HOVER_BIAS));
-    container.addEventListener('focusout', () => animateTo(LIGHT_POINT_BIAS));
-    });
-})();
+/* Bayer-дизер целиком живёт в services-dither.js: один WebGL-canvas на
+   весь viewport. Прежняя реализация (canvas на каждую картинку +
+   CPU-фолбэк) лежала здесь и была недостижима — SITE_DITHER_ENGINE
+   выставляется в 'shared-webgl' в начале этого же файла. Удалена. */

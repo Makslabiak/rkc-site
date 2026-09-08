@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /dither-tuner.html
+Disallow: /tests/
+Disallow: /tools/
+
+# При переносе на боевой домен заменить хост в этой строке и в canonical/og:url.
+Sitemap: https://rks-nr.ru/sitemap.xml

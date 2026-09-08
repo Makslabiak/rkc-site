@@ -163,11 +163,8 @@
 .news-page-card.is-active time { color: var(--dark); }
 
 .news-page-card__headline {
-  display: -webkit-box;
+  display: block;
   margin-top: auto;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
 }
 
 .news-page-card__arrow {
@@ -243,6 +240,64 @@
   .news-page-card__arrow {
     width: 4.6875vw;
     height: 4.6875vw;
+  }
+}
+
+/* Макет 1920 px уменьшается пропорционально: фиксированные размеры фото
+   оставляли тексту слишком узкую колонку и прижимали дату к стрелке. */
+@media (min-width: 1200px) and (max-width: 1919px) {
+  .news-cover { height: 31.5104vw; }
+  .news-cover__title { top: 19.5313vw; }
+
+  .news-page__content {
+    grid-template-columns: 17.8646vw minmax(0, 1fr);
+  }
+
+  .news-page__categories {
+    padding: 4.1667vw 1.0417vw 0 3.125vw;
+  }
+
+  .news-page__categories-sticky {
+    top: 5.2083vw;
+    gap: .5208vw;
+    margin-bottom: 5.2083vw;
+  }
+
+  .news-page__category {
+    width: 13.6979vw;
+    height: 1.7188vw;
+    font-size: 1.5625vw;
+  }
+
+  .news-page__list {
+    gap: 1.5625vw 1.0417vw;
+    padding: 4.1667vw 3.125vw 8.3333vw 1.0417vw;
+  }
+
+  .news-page-card {
+    height: 17.1354vw;
+    grid-template-columns: 14.7917vw minmax(0, 1fr);
+    gap: 2.0833vw;
+    padding: 1.5625vw;
+    font-size: 1.25vw;
+  }
+
+  .news-page-card__image {
+    width: 14.7917vw;
+    height: 14.0104vw;
+  }
+
+  .news-page-card__info {
+    height: 14.0104vw;
+  }
+
+  .news-page-card time {
+    font-size: 1.25vw;
+  }
+
+  .news-page-card__arrow {
+    width: clamp(40px,calc(6.9444vw - 43.333px),90px);
+    height: clamp(40px,calc(6.9444vw - 43.333px),90px);
   }
 }
 

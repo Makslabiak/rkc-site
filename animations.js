@@ -367,50 +367,6 @@
       });
     },
 
-    /* Статистика: цифры и разделители всегда находятся в финальном
-       состоянии. Анимируем только поясняющий текст и кнопку, чтобы блок не
-       запускал лишние layout/paint-задачи во время прокрутки. */
-    stats: function (el, o) {
-      var t = Object.assign({}, TWEEN, { duration: 0.72, stagger: 0.26 }, o);
-      var items = gsap.utils.toArray(el.querySelectorAll('.stat-item'));
-      var descriptions = items.map(function (item) { return item.querySelector('p'); }).filter(Boolean);
-      var button = el.querySelector('.stats__button');
-      if (!items.length) return;
-
-      run(el, o, function (state) {
-        gsap.set(descriptions, { opacity: 0, y: 12 });
-        if (button) gsap.set(button, { opacity: 0, y: 20 });
-        state.tl = gsap.timeline({ paused: true });
-        state.tl.eventCallback('onComplete', function () {
-          /* После появления освобождаем compositor-слои описаний и кнопки. */
-          gsap.set(descriptions, { clearProps: 'transform,opacity' });
-          if (button) gsap.set(button, { clearProps: 'transform,opacity' });
-        });
-        items.forEach(function (item, i) {
-          var at = i * t.stagger;
-          var description = item.querySelector('p');
-
-          if (description) {
-            state.tl.to(description, {
-              opacity: 1,
-              y: 0,
-              duration: 0.55,
-              ease: 'power3.out'
-            }, at + 0.26);
-          }
-        });
-
-        if (button) {
-          state.tl.to(button, {
-            opacity: 1,
-            y: 0,
-            duration: 0.65,
-            ease: 'power3.out'
-          }, items.length * t.stagger + 0.08);
-        }
-      });
-    },
-
     /* Отрисовка линии: масштаб от 0 (по умолчанию вертикально, сверху вниз) */
     line: function (el, o) {
       var t = Object.assign({}, TWEEN, { duration: 0.6, stagger: 0.1 }, o);
@@ -595,7 +551,10 @@
     /* sync вызывается на каждом кадре скролла, а matchMedia каждый раз
        создаёт новый MediaQueryList. Держим один объект на всю функцию. */
     var desktopQuery = window.matchMedia('(min-width: 1200px)');
-    var isHidden = desktopQuery.matches && window.scrollY > 24;
+    var initialScroll = window.lenis && typeof window.lenis.targetScroll === 'number'
+      ? window.lenis.targetScroll
+      : window.scrollY;
+    var isHidden = desktopQuery.matches && initialScroll > 24;
     var introPlayed = false;
     var introTween;
     var tween;
@@ -685,11 +644,12 @@
 
     if (introStarted) playIntro();
     else window.addEventListener('site:loaded', playIntro, { once: true });
-    /* Lenis эмитит scroll на каждом кадре — нативное событие поверх него
-       заставляло sync отрабатывать дважды за кадр. */
+    /* animatedScroll догоняет жест с задержкой из-за lerp. Для навигации
+       берём targetScroll: пункты начинают скрываться сразу при прокрутке,
+       независимо от размера viewport и частоты обновления экрана. */
     if (window.lenis) {
       window.lenis.on('scroll', function (event) {
-        sync(event && typeof event.animatedScroll === 'number' ? event.animatedScroll : undefined);
+        sync(event && typeof event.targetScroll === 'number' ? event.targetScroll : undefined);
       });
     } else {
       window.addEventListener('scroll', sync, { passive: true });
@@ -739,7 +699,9 @@
   /* Все ссылки футера получают тот же scramble-hover и не меняют свою
      геометрию при переборе символов. */
   function initFooterLinksScramble() {
-    var links = gsap.utils.toArray('.footer a');
+    /* Пункты без собственной страницы размечены span'ом (см. footer__nav-pending),
+       но перебор символов при наведении у них тот же. */
+    var links = gsap.utils.toArray('.footer a, .footer .footer__nav-pending');
     if (!links.length || !window.ScrambleTextPlugin) return;
 
     links.forEach(function (link) {
@@ -849,15 +811,14 @@
   }
 
   /* ---------- параллакс карточек проектов (только десктоп) ----------
-     Двигаем саму карточку лёгким вертикальным смещением. Вертикальные
-     разделители вынесены из карточек в статический слой секции, поэтому они
-     не следуют за transform и остаются закреплены нижним краем проекта. */
+     Двигаем только содержимое .project-card__body. Номера, вертикальные
+     разделители и кнопка остаются в статической сетке секции. */
   function initProjectsParallax() {
     var grid = document.querySelector('.projects__grid');
     if (!grid) return;
 
     gsap.matchMedia().add('(min-width: 1200px)', function () {
-      var cards = gsap.utils.toArray(grid.querySelectorAll('.project-card'));
+      var cards = gsap.utils.toArray(grid.querySelectorAll('.project-card__body'));
       if (!cards.length) return;
 
       var from = [8, 0, 10];
@@ -872,7 +833,7 @@
         return state;
       });
 
-      /* Стрелку выносим из карточки: .project-card из-за transform параллакса
+      /* Стрелку выносим из карточки: .project-card__body из-за transform параллакса
          становится контекстом наложения, и z-index стрелки не поднимается над
          общим WebGL-дизером (fixed, z-index 2). Слой живёт на уровне body,
          стрелки в нём стоят по углу медиа и едут за карточкой. */
@@ -906,6 +867,7 @@
         arrows.forEach(function (arrow, i) {
           if (arrow) arrow.style.transform = 'translate3d(0, ' + motionStates[i].y + 'px, 0)';
         });
+        window.__rksSyncProjectLines?.();
       }
 
       var hoverBindings = [];
@@ -1014,7 +976,10 @@
 
         var timeline = gsap.timeline({
           scrollTrigger: {
-            trigger: grid,
+            /* Диапазон отсчитывается от секции, а не от сетки: сетка стоит
+               в потоке и занимает не всю секцию, поэтому по ней параллакс
+               проходил бы быстрее и в другом месте экрана. */
+            trigger: grid.closest('.advantages') || grid,
             start: 'top bottom',
             end: 'bottom bottom',
             scrub: 1.6,
@@ -1183,7 +1148,24 @@
 
       list.classList.add('is-services-anim-ready');
 
+      /* Композиторный слой под карточками нужен только пока секция идёт по
+         экрану. rootMargin в половину экрана даёт браузеру время поднять
+         слой до первого кадра анимации. */
+      var layerObserver = null;
+      if ('IntersectionObserver' in window) {
+        layerObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            list.classList.toggle('is-services-in-view', entry.isIntersecting);
+          });
+        }, { rootMargin: '50% 0px' });
+        layerObserver.observe(list);
+      } else {
+        list.classList.add('is-services-in-view');
+      }
+
       return function () {
+        if (layerObserver) layerObserver.disconnect();
+        list.classList.remove('is-services-in-view');
         tweens.forEach(function (tween) { tween.kill(); });
         gsap.set(cards, { clearProps: 'transform' });
         motionStates.forEach(function (state, i) {

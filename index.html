@@ -3,11 +3,36 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="РКС-НР — строительство и восстановление объектов в новых регионах России">
-  <title>РКС-НР — первые в&nbsp;строительстве новой истории</title>
-  <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
+  <title>РКС-НР — первые в строительстве новой истории</title>
+  <meta name="description" content="ООО «РКС-НР» — генеральный подрядчик строительства и восстановления объектов жилищной и социально-культурной сферы в новых регионах России. Восстановлено 1841 объектов, привлечено 30 000 специалистов.">
+  <link rel="canonical" href="https://rks-nr.ru/">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+
+  <!-- Open Graph и Twitter: превью при отправке ссылки в мессенджеры и соцсети.
+       og:url и og:image должны быть абсолютными — при переносе на боевой домен
+       поменять origin здесь и в canonical. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="РКС-НР">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://rks-nr.ru/">
+  <meta property="og:title" content="РКС-НР — первые в строительстве новой истории">
+  <meta property="og:description" content="Генеральный подрядчик строительства и восстановления объектов жилищной и социально-культурной сферы в новых регионах России.">
+  <meta property="og:image" content="https://rks-nr.ru/assets/images/figma/home-clean/hero.webp">
+  <meta property="og:image:width" content="2048">
+  <meta property="og:image:height" content="1142">
+  <meta property="og:image:alt" content="Панорама восстановленного города">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" sizes="any">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" sizes="120x120">
+
+  <!-- Первый экран: фон hero и два начертания, которыми набраны заголовок и
+       дескриптор. Остальные подтянутся обычным порядком — лоадер всё равно
+       ждёт document.fonts.ready. -->
   <link rel="preload" href="assets/images/figma/home-clean/hero.webp" as="image" fetchpriority="high">
-    <link rel="stylesheet" href="styles.css?v=20260906-2">
+  <link rel="preload" href="assets/fonts/LTSuperior-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/Roboto-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=20260908-30">
   <script src="page-entry.js?v=20260906-1"></script>
   <script>document.documentElement.classList.add('has-anim');</script>
   <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
@@ -16,10 +41,11 @@
   <script src="assets/vendor/SplitText.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
     <script src="site-header.js?v=20260906-2" defer></script>
-    <script src="script.js?v=20260906-3" defer></script>
+  <script src="script.js?v=20260908-13" defer></script>
+  <script src="video-player.js?v=20260908-4" defer></script>
   <script src="news-home.js?v=20260904-1" defer></script>
-  <script src="services-dither.js?v=20260905-6" defer></script>
-    <script src="animations.js?v=20260906-1" defer></script>
+  <script src="services-dither.js?v=20260908-3" defer></script>
+    <script src="animations.js?v=20260908-1" defer></script>
 </head>
 <body data-site-page="home">
   <div class="loader" aria-hidden="true">
@@ -31,8 +57,7 @@
 
   <header class="hero" id="top">
     <div class="hero__media" data-dither-src="assets/images/figma/home-clean/hero.webp" aria-hidden="true">
-      <img src="assets/images/figma/home-clean/hero.webp" alt="">
-      <span class="hero__shade"></span>
+      <img src="assets/images/figma/home-clean/hero.webp" alt="" width="2048" height="1142" decoding="async">
     </div>
     <div class="site-header" data-site-header></div>
 
@@ -43,7 +68,13 @@
       <div class="hero__line hero__line--bottom"></div>
       <div class="hero__line hero__line--left-bottom"></div>
     </div>
-    <p class="hero__descriptor" data-anim="lineUp" data-anim-duration=".8" data-anim-delay=".4" data-anim-stagger=".14">Восстановление объектов <br>жилищного и&nbsp;социально-бытового <br>назначения в&nbsp;новых регионах России</p>
+    <!-- Две копии текста — вынужденная мера, а не небрежность: SplitText
+         разбивает абзац на строки ПО ИСХОДНОЙ разметке и учитывает <br>
+         независимо от display, поэтому переключить переносы одним CSS не
+         получается — планшетный перенос протекает в десктопную раскладку.
+         При посадке на Bitrix это одно поле в админке; вариант с другими
+         переносами собирает шаблон. Подробности — в README. -->
+    <p class="hero__descriptor" aria-label="Восстановление объектов жилищного и социально-бытового назначения в новых регионах России" data-anim="lineUp" data-anim-duration=".8" data-anim-delay=".4" data-anim-stagger=".14"><span class="hero__descriptor-copy hero__descriptor-copy--default">Восстановление объектов<br>жилищного и&nbsp;социально-бытового<br>назначения в&nbsp;новых регионах России</span><span class="hero__descriptor-copy hero__descriptor-copy--tablet">Восстановление объектов<br>жилищного и&nbsp;социально-<br>бытового назначения<br>в&nbsp;новых регионах России</span></p>
     <h1 class="hero__title" data-anim="title" data-anim-start="top 100%">Первые в&nbsp;строительстве новой истории</h1>
   </header>
 
@@ -63,24 +94,33 @@
 
     <section class="stats" aria-labelledby="stats-title">
       <h2 class="stats__title" id="stats-title"><span data-anim="title" data-anim-prewarm>Компания</span>&nbsp;<span data-anim="title" data-anim-delay=".12" data-anim-prewarm>в&nbsp;цифрах</span></h2>
+      <!-- Левая колонка секции: подзаголовок и фотография. Обёртка нужна,
+           чтобы на десктопе колонка была самостоятельным потоком и её высота
+           не зависела от списка показателей справа. На мобильном и планшете
+           у обёртки display: contents — раскладка там прежняя. -->
+      <div class="stats__aside">
       <p class="stats__eyebrow" data-anim="lineUp" data-anim-delay=".2" data-anim-prewarm>В&nbsp;рамках реализации специального инфраструктурного проекта в&nbsp;сжатые сроки</p>
-      <div class="stats__image image-tone" data-anim="fadeIn" aria-hidden="true">
-        <img src="assets/images/figma/home-clean/stats.webp" alt="">
+      <div class="stats__image" data-anim="fadeIn" aria-hidden="true">
+        <div class="stats__image-layer image-tone is-active" data-stats-image="assets/images/figma/home-clean/stats.webp" data-dither-opacity="1"><img src="assets/images/figma/home-clean/stats.webp" alt="" width="2048" height="1366" decoding="async" loading="lazy"></div>
+        <div class="stats__image-layer image-tone" data-stats-image="assets/images/figma/home-clean/stats-1841.webp" data-dither-opacity="0"><img src="assets/images/figma/home-clean/stats-1841.webp" alt="" width="500" height="334" decoding="async" loading="lazy"></div>
+        <div class="stats__image-layer image-tone" data-stats-image="assets/images/figma/home-clean/stats-405.webp" data-dither-opacity="0"><img src="assets/images/figma/home-clean/stats-405.webp" alt="" width="380" height="350" decoding="async" loading="lazy"></div>
+        <div class="stats__image-layer image-tone" data-stats-image="assets/images/figma/home-clean/stats-2275.webp" data-dither-opacity="0"><img src="assets/images/figma/home-clean/stats-2275.webp" alt="" width="500" height="343" decoding="async" loading="lazy"></div>
+      </div>
       </div>
       <div class="stats__list">
-        <article class="stat-item" tabindex="0">
+        <article class="stat-item" tabindex="0" data-stats-index="0">
           <strong>30&nbsp;000</strong>
           <p>Привлечено специалистов в&nbsp;области строительства</p>
         </article>
-        <article class="stat-item" tabindex="0">
+        <article class="stat-item" tabindex="0" data-stats-index="1">
           <strong>1&nbsp;841</strong>
           <p>Восстановлено объектов, в&nbsp;т.&nbsp;ч. в&nbsp;объеме теплового контура</p>
         </article>
-        <article class="stat-item" tabindex="0">
+        <article class="stat-item" tabindex="0" data-stats-index="2">
           <strong>405</strong>
           <p>Демонтировано аварийных объектов</p>
         </article>
-        <article class="stat-item" tabindex="0">
+        <article class="stat-item" tabindex="0" data-stats-index="3">
           <strong>2&nbsp;275</strong>
           <p>Положительных заключений от&nbsp;Главгосэкспертизы РФ</p>
         </article>
@@ -93,35 +133,41 @@
       <div class="projects__grid">
         <article class="project-card">
           <span class="project-card__number">01</span>
-          <h3>Восстановительные работы</h3>
+          <div class="project-card__body">
+            <h3>Восстановительные работы</h3>
             <a class="project-card__media image-tone" data-dither-parallax=".08" href="projects.html" aria-label="Подробнее: Восстановительные работы">
-            <img src="assets/images/figma/home-clean/project-restoration.webp" alt="Восстановленный жилой дом">
+            <img src="assets/images/figma/home-clean/project-restoration.webp" alt="Восстановленный жилой дом" width="2048" height="1366" decoding="async" loading="lazy">
             <span class="project-card__arrow" aria-hidden="true"><img src="assets/icons/arrow-box.svg" width="90" height="90" alt=""></span>
           </a>
           <p data-anim="lineUp" data-anim-delay=".1" data-anim-prewarm>Ремонтно-восстановительные работы более 1&nbsp;500 объектов жилищного строительства Донецкой Народной Республики</p>
+          </div>
         </article>
 
         <article class="project-card">
           <span class="project-card__number">02</span>
-          <h3>Новые жилые дома</h3>
+          <div class="project-card__body">
+            <h3>Новые жилые дома</h3>
             <a class="project-card__media image-tone" data-dither-parallax=".08" href="projects.html" aria-label="Подробнее: Новые жилые дома">
-            <img src="assets/images/figma/home-clean/project-houses.webp" alt="Новые жилые дома">
+            <img src="assets/images/figma/home-clean/project-houses.webp" alt="Новые жилые дома" width="2231" height="1726" decoding="async" loading="lazy">
             <span class="project-card__arrow" aria-hidden="true"><img src="assets/icons/arrow-box.svg" width="90" height="90" alt=""></span>
           </a>
           <p data-anim="lineUp" data-anim-delay=".4" data-anim-prewarm>Строительство 45&nbsp;000&nbsp;кв.&nbsp;м жилья в&nbsp;рамках реализации специального инфраструктурного проекта в&nbsp;ДНР</p>
-            <a class="button projects__button projects__button--desktop" href="projects.html" data-anim="fadeUp" data-anim-delay=".5" data-anim-prewarm><span class="button__text button__text--current">Все проекты</span><span class="button__text button__text--hover" aria-hidden="true">Все проекты</span></a>
+          </div>
         </article>
 
         <article class="project-card">
           <span class="project-card__number">03</span>
-          <h3>Объекты здравоохранения</h3>
+          <div class="project-card__body">
+            <h3>Объекты здравоохранения</h3>
             <a class="project-card__media image-tone" data-dither-parallax=".08" href="projects.html" aria-label="Подробнее: Объекты здравоохранения">
-            <img src="assets/images/figma/home-clean/project-healthcare.webp" alt="Восстановленный объект здравоохранения">
+            <img src="assets/images/figma/home-clean/project-healthcare.webp" alt="Восстановленный объект здравоохранения" width="2048" height="1366" decoding="async" loading="lazy">
             <span class="project-card__arrow" aria-hidden="true"><img src="assets/icons/arrow-box.svg" width="90" height="90" alt=""></span>
           </a>
           <p data-anim="lineUp" data-anim-delay=".7" data-anim-prewarm>Восстановительные работы ключевых объектов здравоохранения в&nbsp;городах Мариуполе и&nbsp;Волновахе</p>
+          </div>
         </article>
       </div>
+      <a class="button projects__button projects__button--desktop" href="projects.html" data-anim="fadeUp" data-anim-delay=".5" data-anim-prewarm><span class="button__text button__text--current">Все проекты</span><span class="button__text button__text--hover" aria-hidden="true">Все проекты</span></a>
       <a class="button projects__button projects__button--adaptive" href="projects.html" data-anim="fadeUp" data-anim-prewarm><span class="button__text button__text--current">Все проекты</span><span class="button__text button__text--hover" aria-hidden="true">Все проекты</span></a>
     </section>
 
@@ -134,7 +180,7 @@
       </div>
       <div class="services__list">
         <article class="service-card">
-          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-epcm.webp" alt="Строительная площадка"></div>
+          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-epcm.webp" alt="Строительная площадка" width="2048" height="1366" decoding="async" loading="lazy"></div>
           <div class="service-card__content">
             <div class="service-card__head"><h3>ЕРСМ</h3><span data-anim="typeChars">01</span></div>
             <p>Оказываем услуги в&nbsp;рамках ЕРСМ-контракта</p>
@@ -142,7 +188,7 @@
           </div>
         </article>
         <article class="service-card">
-          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-epc.webp" alt="Строительство высотного здания"></div>
+          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-epc.webp" alt="Строительство высотного здания" width="2048" height="1368" decoding="async" loading="lazy"></div>
           <div class="service-card__content">
             <div class="service-card__head"><h3>ЕРС</h3><span data-anim="typeChars">02</span></div>
             <p>Ген.&nbsp;подрядчик при&nbsp;строительстве, капитальном ремонте и&nbsp;реконструкции</p>
@@ -150,7 +196,7 @@
           </div>
         </article>
         <article class="service-card">
-          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-cost.webp" alt="Работа со строительной документацией"></div>
+          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-cost.webp" alt="Работа со строительной документацией" width="1280" height="720" decoding="async" loading="lazy"></div>
           <div class="service-card__content">
             <div class="service-card__head"><h3>Стоимостной инжиниринг</h3><span data-anim="typeChars">03</span></div>
             <p>Стоимостный инжиниринг на&nbsp;всех этапах жизненного цикла</p>
@@ -158,7 +204,7 @@
           </div>
         </article>
         <article class="service-card">
-          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-client.webp" alt="Контроль строительства"></div>
+          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-client.webp" alt="Контроль строительства" width="2048" height="1366" decoding="async" loading="lazy"></div>
           <div class="service-card__content">
             <div class="service-card__head"><h3>Технический заказчик</h3><span data-anim="typeChars">04</span></div>
             <p>Контроль и&nbsp;надзор за&nbsp;строительством</p>
@@ -166,7 +212,7 @@
           </div>
         </article>
         <article class="service-card">
-          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-developer.webp" alt="Новый жилой комплекс"></div>
+          <div class="service-card__media image-tone" data-dither-parallax="0"><img src="assets/images/figma/home-clean/service-developer.webp" alt="Новый жилой комплекс" width="555" height="400" decoding="async" loading="lazy"></div>
           <div class="service-card__content">
             <div class="service-card__head"><h3>Специализированный застройщик</h3><span data-anim="typeChars">05</span></div>
             <p>Девелопмент</p>
@@ -177,17 +223,29 @@
     </section>
 
     <section class="video-section" aria-label="Видео о компании">
-      <div class="video-frame">
+      <div class="video-frame" data-video-player>
         <div class="video-frame__ticker video-frame__ticker--top" aria-hidden="true">Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории</div>
         <div class="video-frame__ticker video-frame__ticker--right" aria-hidden="true">Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории</div>
         <div class="video-frame__ticker video-frame__ticker--bottom" aria-hidden="true">Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории</div>
         <div class="video-frame__ticker video-frame__ticker--left" aria-hidden="true">Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории</div>
+        <!-- Обложка живёт в .image-tone: её рисует общий дизер.
+             Видео и панель управления плеер поднимает в .video-frame__stage. -->
         <div class="video-frame__media image-tone image-tone--hero">
-          <img src="assets/images/figma/home-clean/video-cover.webp" alt="Строительство жилого комплекса">
-          <button class="play-button" type="button" aria-label="Воспроизвести видео">
-            <img src="assets/icons/play.svg" width="127" height="127" alt="">
-          </button>
+          <img src="assets/images/figma/home-clean/video-cover.webp" alt="Строительство жилого комплекса" width="2048" height="1366" decoding="async" loading="lazy">
         </div>
+        <!-- preload="none": ролик весит десятки мегабайт и лежит пятой секцией.
+             video-player.js поднимает preload до "metadata" через
+             IntersectionObserver, когда секция подходит к экрану, — длительность
+             и полоса прогресса появляются до того, как пользователь до них
+             дойдёт, но стартовая загрузка страницы к файлу не обращается. -->
+        <video class="video-frame__video" poster="assets/images/figma/home-clean/video-cover.webp" preload="none" playsinline webkit-playsinline controls aria-label="Видео о компании">
+          <source src="assets/videos/company.mp4" type="video/mp4">
+          <p>Ваш браузер не поддерживает встроенное видео.
+            <a href="assets/videos/company.mp4">Скачать ролик</a>.</p>
+        </video>
+        <button class="play-button" type="button" aria-label="Воспроизвести видео">
+          <img src="assets/icons/play.svg" width="127" height="127" alt="">
+        </button>
       </div>
     </section>
 
@@ -197,7 +255,12 @@
         <a class="text-link" href="news.html">Все новости</a>
       </div>
       <div class="news__layout">
-        <div class="news__image image-tone image-tone--hero"><img src="assets/images/figma/home-clean/news.webp" alt="Панорама города ночью"></div>
+        <div class="news__image" aria-hidden="true">
+          <div class="news__image-layer image-tone image-tone--hero is-active" data-dither-opacity="1"><img src="assets/images/figma/home-clean/news-2026-02-04.webp" alt="" width="2048" height="1366" decoding="async" loading="lazy"></div>
+          <div class="news__image-layer image-tone image-tone--hero" data-dither-opacity="0"><img src="assets/images/figma/home-clean/news.webp" alt="" width="2048" height="1366" decoding="async" loading="lazy"></div>
+          <div class="news__image-layer image-tone image-tone--hero" data-dither-opacity="0"><img src="assets/images/figma/home-clean/news-2026-01-27.webp" alt="" width="2048" height="1290" decoding="async" loading="lazy"></div>
+          <div class="news__image-layer image-tone image-tone--hero" data-dither-opacity="0"><img src="assets/images/figma/home-clean/news-2026-01-23.webp" alt="" width="2048" height="1366" decoding="async" loading="lazy"></div>
+        </div>
         <!-- Первые 4 карточки синхронизируются с news.html через news-home.js.
              Разметка ниже — запасной вариант, если fetch недоступен. -->
         <div class="news__grid" data-news-home>
@@ -229,17 +292,17 @@
   <footer class="footer" id="contacts">
     <img class="footer__logo" src="assets/icons/logo-footer.svg" width="738" height="147" alt="РКС-НР">
     <div class="footer__nav">
-      <nav aria-label="Навигация в подвале" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom">
+      <nav aria-label="Навигация в подвале" data-anim="typeChars" data-anim-target="a, .footer__nav-pending" data-anim-start="top bottom">
         <a href="about.html">О&nbsp;компании</a>
         <a href="services.html">Услуги</a>
         <a href="projects.html">Проекты</a>
         <a href="news.html">Новости</a>
         <a href="contacts.html">Контакты</a>
-        <a href="#">Охрана труда</a>
-        <a href="#">Этика и&nbsp;ответственность</a>
-        <a href="#">Противодействие коррупции</a>
+        <span class="footer__nav-pending">Охрана труда</span>
+        <span class="footer__nav-pending">Этика и&nbsp;ответственность</span>
+        <span class="footer__nav-pending">Противодействие коррупции</span>
       </nav>
-      <div class="footer__socials" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom"><a href="#">MAX</a><a href="#">Telegram</a></div>
+      <div class="footer__socials" data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom"><a href="https://max.ru/rks_nr" target="_blank" rel="noopener noreferrer">MAX</a><a href="https://t.me/rks_nr" target="_blank" rel="noopener noreferrer">Telegram</a></div>
     </div>
     <div class="footer__contacts">
       <div data-anim="typeChars" data-anim-target="a" data-anim-start="top bottom"><a href="tel:+74951472233">+7&nbsp;(495)&nbsp;147-22-33</a><a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a></div>
@@ -253,8 +316,33 @@
        в каждом кадре обычного просмотра ему незачем. -->
   <script>
     if (new URLSearchParams(location.search).has('annotate')) {
-      document.write('<script src="annotator-tool%C2%A0%E2%80%94%20%D0%BA%D0%BE%D0%BF%D0%B8%D1%8F/annotator.js"><\/script>');
+      var annotator = document.createElement('script');
+      annotator.src = 'annotator-tool%C2%A0%E2%80%94%20%D0%BA%D0%BE%D0%BF%D0%B8%D1%8F/annotator.js';
+      document.body.appendChild(annotator);
     }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://rks-nr.ru/#organization",
+    "name": "ООО «РКС-НР»",
+    "alternateName": "РКС-НР",
+    "url": "https://rks-nr.ru/",
+    "logo": "https://rks-nr.ru/assets/icons/logo-header.svg",
+    "description": "Генеральный подрядчик строительства и восстановления объектов жилищной и социально-культурной сферы в новых регионах Российской Федерации.",
+    "foundingDate": "2022",
+    "telephone": "+7-495-147-22-33",
+    "email": "mail@rks-nr.ru",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "RU",
+      "addressLocality": "Москва",
+      "postalCode": "125167",
+      "streetAddress": "Ленинградский проспект, д. 47, стр. 3, подъезд 3"
+    },
+    "sameAs": ["https://t.me/rks_nr", "https://max.ru/rks_nr"]
+  }
   </script>
 </body>
 </html>

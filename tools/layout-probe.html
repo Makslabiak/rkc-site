@@ -1,0 +1,206 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>layout probe</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #111; }
+  iframe { border: 0; display: block; }
+  #probe { display: none; }
+</style>
+<body>
+<script>
+/* Снимает раскладку страницы в iframe фиксированной ширины и печатает её
+   в pre#probe как JSON. Читается через headless-Chrome --dump-dom,
+   сравнивается tools/layout-check.py. Сам сайт не трогает. */
+(function () {
+  var params = new URLSearchParams(location.search);
+  var page = params.get('page') || 'index.html';
+  var width = parseInt(params.get('w') || '1440', 10);
+  var height = parseInt(params.get('h') || '900', 10);
+  /* Ждать загрузчик дольше, чем его MIN_DISPLAY_MS (2 с) плюс анимация ухода. */
+  var loaderMs = parseInt(params.get('loader') || '7000', 10);
+  var settleMs = parseInt(params.get('settle') || '3500', 10);
+
+  var frame = document.createElement('iframe');
+  frame.style.width = width + 'px';
+  frame.style.height = height + 'px';
+  frame.setAttribute('scrolling', 'no');
+  frame.src = '/' + page.replace(/^\//, '');
+  document.body.appendChild(frame);
+
+  function emit(data) {
+    var pre = document.createElement('pre');
+    pre.id = 'probe';
+    pre.textContent = JSON.stringify(data);
+    document.body.appendChild(pre);
+  }
+
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  /* Загрузчик есть только на главной. Ждём его собственный уход, а если не
+     дождались — снимаем руками ровно так, как это делает script.js. */
+  function loaded(win) {
+    return new Promise(function (resolve) {
+      var done = false;
+      function finish() {
+        if (done) return;
+        done = true;
+        resolve();
+      }
+      win.addEventListener('site:loaded', function () { setTimeout(finish, 400); });
+      setTimeout(function () {
+        try {
+          var doc = win.document;
+          var loader = doc.querySelector('.loader');
+          if (loader) loader.remove();
+          doc.documentElement.classList.remove('is-page-entering', 'is-page-entering-home');
+          doc.documentElement.classList.add('is-loaded');
+          if (doc.body) doc.body.inert = false;
+          win.dispatchEvent(new CustomEvent('site:loaded'));
+        } catch (error) { /* Снимок всё равно снимаем. */ }
+        finish();
+      }, loaderMs);
+    });
+  }
+
+  var SKIP_TAGS = { SCRIPT: 1, STYLE: 1, LINK: 1, META: 1, TITLE: 1, NOSCRIPT: 1, TEMPLATE: 1, BR: 1 };
+
+  function classKey(el) {
+    var raw = el.getAttribute('class') || '';
+    var parts = raw.trim().split(/\s+/).filter(Boolean);
+    /* Классы состояния навешивает анимация — в ключ они не идут, иначе
+       один и тот же элемент получит разные имена в двух прогонах. */
+    parts = parts.filter(function (name) {
+      return !/^(is-|has-|gsap-|split-text$)/.test(name);
+    });
+    parts.sort();
+    return el.tagName.toLowerCase() + (parts.length ? '.' + parts.join('.') : '');
+  }
+
+  function measure(win) {
+    var doc = win.document;
+    var seen = Object.create(null);
+    var items = [];
+    var skipped = 0;
+
+    function keyFor(el) {
+      var base = classKey(el);
+      var n = seen[base] = (seen[base] || 0) + 1;
+      return n === 1 ? base : base + '#' + n;
+    }
+
+    function walk(el, insideSplit) {
+      var tag = el.tagName;
+      if (SKIP_TAGS[tag]) return;
+      if (el.namespaceURI && el.namespaceURI.indexOf('svg') !== -1) return;
+      var cls = el.getAttribute('class') || '';
+      /* Обёртки SplitText живут внутри собственных элементов и пересобираются
+         на каждом ресайзе — сравнивать их бессмысленно. */
+      var split = insideSplit || / line-split |^line-split | line-split$|^line-split$/.test(' ' + cls + ' ');
+      if (!split && (cls.trim() || el.id)) {
+        var rect = el.getBoundingClientRect();
+        items.push({
+          k: keyFor(el),
+          /* offset* не зависит от трансформов, поэтому именно он основной:
+             hero__line и карточки услуг ловятся ректом посреди твина. */
+          ol: el.offsetLeft,
+          ot: el.offsetTop,
+          ow: el.offsetWidth,
+          oh: el.offsetHeight,
+          op: el.offsetParent ? classKey(el.offsetParent) : null,
+          rx: Math.round(rect.left * 100) / 100,
+          ry: Math.round((rect.top + win.scrollY) * 100) / 100,
+          rw: Math.round(rect.width * 100) / 100,
+          rh: Math.round(rect.height * 100) / 100,
+          ds: win.getComputedStyle(el).display,
+          ps: win.getComputedStyle(el).position
+        });
+      } else {
+        skipped++;
+      }
+      for (var child = el.firstElementChild; child; child = child.nextElementSibling) {
+        walk(child, split);
+      }
+    }
+
+    walk(doc.body, false);
+    return {
+      page: page,
+      width: width,
+      height: height,
+      docHeight: doc.documentElement.scrollHeight,
+      bodyHeight: doc.body.offsetHeight,
+      count: items.length,
+      skipped: skipped,
+      items: items
+    };
+  }
+
+  /* Для скриншота секции: подкручиваем страницу так, чтобы нужный блок встал
+     под верх кадра. Лениса просим прыгнуть мгновенно, иначе он вернёт скролл. */
+  function scrollToTarget(win) {
+    var selector = params.get('scroll');
+    if (!selector) return;
+    var offset = parseInt(params.get('offset') || '0', 10);
+    function jump() {
+      var target = win.document.querySelector(selector);
+      if (!target) return;
+      var y = target.getBoundingClientRect().top + win.scrollY - offset;
+      if (win.lenis) win.lenis.scrollTo(y, { immediate: true, force: true });
+      else win.scrollTo(0, y);
+    }
+    /* Прыгаем трижды: после первой прокрутки ScrollTrigger пересчитывает
+       закреплённые секции и цель уезжает на десяток пикселей. Без повтора два
+       кадра снимаются с разной прокрутки и попиксельное сравнение врёт. */
+    jump();
+    setTimeout(jump, 500);
+    setTimeout(jump, 1200);
+  }
+
+  /* Под нагрузкой (несколько Chrome разом) виртуальное время убегает вперёд
+     реальной сети, и кадр успевает сняться до применения CSS или загрузки
+     шрифтов. Такой снимок бесполезен, поэтому готовность проверяем явно и
+     кладём результат в JSON — прогон с ready:false запускается заново. */
+  function readiness(win) {
+    var doc = win.document;
+    var links = Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]'));
+    var css = links.length > 0 && links.every(function (link) {
+      try { return !!(link.sheet && link.sheet.cssRules.length); } catch (error) { return false; }
+    });
+    var fonts = !doc.fonts || (doc.fonts.check('16px "LT Superior"') && doc.fonts.check('16px Roboto'));
+    return { css: css, fonts: fonts, sheets: links.length };
+  }
+
+  function untilReady(win, limitMs) {
+    var deadline = Date.now() + limitMs;
+    return new Promise(function (resolve) {
+      (function poll() {
+        var state = readiness(win);
+        if ((state.css && state.fonts) || Date.now() > deadline) return resolve(state);
+        setTimeout(poll, 150);
+      })();
+    });
+  }
+
+  frame.addEventListener('load', function () {
+    var win = frame.contentWindow;
+    var ready = null;
+    loaded(win)
+      .then(function () { return win.document.fonts ? win.document.fonts.ready : null; })
+      .then(function () { return untilReady(win, 15000); })
+      .then(function (state) { ready = state; return wait(settleMs); })
+      .then(function () {
+        var data = measure(win);
+        data.ready = ready;
+        emit(data);
+        scrollToTarget(win);
+      })
+      .catch(function (error) { emit({ error: String(error && error.stack || error) }); });
+  });
+
+  setTimeout(function () {
+    if (!document.getElementById('probe')) emit({ error: 'timeout' });
+  }, loaderMs + settleMs + 20000);
+})();
+</script>

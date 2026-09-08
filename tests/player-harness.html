@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Проверка плеера — РКС-НР</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../video-player.js" defer></script>
+  <style>
+    body { margin: 0; background: #f0f0f0; }
+    .harness { padding: 24px; }
+    .harness h1 { margin: 0 0 16px; font-size: 16px; }
+    /* Стенд без общего дизера: обложка показывается как есть. */
+    .video-section { position: relative; height: 620px; }
+  </style>
+</head>
+<body data-site-page="home">
+  <div class="harness">
+    <h1>Стенд плеера. Страницу дизер не обслуживает — проверяем только панель управления.</h1>
+    <section class="video-section" aria-label="Видео о компании">
+      <div class="video-frame" data-video-player>
+        <div class="video-frame__media image-tone image-tone--hero">
+          <img src="../assets/images/figma/home-clean/video-cover.webp" alt="Обложка">
+        </div>
+        <button class="play-button" type="button" aria-label="Воспроизвести видео">
+          <img src="../assets/icons/play.svg" width="127" height="127" alt="">
+        </button>
+      </div>
+    </section>
+  </div>
+  <script>
+    // Видео добавляем скриптом, чтобы стенд не тянул 70 МБ до нажатия.
+    const frame = document.querySelector('.video-frame');
+    const video = document.createElement('video');
+    video.className = 'video-frame__video';
+    video.setAttribute('preload', 'metadata');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('controls', '');
+    video.setAttribute('poster', '../assets/images/figma/home-clean/video-cover.webp');
+    video.setAttribute('aria-label', 'Видео о компании');
+    video.innerHTML = '<source src="../assets/videos/company.mp4" type="video/mp4">';
+    frame.append(video);
+    window.RKSVideoPlayer.init(document);
+  </script>
+</body>
+</html>

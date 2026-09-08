@@ -59,25 +59,85 @@
   empty.hidden = true;
   grid.append(...cards, empty);
   let activeFilter;
+  let animationId = 0;
 
-  const render = (filter = 'all') => {
-    if (filter === activeFilter) return;
-    activeFilter = filter;
-    let count = 0;
-    projects.forEach((project, index) => {
-      const visible = filter === 'all' || filter === project.category
-        || filter === `${project.category}-${project.subcategory}`;
-      cards[index].hidden = !visible;
-      if (visible) count += 1;
-    });
-    empty.hidden = count > 0;
-    grid.classList.toggle('is-empty', count === 0);
-    document.querySelector('[data-projects-status]').textContent = count
-      ? `Найдено проектов: ${count}` : empty.textContent;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const matchesFilter = (project, filter) => filter === 'all' || filter === project.category
+    || filter === `${project.category}-${project.subcategory}`;
+
+  const setMediaOpacity = (card, opacity, duration = 0) => {
+    const media = card?.querySelector?.('.projects-page-card__media');
+    if (media) window.__rksDitherSetOpacity?.(media, opacity, duration);
+  };
+
+  const refreshLayout = () => {
     window.lenis?.resize();
     window.ScrollTrigger?.refresh();
     window.__rksDitherRefresh?.();
     window.__rksScrollbarRefresh?.();
+  };
+
+  const applyFilter = (filter, mediaOpacity = 1) => {
+    const visibleCards = [];
+    projects.forEach((project, index) => {
+      const visible = matchesFilter(project, filter);
+      setMediaOpacity(cards[index], visible ? mediaOpacity : 0, 0);
+      cards[index].hidden = !visible;
+      if (visible) visibleCards.push(cards[index]);
+    });
+
+    const count = visibleCards.length;
+    empty.hidden = count > 0;
+    grid.classList.toggle('is-empty', count === 0);
+    document.querySelector('[data-projects-status]').textContent = count
+      ? `Найдено проектов: ${count}` : empty.textContent;
+    refreshLayout();
+    return count ? visibleCards : [empty];
+  };
+
+  const render = (filter = 'all', animate = true) => {
+    if (filter === activeFilter) return;
+    activeFilter = filter;
+    const gsap = window.gsap;
+    const currentAnimation = ++animationId;
+    const currentCards = cards.filter((card) => !card.hidden);
+    if (!empty.hidden) currentCards.push(empty);
+
+    if (!animate || reducedMotion.matches || !gsap || currentCards.length === 0) {
+      const nextCards = applyFilter(filter);
+      if (gsap) gsap.set(nextCards, { clearProps: 'opacity,transform' });
+      grid.removeAttribute('aria-busy');
+      return;
+    }
+
+    grid.setAttribute('aria-busy', 'true');
+    gsap.killTweensOf([...cards, empty]);
+    gsap.set(currentCards, { clearProps: 'transform,transform-origin' });
+    currentCards.forEach((card) => setMediaOpacity(card, 0, .4));
+    gsap.to(currentCards, {
+      autoAlpha: 0,
+      duration: .4,
+      ease: 'power4.inOut',
+      overwrite: true,
+      onComplete: () => {
+        if (currentAnimation !== animationId) return;
+        const nextCards = applyFilter(filter, 0);
+        gsap.set(nextCards, { autoAlpha: 0, clearProps: 'transform,transform-origin' });
+        nextCards.forEach((card) => setMediaOpacity(card, 1, .4));
+        gsap.to(nextCards, {
+          autoAlpha: 1,
+          duration: .4,
+          ease: 'power4.inOut',
+          overwrite: true,
+          clearProps: 'opacity,visibility',
+          onComplete: () => {
+            if (currentAnimation !== animationId) return;
+            grid.removeAttribute('aria-busy');
+            refreshLayout();
+          }
+        });
+      }
+    });
   };
 
   filters.forEach((filter) => {
@@ -101,5 +161,5 @@
     filter.classList.toggle('is-active', active);
     filter.setAttribute('aria-pressed', String(active));
   });
-  render(initialFilter);
+  render(initialFilter, false);
 })();

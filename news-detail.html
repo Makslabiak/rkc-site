@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Новости ООО «РКС-НР» — восстановление дома на проспекте Маршала Жукова">
   <title>Восстановление дома на проспекте Маршала Жукова — РКС-НР</title>
-  <link rel="icon" href="assets/icons/logo-header.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=20260906-1">
-  <link rel="stylesheet" href="news-detail.css?v=20260906-4">
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" sizes="any">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" sizes="120x120">
+  <link rel="stylesheet" href="styles.css?v=20260908-30">
+  <link rel="stylesheet" href="news-detail.css?v=20260907-2">
   <script src="page-entry.js?v=20260906-1"></script>
   <script>document.documentElement.classList.add('has-anim');</script>
   <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
@@ -16,10 +17,11 @@
   <script src="assets/vendor/SplitText.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
   <script src="site-header.js?v=20260903-2" defer></script>
-  <script src="script.js?v=20260906-3" defer></script>
+  <script src="script.js?v=20260907-5" defer></script>
+  <script src="video-player.js?v=20260907-3" defer></script>
   <script src="news-detail.js?v=20260906-2" defer></script>
-  <script src="services-dither.js?v=20260906-3" defer></script>
-  <script src="animations.js?v=20260906-3" defer></script>
+  <script src="services-dither.js?v=20260907-1" defer></script>
+  <script src="animations.js?v=20260908-1" defer></script>
 </head>
 <body class="news-detail-page" data-site-page="news-detail">
   <a class="skip-link" href="#main">Перейти к&nbsp;содержимому</a>
@@ -56,20 +58,25 @@
           <p>Пережил и нынешние тяжёлые события. Сегодня он снова стоит обновлённый, усиленный, но всё такой же узнаваемый.</p>
         </div>
         <div class="news-detail__gallery" data-news-gallery aria-label="Фотографии восстановленного дома">
-          <div class="image-tone"><img src="assets/images/news-detail-gallery.png" width="330" height="220" alt="Фасад восстановленного дома" loading="lazy"></div>
-          <div class="image-tone"><img src="assets/images/news-detail-gallery.png" width="330" height="220" alt="Фасад восстановленного дома, вид сбоку" loading="lazy"></div>
+          <div class="image-tone"><img src="assets/images/news-detail-gallery.webp" width="330" height="220" alt="Фасад восстановленного дома" loading="lazy"></div>
+          <div class="image-tone"><img src="assets/images/news-detail-gallery.webp" width="330" height="220" alt="Фасад восстановленного дома, вид сбоку" loading="lazy"></div>
         </div>
       </article>
     </section>
 
     <section class="video-section" aria-label="Видео о компании">
-      <div class="video-frame">
+      <div class="video-frame" data-video-player>
         <div class="video-frame__media image-tone image-tone--hero">
-          <img src="assets/images/news-detail-video.png" alt="Восстановленный дом на видео">
-          <button class="play-button" type="button" aria-label="Воспроизвести видео">
-            <img src="assets/icons/play.svg" width="127" height="127" alt="">
-          </button>
+          <img src="assets/images/news-detail-video.webp" width="330" height="220" alt="Восстановленный дом на видео">
         </div>
+        <video class="video-frame__video" poster="assets/images/news-detail-video.webp" preload="metadata" playsinline webkit-playsinline controls aria-label="Видео о компании">
+          <source src="assets/videos/company.mp4" type="video/mp4">
+          <p>Ваш браузер не поддерживает встроенное видео.
+            <a href="assets/videos/company.mp4">Скачать ролик</a>.</p>
+        </video>
+        <button class="play-button" type="button" aria-label="Воспроизвести видео">
+          <img src="assets/icons/play.svg" width="127" height="127" alt="">
+        </button>
       </div>
     </section>
   </main>
@@ -87,7 +94,7 @@
         <a href="#">Этика и ответственность</a>
         <a href="#">Противодействие коррупции</a>
       </nav>
-      <div class="footer__socials"><a href="#">MAX</a><a href="#">Telegram</a></div>
+      <div class="footer__socials"><a href="https://max.ru/rks_nr" target="_blank" rel="noopener noreferrer">MAX</a><a href="https://t.me/rks_nr" target="_blank" rel="noopener noreferrer">Telegram</a></div>
     </div>
     <div class="footer__contacts">
       <div><a href="tel:+74951472233">+7 (495) 147-22-33</a><a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a></div>

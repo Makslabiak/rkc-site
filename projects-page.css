@@ -42,7 +42,7 @@
   top: 100px;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 30px;
   height: max-content;
   margin-bottom: 100px;
 }
@@ -51,21 +51,21 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
 .projects-page__filter-subgroup {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-left: 20px;
+  padding-left: 0;
 }
 
 .projects-page__filter-button {
   width: 100%;
   min-height: 33px;
   padding: 0;
-  color: var(--muted);
+  color: var(--dark);
   background: transparent;
   font-family: "LT Superior", Arial, sans-serif;
   font-size: 30px;
@@ -84,7 +84,7 @@
 
 .projects-page__filter-button:hover,
 .projects-page__filter-button:focus-visible,
-.projects-page__filter-button.is-active { color: var(--dark); }
+.projects-page__filter-button.is-active { color: var(--muted); }
 
 .projects-page__grid {
   display: grid;
@@ -176,6 +176,24 @@
   }
 }
 
+@media (min-width: 1200px) and (max-width: 1919px) {
+  .projects-cover { min-height: 31.5104vw; padding: 12.5vw 3.125vw 5.2083vw; }
+  .projects-page__catalog { grid-template-columns: 17.8646vw minmax(0,1fr); }
+  .projects-page__filter { padding: 4.1667vw 1.0417vw 8.3333vw 3.125vw; }
+  .projects-page__filter-sticky { top: 5.2083vw; gap: 1.5625vw; margin-bottom: 5.2083vw; }
+  .projects-page__filter-group { gap: .7813vw; }
+  .projects-page__filter-subgroup { gap: .5208vw; }
+  .projects-page__filter-button { min-height: 1.7188vw; font-size: 1.5625vw; }
+  .projects-page__filter-button--sub { min-height: 1.3542vw; font-size: 1.1458vw; }
+  .projects-page__grid { gap: 4.1667vw 1.0417vw; padding: 4.1667vw 1.0417vw 8.3333vw; }
+  .projects-page-card,
+  .projects-page-card__link { gap: 1.3021vw; }
+  .projects-page-card__info { width: min(27.0833vw,100%); gap: .5208vw; }
+  .projects-page-card__title { max-width: 26.9271vw; font-size: 1.5625vw; }
+  .projects-page-card__category { font-size: .8333vw; }
+  .projects-page__empty { font-size: 1.5625vw; }
+}
+
 @media (min-width: 600px) and (max-width: 1199px) {
   .projects-cover { min-height: 430px; padding: 240px 4.1667vw 90px; }
   .projects-cover__title { font-size: 7.7865vw; }
@@ -235,7 +253,7 @@
 
   .projects-page__filter-button:not(.projects-page__filter-button--sub) { font-size: 25px; }
   .projects-page__filter-group { gap: 10px; }
-  .projects-page__filter-subgroup { padding-left: 15px; }
+ .projects-page__filter-subgroup { padding-left: 0; }
 
   .projects-page__grid {
     display: flex;

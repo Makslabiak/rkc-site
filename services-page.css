@@ -16,25 +16,29 @@
 
 .services-cover {
   position: relative;
-  height: 300px;
+  display: flex;
+  min-height: 300px;
+  padding: 0 15px 20px;
+  align-items: flex-end;
   overflow: hidden;
   background: var(--light);
 }
 
 .services-cover__title {
-  position: absolute;
-  top: 220px;
-  left: 15px;
-  width: calc(100% - 30px);
+  width: 100%;
   font-family: "LT Superior", Arial, sans-serif;
   font-size: 60px;
   font-weight: 450;
   line-height: 1;
 }
 
+/* Высота кадра задана min-height, а положение лида — отступами секции:
+   фотография лежит абсолютным слоем на всю секцию, поэтому лиду достаточно
+   position: relative ради z-index над ней. */
 .services-hero {
   position: relative;
-  height: 420px;
+  min-height: 420px;
+  padding: 235px 0 77px 115px;
   overflow: hidden;
   color: var(--light);
 }
@@ -50,11 +54,8 @@
 }
 
 .services-hero__title {
-  position: absolute;
+  position: relative;
   z-index: 3;
-  top: 235px;
-  right: auto;
-  left: 115px;
   width: 240px;
   font-family: "LT Superior", Arial, sans-serif;
   font-size: 18px;
@@ -69,7 +70,7 @@
 }
 
 .services-catalog__intro {
-  height: 288px;
+  min-height: 288px;
 }
 
 /* Обёртка нужна только для sticky на десктопе; на узких экранах прозрачна. */
@@ -301,8 +302,6 @@
 
 .advantages {
   position: relative;
-  height: 2335px;
-  min-height: 0;
   padding: 60px 15px;
   border-bottom: var(--line);
   background: var(--light);
@@ -326,7 +325,7 @@
 .advantage-card {
   display: flex;
   width: 100%;
-  height: 330px;
+  min-height: 330px;
   flex-direction: column;
   justify-content: space-between;
   padding: 32px 37px 33px;
@@ -351,7 +350,6 @@
 
 @media (max-width: 599px) {
   .advantages {
-    height: auto;
     padding: 60px 15px;
   }
 
@@ -367,7 +365,6 @@
 
   .advantage-card {
     min-height: 176px;
-    height: auto;
     justify-content: flex-start;
     gap: 25.38px;
     padding: 20.16px;
@@ -384,9 +381,13 @@
   }
 }
 
+/* Заголовок и кнопка идут потоком, отступы секции держат их положение.
+   Дескриптор на планшете и десктопе стоит сбоку от первой строки заголовка —
+   там он остаётся абсолютным слоем, в одну колонку его не выстроить. */
 .services-cta {
   position: relative;
-  height: 590px;
+  min-height: 590px;
+  padding: 270px 15px 49px;
   border-bottom: 0;
   background: var(--light);
 }
@@ -407,9 +408,8 @@
 }
 
 .services-cta__title {
-  position: absolute;
-  top: 270px;
-  left: 15px;
+  width: max-content;
+  max-width: 100%;
   font-family: "LT Superior", Arial, sans-serif;
   font-size: 35px;
   font-weight: 450;
@@ -417,10 +417,8 @@
 }
 
 .services-cta__descriptor {
-  position: absolute;
-  top: 390px;
-  left: 15px;
   width: 252px;
+  margin-top: 50px;
   font-family: "LT Superior", Arial, sans-serif;
   font-size: 20px;
   font-weight: 400;
@@ -428,30 +426,28 @@
 }
 
 .services-cta__button {
-  position: absolute;
-  top: 485px;
-  left: 15px;
-  width: calc(100% - 30px);
+  width: 100%;
+  margin-top: 55px;
 }
 
 @media (min-width: 600px) and (max-width: 1199px) {
-  .services-cover { height: 430px; }
-  .services-cover__title { top: 280px; left: 4.1667vw; width: auto; font-size: 100px; }
+  .services-cover { min-height: 430px; padding: 0 4.1667vw 50px; }
+  .services-cover__title { width: auto; font-size: 100px; }
 
-  .services-hero { height: 550px; }
-  .services-hero__title { top: 291px; right: 32px; width: 426px; height: 170px; font-family: "LT Superior", Arial, sans-serif; font-size: 30px; font-weight: 450; }
+  .services-hero { min-height: 550px; padding: 291px 0 89px 115px; }
+  .services-hero__title { width: min(426px, 55.4688vw); min-height: 170px; font-family: "LT Superior", Arial, sans-serif; font-size: 30px; font-weight: 450; }
 
-  .services-catalog { padding: 60px 32px 40px; }
-  .services-catalog__intro { height: 300px; }
+  .services-catalog { padding: 60px 4.1667vw 40px; }
+  .services-catalog__intro { min-height: 300px; }
   .services-catalog__image { width: 320px; height: 216px; margin-top: 48px; }
   .service-accordion {
     --accordion-column-gap: 16px;
     --accordion-number-width: 44px;
-    --accordion-padding-x: 32px;
+    --accordion-padding-x: 4.1667vw;
     --accordion-padding-y: 31px;
     --accordion-row-gap: 28px;
     --accordion-toggle-size: 90px;
-    margin: 20px -32px 0;
+    margin: 20px -4.1667vw 0;
   }
   .service-accordion__item { width: 100%; margin: 0; }
   .service-accordion__item:first-child { border-top: 1px solid var(--dark); }
@@ -481,21 +477,21 @@
   .service-accordion__panel ul { gap: 12px; margin: 0; }
   .service-accordion__panel li { padding-left: 23px; font-family: "Roboto", Arial, sans-serif; font-size: 14.08px; font-weight: 400; line-height: 1.2; }
 
-  .advantages { height: 1420px; min-height: 0; padding: 80px 32px 60px; }
+  .advantages { min-height: 1420px; padding: 80px 4.1667vw 60px; }
   .advantages__title { font-size: 80px; }
   .advantages__title span + span { margin-top: 14px; }
   .advantages__grid { grid-template-columns: repeat(2, 1fr); gap: 20px 16px; margin-top: 74px; }
-  .advantage-card { width: 100%; height: 330px; padding: 33px 37px; }
+  .advantage-card { width: 100%; min-height: 330px; padding: 33px 37px; }
   .advantage-card strong { font-size: 60px; }
   .advantage-card:nth-child(4) { grid-column: 2; grid-row: 2; }
   .advantage-card:nth-child(5) { grid-column: 1; grid-row: 3; }
   .advantage-card:nth-child(6) { grid-column: 2; grid-row: 3; }
 
-  .services-cta { height: 800px; }
+  .services-cta { min-height: 800px; padding: 390px 4.1667vw 130px; }
   .services-cta__image { width: 100%; height: 340px; }
-  .services-cta__title { top: 390px; left: 32px; font-size: 75px; }
-  .services-cta__descriptor { top: 405px; left: 44.0104%; width: 250px; font-size: 20px; }
-  .services-cta__button { top: 590px; left: 32px; width: calc(100% - 64px); }
+  .services-cta__title { font-size: 75px; }
+  .services-cta__descriptor { position: absolute; top: 405px; left: 44.0104%; width: 250px; margin-top: 0; font-size: 20px; }
+  .services-cta__button { width: 91.6667vw; margin-top: 50px; }
 }
 
 @media (min-width: 1200px) {
@@ -520,11 +516,11 @@
     transform: translateY(-100%);
   }
 
-  .services-cover { height: 31.5104vw; }
-  .services-cover__title { top: 21.6146vw; left: 3.125vw; width: auto; font-size: 6.7708vw; }
+  .services-cover { min-height: 31.5104vw; padding: 0 3.125vw 3.125vw; }
+  .services-cover__title { width: auto; font-size: 6.7708vw; }
 
-  .services-hero { height: 44.4271vw; }
-  .services-hero__title { top: 26.3021vw; right: auto; left: 66.3021vw; width: 30.4167vw; max-width: 584px; font-family: "LT Superior", Arial, sans-serif; font-size: 2.0833vw; font-weight: 450; line-height: 1; }
+  .services-hero { min-height: 44.4271vw; padding: 26.3021vw 0 5.625vw 66.3021vw; }
+  .services-hero__title { width: 30.4167vw; min-height: 0; max-width: 584px; font-family: "LT Superior", Arial, sans-serif; font-size: 2.0833vw; font-weight: 450; line-height: 1; }
 
   /* Высоту секции задаёт сам аккордеон, жёсткого min-height нет — фиксация
      держится ровно столько, сколько длится список услуг, и подстроится под
@@ -534,10 +530,10 @@
      иначе он «отлипает» на своей же короткой высоте. */
   .services-catalog { display: flex; align-items: stretch; min-height: 0; padding: 4.1667vw 3.125vw 0; }
   .services-catalog::after { position: absolute; top: auto; right: 3.125vw; bottom: 0; left: 3.125vw; height: 1px; background: var(--dark); content: ""; }
-  .services-catalog__intro { flex: 0 0 31.6667vw; width: 31.6667vw; height: auto; padding-top: 1.7188vw; border-top: var(--line); border-right: var(--line); border-bottom: 0; }
+  .services-catalog__intro { flex: 0 0 31.6667vw; width: 31.6667vw; min-height: 0; padding-top: 1.7188vw; border-top: var(--line); border-right: var(--line); border-bottom: 0; }
   /* Отступ сверху 100px (точка прилипания) и снизу 100px (нижняя граница
      через margin-bottom — прижатый блок отлипает за 100px до конца каталога). */
-  .services-catalog__intro-sticky { display: block; position: sticky; top: 100px; height: max-content; margin-bottom: 100px; }
+  .services-catalog__intro-sticky { display: block; position: sticky; top: min(100px,5.2083vw); height: max-content; margin-bottom: min(100px,5.2083vw); }
   .services-catalog__intro h2 { font-size: .8333vw; }
   .services-catalog__image { width: 22.6563vw; height: 15.3125vw; margin-top: 5.4688vw; }
   .service-accordion { display: flex; flex: 1; min-width: 0; margin: 0; flex-direction: column; border-top: 1px solid var(--dark); border-bottom: 1px solid var(--dark); }
@@ -632,30 +628,33 @@
   .service-accordion__panel-copy p:nth-child(2),
   .service-accordion__panel-link { font-size: .8333vw; }
 
-  .advantages { height: 86.4063vw; min-height: 0; padding: 0; overflow: hidden; }
+  .advantages { min-height: 86.4063vw; padding: 8.3333vw 0 8.3334vw 3.125vw; overflow: hidden; }
   .advantages::before { position: absolute; top: 15.1042vw; bottom: 0; left: 3.125vw; width: 1px; background: var(--dark); box-shadow: 31.6146vw 0 var(--dark), 63.1771vw 0 var(--dark); content: ""; }
   .advantages::after { position: absolute; top: 0; left: 34.7396vw; width: 1px; height: 8.3333vw; background: var(--dark); box-shadow: 31.5625vw 0 var(--dark); content: ""; }
-  .advantages__title { position: absolute; top: 8.3333vw; left: 3.125vw; display: block; font-size: 6.7708vw; white-space: nowrap; }
+  .advantages__title { position: static; inset: auto; display: block; width: max-content; font-size: 6.7708vw; white-space: nowrap; }
   .advantages__title span:last-child { margin-left: 7.2396vw; }
-  .advantages__grid { position: absolute; inset: 0; display: block; margin: 0; }
-  .advantage-card { position: absolute; width: 22.1354vw; height: 22.1354vw; padding: 1.5625vw 2.0833vw 1.5625vw 1.5625vw; }
-  .advantage-card::before { position: absolute; z-index: 0; top: -1px; bottom: -1px; left: -1vw; width: 1vw; background: var(--light); content: ""; }
+  /* gap: 0 обязателен — базовое правило задаёт 15px, и они разъехались бы
+     по колонкам и рядам. align-items: start не даёт карточке растянуться на
+     всю высоту ряда: ряд выше её на величину разбега соседей. */
+  .advantages__grid { position: static; inset: auto; display: grid; width: max-content; margin: 5.2083vw 0 0 .8854vw; gap: 0; grid-template-columns: 31.6146vw 31.5625vw 22.1354vw; align-items: start; justify-items: start; }
+  .advantage-card { position: relative; width: 22.1354vw; min-height: 22.1354vw; padding: 1.5625vw 2.0833vw 1.5625vw 1.5625vw; }
+  .advantage-card::before { position: absolute; z-index: 0; top: -1px; bottom: -1px; left: -1vw; width: calc(1vw - 1px); background: var(--light); content: ""; }
   .advantage-card strong { font-size: 4.1667vw; }
   .advantage-card p { font-size: .8333vw; }
-  .advantage-card:nth-child(1) { top: 20.3125vw; left: 4.0104vw; }
-  .advantage-card:nth-child(2) { top: 25.4688vw; left: 35.625vw; }
-  .advantage-card:nth-child(3) { top: 22.0833vw; left: 67.1875vw; }
-  .advantage-card:nth-child(4) { top: 50.9896vw; left: 4.0104vw; }
-  .advantage-card:nth-child(5) { top: 55.9375vw; left: 35.625vw; }
-  .advantage-card:nth-child(6) { top: 52.5521vw; left: 67.1875vw; }
+  /* Разбег карточек по вертикали внутри своего ряда. */
+  .advantage-card:nth-child(2) { margin-top: 5.1563vw; }
+  .advantage-card:nth-child(3) { margin-top: 1.7708vw; }
+  .advantage-card:nth-child(4) { margin-top: 3.3854vw; }
+  .advantage-card:nth-child(5) { margin-top: 8.3333vw; }
+  .advantage-card:nth-child(6) { margin-top: 4.9479vw; }
 
-  .services-cta { height: 36.4583vw; }
-  .services-cta__image { width: 34.7396vw; height: 36.4583vw; }
+  .services-cta { min-height: 36.4583vw; padding: 8.3333vw 0 8.3334vw 42.2396vw; }
+  .services-cta__image { bottom: 0; width: 34.7396vw; height: auto; }
   .services-cta__image > img:first-child,
   .services-cta__image > .dither-photo__canvas { object-position: 33% center; }
-  .services-cta__title { top: 8.3333vw; left: 42.2396vw; font-size: 6.7708vw; }
-  .services-cta__descriptor { top: 10.9896vw; left: 67.6042vw; width: 16.4583vw; font-size: 1.25vw; }
-  .services-cta__button { top: 23.9583vw; left: 42.6042vw; width: 16.5625vw; }
+  .services-cta__title { font-size: 6.7708vw; }
+  .services-cta__descriptor { position: absolute; top: 10.9896vw; left: 67.6042vw; width: 16.4583vw; margin-top: 0; font-size: 1.25vw; }
+  .services-cta__button { width: 16.5625vw; margin: 2.0833vw 0 0 .3646vw; }
 }
 
 @media (prefers-reduced-motion: reduce) {

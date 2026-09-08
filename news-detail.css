@@ -2,7 +2,11 @@
   background: var(--light);
 }
 
-.news-detail-page .video-frame__media {
+/* Обложка и сцена плеера — две половины одной коробки: переопределять
+   геометрию нужно всегда парой, иначе панель управления разъедется с
+   картинкой. video-player.js дополнительно сверяет их и выравнивает. */
+.news-detail-page .video-frame__media,
+.news-detail-page .video-frame__stage {
   inset: 0;
 }
 
@@ -272,6 +276,11 @@
   .news-detail-footer {
     height: 22.8646vw;
   }
+}
+
+@media (min-width: 1200px) and (max-width: 1919px) {
+  .news-detail-page .video-section { height: 44.0625vw; padding-bottom: 8.3333vw; }
+  .news-detail-page .video-frame { left: 18.2813vw; width: 63.4375vw; }
 }
 
 @media (min-width: 600px) and (max-width: 1199px) {
