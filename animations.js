@@ -670,7 +670,8 @@
       '.menu-panel__contacts-links a',
       '.contacts-info__links a',
       '.news-detail__back',
-      '.project-detail__back'
+      '.project-detail__back',
+      '.not-found__links a'
     ].join(', '));
     if (!links.length || !window.ScrambleTextPlugin) return;
 
