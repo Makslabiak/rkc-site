@@ -25,6 +25,12 @@
     const image = document.createElement('img');
     image.src = project.image;
     image.alt = project.alt || project.title;
+    /* Размеры кадра из данных: без них браузер не знает пропорций до загрузки
+       и первый экран каталога дёргается. Пропорции всё равно задаёт CSS. */
+    if (project.width && project.height) {
+      image.width = project.width;
+      image.height = project.height;
+    }
     image.loading = 'lazy';
     image.decoding = 'async';
     media.append(image);

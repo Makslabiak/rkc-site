@@ -3,10 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Проекты ООО «РКС-НР» — строительство и восстановление объектов">
   <title>Проекты — РКС-НР</title>
+  <meta name="description" content="Проекты ООО «РКС-НР»: восстановление и строительство жилых домов, образовательных и медицинских учреждений, коммунальной инфраструктуры в новых регионах России.">
+  <link rel="canonical" href="https://rks-nr.ru/projects.html">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+
+  <!-- Open Graph и Twitter: превью при отправке ссылки в мессенджеры и соцсети.
+       og:url и og:image должны быть абсолютными — при переносе на боевой домен
+       поменять origin здесь и в canonical. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="РКС-НР">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://rks-nr.ru/projects.html">
+  <meta property="og:title" content="Проекты — РКС-НР">
+  <meta property="og:description" content="Восстановление и строительство жилых домов, образовательных и медицинских учреждений, коммунальной инфраструктуры.">
+  <meta property="og:image" content="https://rks-nr.ru/assets/images/figma/home-clean/hero.webp">
+  <meta property="og:image:width" content="2048">
+  <meta property="og:image:height" content="1142">
+  <meta property="og:image:alt" content="Панорама восстановленного города">
+  <meta name="twitter:card" content="summary_large_image">
+
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" sizes="any">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" sizes="120x120">
+
+  <!-- Два начертания, которыми набраны обложка и фильтр. -->
+  <link rel="preload" href="assets/fonts/LTSuperior-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/Roboto-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20260908-30">
   <link rel="stylesheet" href="projects-page.css?v=20260907-4">
   <script src="page-entry.js?v=20260906-1"></script>
@@ -16,10 +38,10 @@
   <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
   <script src="assets/vendor/SplitText.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
-  <script src="site-header.js?v=20260903-2" defer></script>
-  <script src="script.js?v=20260906-3" defer></script>
-  <script src="projects-page.js?v=20260907-4" defer></script>
-  <script src="services-dither.js?v=20260906-2" defer></script>
+  <script src="site-header.js?v=20260906-2" defer></script>
+  <script src="script.js?v=20260908-13" defer></script>
+  <script src="projects-page.js?v=20260908-1" defer></script>
+  <script src="services-dither.js?v=20260908-3" defer></script>
   <script src="animations.js?v=20260908-1" defer></script>
 </head>
 <body class="projects-page" data-site-page="projects">
@@ -74,9 +96,9 @@
         <a href="projects.html" aria-current="page">Проекты</a>
         <a href="news.html">Новости</a>
         <a href="contacts.html">Контакты</a>
-        <a href="#">Охрана труда</a>
-        <a href="#">Этика и&nbsp;ответственность</a>
-        <a href="#">Противодействие коррупции</a>
+        <span class="footer__nav-pending">Охрана труда</span>
+        <span class="footer__nav-pending">Этика и&nbsp;ответственность</span>
+        <span class="footer__nav-pending">Противодействие коррупции</span>
       </nav>
       <div class="footer__socials"><a href="https://max.ru/rks_nr" target="_blank" rel="noopener noreferrer">MAX</a><a href="https://t.me/rks_nr" target="_blank" rel="noopener noreferrer">Telegram</a></div>
     </div>
@@ -97,6 +119,8 @@
         "categoryLabel": "Восстановление",
         "url": "project-detail.html",
         "image": "assets/images/projects/project-01.webp",
+        "width": 500,
+        "height": 350,
         "alt": "Жилой дом с цветным фасадом в Мариуполе"
       },
       {
@@ -107,6 +131,8 @@
         "categoryLabel": "Восстановление",
         "url": "project-detail.html",
         "image": "assets/images/projects/project-02.webp",
+        "width": 500,
+        "height": 350,
         "alt": "Фасад жилого дома с муралом"
       },
       {
@@ -117,6 +143,8 @@
         "categoryLabel": "Восстановление",
         "url": "project-detail.html",
         "image": "assets/images/projects/project-03.webp",
+        "width": 500,
+        "height": 350,
         "alt": "Восстановленный многоквартирный дом"
       },
       {
@@ -127,9 +155,22 @@
         "categoryLabel": "Восстановление",
         "url": "project-detail.html",
         "image": "assets/images/projects/project-04.webp",
+        "width": 500,
+        "height": 350,
         "alt": "Многоквартирный дом после восстановления"
       }
     ]
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://rks-nr.ru/" },
+      { "@type": "ListItem", "position": 2, "name": "Проекты", "item": "https://rks-nr.ru/projects.html" }
+    ]
+  }
   </script>
 </body>
 </html>

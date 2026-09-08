@@ -3,12 +3,35 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Новости ООО «РКС-НР» — восстановление дома на проспекте Маршала Жукова">
   <title>Восстановление дома на проспекте Маршала Жукова — РКС-НР</title>
+  <meta name="description" content="ООО «РКС-НР» совместно с Фондом капитального ремонта Московской области завершили восстановление дома 1993 года постройки на проспекте Маршала Жукова.">
+  <link rel="canonical" href="https://rks-nr.ru/news-detail.html">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+
+  <!-- Open Graph и Twitter: превью при отправке ссылки в мессенджеры и соцсети.
+       og:url и og:image должны быть абсолютными — при переносе на боевой домен
+       поменять origin здесь и в canonical. -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="РКС-НР">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://rks-nr.ru/news-detail.html">
+  <meta property="og:title" content="Восстановление дома на проспекте Маршала Жукова">
+  <meta property="og:description" content="РКС-НР совместно с Фондом капитального ремонта Московской области завершили восстановление дома 1993 года постройки.">
+  <meta property="og:image" content="https://rks-nr.ru/assets/images/news-detail-hero.webp">
+  <meta property="og:image:width" content="2048">
+  <meta property="og:image:height" content="1332">
+  <meta property="og:image:alt" content="Восстановленный дом на проспекте Маршала Жукова">
+  <meta name="twitter:card" content="summary_large_image">
+
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" sizes="any">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" sizes="120x120">
+
+  <!-- Первый экран: кадр статьи и два начертания, которыми набран заголовок. -->
+  <link rel="preload" href="assets/images/news-detail-hero.webp" as="image" fetchpriority="high">
+  <link rel="preload" href="assets/fonts/LTSuperior-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/Roboto-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20260908-30">
-  <link rel="stylesheet" href="news-detail.css?v=20260907-2">
+  <link rel="stylesheet" href="news-detail.css?v=20260908-1">
   <script src="page-entry.js?v=20260906-1"></script>
   <script>document.documentElement.classList.add('has-anim');</script>
   <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
@@ -16,11 +39,11 @@
   <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
   <script src="assets/vendor/SplitText.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
-  <script src="site-header.js?v=20260903-2" defer></script>
-  <script src="script.js?v=20260907-5" defer></script>
-  <script src="video-player.js?v=20260907-3" defer></script>
+  <script src="site-header.js?v=20260906-2" defer></script>
+  <script src="script.js?v=20260908-13" defer></script>
+  <script src="video-player.js?v=20260908-4" defer></script>
   <script src="news-detail.js?v=20260906-2" defer></script>
-  <script src="services-dither.js?v=20260907-1" defer></script>
+  <script src="services-dither.js?v=20260908-3" defer></script>
   <script src="animations.js?v=20260908-1" defer></script>
 </head>
 <body class="news-detail-page" data-site-page="news-detail">
@@ -44,7 +67,7 @@
 
       <article class="news-detail__body">
         <div class="news-detail__hero image-tone">
-          <img src="assets/images/news-detail-hero.webp" width="2048" height="1332" alt="Восстановленный дом на проспекте Маршала Жукова">
+          <img src="assets/images/news-detail-hero.webp" width="2048" height="1332" alt="Восстановленный дом на проспекте Маршала Жукова" fetchpriority="high" decoding="async">
         </div>
         <div class="news-detail__copy">
           <p>Компания ООО «РКС-НР» с привлечением подрядной организации ООО «Трансюжстрой» выполнила ремонт многоквартирного жилого дома на Харлампиевской улице в Мариуполе.</p>
@@ -58,8 +81,8 @@
           <p>Пережил и нынешние тяжёлые события. Сегодня он снова стоит обновлённый, усиленный, но всё такой же узнаваемый.</p>
         </div>
         <div class="news-detail__gallery" data-news-gallery aria-label="Фотографии восстановленного дома">
-          <div class="image-tone"><img src="assets/images/news-detail-gallery.webp" width="330" height="220" alt="Фасад восстановленного дома" loading="lazy"></div>
-          <div class="image-tone"><img src="assets/images/news-detail-gallery.webp" width="330" height="220" alt="Фасад восстановленного дома, вид сбоку" loading="lazy"></div>
+          <div class="image-tone"><img src="assets/images/news-detail-gallery.webp" width="330" height="220" alt="Фасад восстановленного дома" loading="lazy" decoding="async"></div>
+          <div class="image-tone"><img src="assets/images/news-detail-gallery.webp" width="330" height="220" alt="Фасад восстановленного дома, вид сбоку" loading="lazy" decoding="async"></div>
         </div>
       </article>
     </section>
@@ -67,9 +90,9 @@
     <section class="video-section" aria-label="Видео о компании">
       <div class="video-frame" data-video-player>
         <div class="video-frame__media image-tone image-tone--hero">
-          <img src="assets/images/news-detail-video.webp" width="330" height="220" alt="Восстановленный дом на видео">
+          <img src="assets/images/news-detail-video.webp" width="330" height="220" alt="Восстановленный дом на видео" loading="lazy" decoding="async">
         </div>
-        <video class="video-frame__video" poster="assets/images/news-detail-video.webp" preload="metadata" playsinline webkit-playsinline controls aria-label="Видео о компании">
+        <video class="video-frame__video" poster="assets/images/news-detail-video.webp" preload="none" playsinline webkit-playsinline controls aria-label="Видео о компании">
           <source src="assets/videos/company.mp4" type="video/mp4">
           <p>Ваш браузер не поддерживает встроенное видео.
             <a href="assets/videos/company.mp4">Скачать ролик</a>.</p>
@@ -90,9 +113,9 @@
         <a href="projects.html">Проекты</a>
         <a href="news.html">Новости</a>
         <a href="contacts.html">Контакты</a>
-        <a href="#">Охрана труда</a>
-        <a href="#">Этика и ответственность</a>
-        <a href="#">Противодействие коррупции</a>
+        <span class="footer__nav-pending">Охрана труда</span>
+        <span class="footer__nav-pending">Этика и ответственность</span>
+        <span class="footer__nav-pending">Противодействие коррупции</span>
       </nav>
       <div class="footer__socials"><a href="https://max.ru/rks_nr" target="_blank" rel="noopener noreferrer">MAX</a><a href="https://t.me/rks_nr" target="_blank" rel="noopener noreferrer">Telegram</a></div>
     </div>
@@ -102,5 +125,30 @@
     </div>
     <p class="footer__copyright">© ООО «РКС-НР», 2026. Все права защищены</p>
   </footer>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://rks-nr.ru/" },
+      { "@type": "ListItem", "position": 2, "name": "Новости", "item": "https://rks-nr.ru/news.html" },
+      { "@type": "ListItem", "position": 3, "name": "Восстановление дома на проспекте Маршала Жукова", "item": "https://rks-nr.ru/news-detail.html" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": "Восстановление дома на проспекте Маршала Жукова",
+    "description": "ООО «РКС-НР» совместно с Фондом капитального ремонта Московской области завершили восстановление дома 1993 года постройки.",
+    "image": "https://rks-nr.ru/assets/images/news-detail-hero.webp",
+    "datePublished": "2026-02-02",
+    "mainEntityOfPage": "https://rks-nr.ru/news-detail.html",
+    "author": { "@id": "https://rks-nr.ru/#organization" },
+    "publisher": { "@id": "https://rks-nr.ru/#organization" }
+  }
+  </script>
 </body>
 </html>
