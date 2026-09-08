@@ -817,19 +817,28 @@
     if (!steps || !stairs.length || !section) return;
 
     gsap.fromTo(steps, {
+      visibility: 'hidden',
       scaleX: 0,
       transformOrigin: 'left center',
       force3D: true
     }, {
+      visibility: 'visible',
       scaleX: 1,
       transformOrigin: 'left center',
       force3D: true,
       ease: 'power2.out',
       scrollTrigger: {
-        trigger: stairs[stairs.length - 1],
-        start: 'top 100%',
+        trigger: section,
+        start: 1,
         endTrigger: section,
-        end: 'bottom 45%',
+        end: function () {
+          /* На мобильном и планшете прежняя точка end оказывалась почти
+             рядом со start. Полная высота фотоблока даёт ровный длинный
+             ход ступеней и одинаковый темп на обеих ширинах. */
+          return window.matchMedia('(max-width: 1199px)').matches
+            ? '+=' + section.offsetHeight
+            : 'bottom 45%';
+        },
         scrub: 0.35,
         invalidateOnRefresh: true
       }

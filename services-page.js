@@ -8,7 +8,43 @@
   const closeDuration = 420;
   const contentOffset = 'translate3d(0, -48px, 0)';
   const scrollOffset = 100;
+  const accordion = items[0].closest('.service-accordion');
+  const hoverMedia = window.matchMedia('(min-width: 1200px) and (hover: hover)');
   let deferredScrollTimer = 0;
+  let hoveredItem = null;
+  let hoverFrame = 0;
+
+  function positionHoverIndicator(item, initial = false) {
+    if (!accordion || !hoverMedia.matches || !item) return;
+
+    const accordionRect = accordion.getBoundingClientRect();
+    const itemRect = item.getBoundingClientRect();
+    accordion.style.setProperty('--service-hover-y', `${itemRect.top - accordionRect.top}px`);
+    accordion.style.setProperty('--service-hover-height', `${itemRect.height}px`);
+
+    if (initial) {
+      accordion.classList.add('is-hover-initializing');
+      cancelAnimationFrame(hoverFrame);
+      hoverFrame = requestAnimationFrame(() => {
+        accordion.classList.remove('is-hover-initializing');
+      });
+    }
+  }
+
+  function activateHover(item) {
+    if (!accordion || !hoverMedia.matches) return;
+    const initial = !hoveredItem;
+    hoveredItem = item;
+    items.forEach((otherItem) => otherItem.classList.toggle('is-hovered', otherItem === item));
+    positionHoverIndicator(item, initial);
+    accordion.classList.add('has-hover');
+  }
+
+  function clearHover() {
+    hoveredItem = null;
+    items.forEach((item) => item.classList.remove('is-hovered'));
+    accordion?.classList.remove('has-hover', 'is-hover-initializing');
+  }
 
   function stopCurrentScroll() {
     if (window.lenis && typeof window.lenis.scrollTo === 'function') {
@@ -129,22 +165,8 @@
 
   items.forEach((item) => {
     const button = item.querySelector('.service-accordion__header');
-    let leaveTimer = 0;
-
-    item.addEventListener('mouseleave', () => {
-      if (item.classList.contains('is-open')) return;
-
-      item.classList.add('is-hover-leaving');
-      window.clearTimeout(leaveTimer);
-      leaveTimer = window.setTimeout(() => {
-        item.classList.remove('is-hover-leaving');
-      }, 400);
-    });
-
-    item.addEventListener('mouseenter', () => {
-      window.clearTimeout(leaveTimer);
-      item.classList.remove('is-hover-leaving');
-    });
+    item.addEventListener('pointerenter', () => activateHover(item));
+    button?.addEventListener('focus', () => activateHover(item));
 
     button?.addEventListener('click', () => {
       window.clearTimeout(deferredScrollTimer);
@@ -159,6 +181,7 @@
         }
       });
       setItemState(item, willOpen);
+      requestAnimationFrame(() => positionHoverIndicator(hoveredItem));
       if (willOpen) {
         // The closing panel changes the position of every item below it.
         // Measure the target only after that collapse has finished.
@@ -174,6 +197,25 @@
         }
       }
     });
+  });
+
+  accordion?.addEventListener('pointerleave', clearHover);
+  accordion?.addEventListener('focusout', () => {
+    requestAnimationFrame(() => {
+      if (!accordion.contains(document.activeElement)) clearHover();
+    });
+  });
+
+  if ('ResizeObserver' in window && accordion) {
+    const hoverResizeObserver = new ResizeObserver(() => {
+      if (hoveredItem) positionHoverIndicator(hoveredItem);
+    });
+    hoverResizeObserver.observe(accordion);
+    items.forEach((item) => hoverResizeObserver.observe(item));
+  }
+
+  hoverMedia.addEventListener?.('change', () => {
+    clearHover();
   });
 
   const openFromHash = () => {

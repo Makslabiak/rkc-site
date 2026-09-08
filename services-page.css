@@ -32,9 +32,7 @@
   line-height: 1;
 }
 
-/* Высота кадра задана min-height, а положение лида — отступами секции:
-   фотография лежит абсолютным слоем на всю секцию, поэтому лиду достаточно
-   position: relative ради z-index над ней. */
+/* Фотография и ступени лежат абсолютными слоями на всю секцию. */
 .services-hero {
   position: relative;
   min-height: 420px;
@@ -66,6 +64,7 @@
 }
 
 .has-anim .services-hero__steps {
+  visibility: hidden;
   transform: scaleX(0);
 }
 
@@ -76,13 +75,15 @@
   background: var(--light);
 }
 
-/* На узких экранах две верхние ступени не заходят под светлый лид. */
-.services-hero__steps span:nth-child(1) { top: 37.3974%; width: 6.9792%; height: 22.6026%; }
-.services-hero__steps span:nth-child(2) { top: 60%; width: 14%; height: 24%; }
-.services-hero__steps span:nth-child(3) { top: 84%; bottom: -2px; width: 50.5208%; }
+/* Пропорции состояния scroll из макета 1920 × 853. */
+.services-hero__steps span:nth-child(1) { top: 37.3974%; width: 6.9792%; height: 18.9918%; }
+.services-hero__steps span:nth-child(2) { top: 56.3892%; width: 26.875%; height: 22.0399%; }
+.services-hero__steps span:nth-child(3) { top: 78.4291%; bottom: -2px; width: 50.5208%; }
 
 .services-hero__title {
-  position: relative;
+  position: absolute;
+  top: 40px;
+  right: 15px;
   z-index: 3;
   width: 240px;
   font-family: "LT Superior", Arial, sans-serif;
@@ -369,6 +370,22 @@
   line-height: 1.04;
 }
 
+.advantage-card__content {
+  display: flex;
+  width: 100%;
+  margin-top: auto;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.advantage-card__content h3 {
+  width: min(336px, 100%);
+  font-family: "LT Superior", Arial, sans-serif;
+  font-size: 30px;
+  font-weight: 450;
+  line-height: 1.1;
+}
+
 .advantage-card p {
   font-size: 16px;
   font-weight: 400;
@@ -392,7 +409,7 @@
   }
 
   .advantage-card {
-    min-height: 176px;
+    min-height: 330px;
     justify-content: flex-start;
     gap: 25.38px;
     padding: 20.16px;
@@ -403,9 +420,12 @@
     font-size: 57.6px;
   }
 
+  .advantage-card__content { gap: 12px; }
+  .advantage-card__content h3 { width: min(255.6px, 100%); font-size: 20px; }
+
   .advantage-card p {
     width: min(255.6px, 100%);
-    font-size: 11.52px;
+    font-size: 12px;
   }
 }
 
@@ -463,7 +483,7 @@
   .services-cover__title { width: auto; font-size: 100px; }
 
   .services-hero { min-height: 550px; padding: 291px 0 89px 115px; }
-  .services-hero__title { width: min(426px, 55.4688vw); min-height: 170px; font-family: "LT Superior", Arial, sans-serif; font-size: 30px; font-weight: 450; }
+  .services-hero__title { top: 60px; right: 4.1667vw; width: min(426px, 55.4688vw); min-height: 170px; font-family: "LT Superior", Arial, sans-serif; font-size: 30px; font-weight: 450; }
 
   .services-catalog { padding: 60px 4.1667vw 40px; }
   .services-catalog__intro { min-height: 300px; }
@@ -505,12 +525,21 @@
   .service-accordion__panel ul { gap: 12px; margin: 0; }
   .service-accordion__panel li { padding-left: 23px; font-family: "Roboto", Arial, sans-serif; font-size: 14.08px; font-weight: 400; line-height: 1.2; }
 
-  .advantages { min-height: 1420px; padding: 80px 4.1667vw 60px; }
-  .advantages__title { font-size: 80px; }
-  .advantages__title span + span { margin-top: 14px; }
-  .advantages__grid { grid-template-columns: repeat(2, 1fr); gap: 20px 16px; margin-top: 74px; }
-  .advantage-card { width: 100%; min-height: 330px; padding: 33px 37px; }
-  .advantage-card strong { font-size: 60px; }
+  .advantages { min-height: 1420px; padding: 50px 4.1667vw 60px; }
+  .advantages__title { width: 573px; font-size: 75px; }
+  .advantages__title span + span { margin-top: 0; }
+  .advantages__grid {
+    width: 86.7188vw;
+    margin: 62px 0 0 2.0833vw;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 7.0313vw;
+    row-gap: 44px;
+  }
+  .advantage-card { width: 100%; min-height: 0; aspect-ratio: 1; padding: 20.88px; border-width: .72px; }
+  .advantage-card strong { font-size: 57.6px; }
+  .advantage-card__content { gap: 14px; }
+  .advantage-card__content h3 { font-size: 22px; }
+  .advantage-card p { width: 100%; font-size: 14px; }
   .advantage-card:nth-child(4) { grid-column: 2; grid-row: 2; }
   .advantage-card:nth-child(5) { grid-column: 1; grid-row: 3; }
   .advantage-card:nth-child(6) { grid-column: 2; grid-row: 3; }
@@ -560,11 +589,7 @@
   .services-cover__title { width: auto; font-size: 6.7708vw; }
 
   .services-hero { min-height: 44.4271vw; padding: 26.3021vw 0 5.625vw 66.3021vw; }
-  .services-hero__title { width: 30.4167vw; min-height: 0; max-width: 584px; font-family: "LT Superior", Arial, sans-serif; font-size: 2.0833vw; font-weight: 450; line-height: 1; }
-  /* Геометрия состояния scroll из макета 1920 × 853. */
-  .services-hero__steps span:nth-child(1) { top: 37.3974%; width: 6.9792%; height: 18.9918%; }
-  .services-hero__steps span:nth-child(2) { top: 56.3892%; width: 26.875%; height: 22.0399%; }
-  .services-hero__steps span:nth-child(3) { top: 78.4291%; bottom: -2px; width: 50.5208%; }
+  .services-hero__title { position: relative; top: auto; right: auto; width: 30.4167vw; min-height: 0; max-width: 584px; font-family: "LT Superior", Arial, sans-serif; font-size: 2.0833vw; font-weight: 450; line-height: 1; }
 
   /* Высоту секции задаёт сам аккордеон, жёсткого min-height нет — фиксация
      держится ровно столько, сколько длится список услуг, и подстроится под
@@ -580,8 +605,13 @@
   .services-catalog__intro-sticky { display: block; position: sticky; top: min(100px,5.2083vw); height: max-content; margin-bottom: min(100px,5.2083vw); }
   .services-catalog__intro h2 { font-size: .8333vw; }
   .services-catalog__image { width: 22.6563vw; height: 15.3125vw; margin-top: 5.4688vw; }
-  .service-accordion { display: flex; flex: 1; min-width: 0; margin: 0; flex-direction: column; border-top: 1px solid var(--dark); border-bottom: 1px solid var(--dark); }
-  .service-accordion__item { position: relative; width: 100%; margin-left: 0; border-top: 0; }
+  .service-accordion { --service-hover-y: 0px; --service-hover-height: 15.625vw; position: relative; isolation: isolate; display: flex; flex: 1; min-width: 0; margin: 0; flex-direction: column; overflow: hidden; border-top: 1px solid var(--dark); border-bottom: 1px solid var(--dark); background: var(--light); }
+  /* Запас по пикселю сверху и снизу перекрывает субпиксельный зазор между
+     подложкой и разделителем во время translate-анимации. */
+  .service-accordion::after { position: absolute; z-index: 0; top: -1px; right: 0; left: 0; height: calc(var(--service-hover-height) + 2px); background: var(--dark); content: ""; opacity: 0; pointer-events: none; transform: translate3d(0,var(--service-hover-y),0); transition: transform 320ms cubic-bezier(.22,1,.36,1),height 320ms cubic-bezier(.22,1,.36,1); }
+  .service-accordion.has-hover::after { opacity: 1; }
+  .service-accordion.is-hover-initializing::after { transition: none; }
+  .service-accordion__item { position: relative; z-index: 1; width: 100%; margin-left: 0; border-top: 0; background: transparent; transition: color 220ms ease; }
   .service-accordion__item:not(:first-child)::before {
     position: absolute;
     z-index: 2;
@@ -595,10 +625,7 @@
   .service-accordion__item:first-child { border-top: 0; }
   .service-accordion__item:last-child { border-bottom: 0; }
   .service-accordion__item.is-open { width: 100%; margin-left: 0; border-top: 0; }
-  .service-accordion__item:not(.is-open):not(.is-hover-leaving):hover {
-    color: var(--light);
-    background: var(--dark);
-  }
+  .service-accordion__item.is-hovered { color: var(--light); }
   .service-accordion__header {
     display: grid;
     height: auto;
@@ -635,27 +662,16 @@
     transition: transform 500ms cubic-bezier(.165, .84, .44, 1);
     grid-area: auto;
   }
-  .service-accordion__item:not(.is-open):not(.is-hover-leaving):hover .service-accordion__toggle {
+  .service-accordion__item:not(.is-open).is-hovered .service-accordion__toggle {
     border-color: var(--dark);
     background: var(--light);
     pointer-events: auto;
     transform: scale(1);
   }
-  .service-accordion__item:not(.is-open):not(.is-hover-leaving):hover .service-accordion__toggle::before {
+  .service-accordion__item:not(.is-open).is-hovered .service-accordion__toggle::before {
     background: var(--dark);
     transform: rotate(180deg) scale(1);
     transition-delay: 100ms;
-  }
-  .service-accordion__item:not(.is-open).is-hover-leaving .service-accordion__toggle {
-    border-color: var(--dark);
-    background: var(--light);
-    pointer-events: none;
-    transform: scale(0);
-  }
-  .service-accordion__item:not(.is-open).is-hover-leaving .service-accordion__toggle::before {
-    background: var(--dark);
-    transform: rotate(180deg);
-    transition-delay: 0ms;
   }
   .service-accordion__item:first-child:not(.is-open) .service-accordion__toggle { top: auto; bottom: 0; }
   .service-accordion__item:not(:first-child) .service-accordion__header { min-height: 15.625vw; }
@@ -684,6 +700,8 @@
   .advantage-card { position: relative; width: 22.1354vw; min-height: 22.1354vw; padding: 1.5625vw 2.0833vw 1.5625vw 1.5625vw; }
   .advantage-card::before { position: absolute; z-index: 0; top: -1px; bottom: -1px; left: -1vw; width: calc(1vw - 1px); background: var(--light); content: ""; }
   .advantage-card strong { font-size: 4.1667vw; }
+  .advantage-card__content { gap: 1.0417vw; }
+  .advantage-card__content h3 { width: 17.5vw; font-size: 1.5625vw; }
   .advantage-card p { font-size: .8333vw; }
   /* Разбег карточек по вертикали внутри своего ряда. */
   .advantage-card:nth-child(2) { margin-top: 5.1563vw; }
@@ -702,6 +720,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .services-hero__steps { display: none; }
+  .service-accordion::after,
   .service-accordion__item,
   .service-accordion__header,
   .service-accordion__toggle,
