@@ -2286,7 +2286,10 @@ body.menu-closing .hero__descriptor {
 /* Footer — mobile */
 .footer {
   position: relative;
+  display: flex;
   min-height: 871px;
+  flex-direction: column;
+  padding: 35px 0;
   overflow: hidden;
   color: var(--light);
   background: var(--dark);
@@ -2294,17 +2297,14 @@ body.menu-closing .hero__descriptor {
 }
 
 .footer__logo {
-  position: absolute;
-  top: 35px;
-  left: 15px;
   width: calc(100% - 30px);
   height: 66px;
+  margin-left: 15px;
 }
 
 .footer__nav {
-  position: absolute;
-  top: 156px;
-  left: 15px;
+  align-self: flex-start;
+  margin: 55px 0 0 15px;
 }
 
 .footer__nav nav,
@@ -2366,10 +2366,11 @@ body.menu-closing .hero__descriptor {
 }
 
 .footer__contacts {
-  position: absolute;
-  top: 563px;
-  left: 0;
   width: 100%;
+  /* Нижний auto забирает свободную высоту подвала (min-height больше
+     содержимого): копирайт остаётся прижат к низу, как когда стоял
+     координатой. Содержимое переросло min-height — отступ схлопывается. */
+  margin: 25px 0 auto;
   padding: 22px 15px 0;
   border-top: 1px solid rgba(240, 250, 255, 0.3);
 }
@@ -2390,9 +2391,8 @@ body.menu-closing .hero__descriptor {
 }
 
 .footer__copyright {
-  position: absolute;
-  top: 818px;
-  left: 15px;
+  align-self: flex-start;
+  margin: 51px 0 0 15px;
   font-size: 12.891px;
 }
 
@@ -2560,17 +2560,26 @@ body.menu-closing .hero__descriptor {
   .news-card__arrow::after { position: absolute; inset: 32%; background: var(--light); content: ""; -webkit-mask: url("assets/icons/arrow-back.svg") center / contain no-repeat; mask: url("assets/icons/arrow-back.svg") center / contain no-repeat; }
   .news-card--featured { color: var(--dark); background: transparent; }
 
-  .footer { min-height: 1056px; }
-  .footer__logo { top: 100px; left: 4.1667vw; width: 91.6667vw; height: 140px; }
-  .footer__nav { top: 358px; left: 4.1667vw; width: 44.53vw; min-height: 555px; padding: 20px 0 0 20px; border-left: 1px solid var(--light); }
+  /* Подвал: колонки сеткой вместо координат. Навигация начиналась на
+     4.1667vw, контакты — на calc(50% + 10px); третий трек и есть этот зазор,
+     поэтому колонки стоят там же, где стояли абсолютом. */
+  .footer {
+    display: grid;
+    grid-template-columns: 4.1667vw 44.53vw calc(50% + 10px - 48.6967vw) 44.53vw 1fr;
+    min-height: 1056px;
+    align-content: start;
+    padding: 100px 0 45px;
+  }
+  .footer__logo { grid-area: 1 / 2 / 2 / 6; width: 91.6667vw; height: 140px; margin: 0; }
+  .footer__nav { grid-area: 2 / 2 / 3 / 3; align-self: start; width: auto; min-height: 555px; margin: 118px 0 0; padding: 20px 0 0 20px; border-left: 1px solid var(--light); }
   .footer__nav nav { gap: 7px; }
   .footer__nav a,
   .footer__nav-pending { font-size: 21px; line-height: normal; }
   .footer__socials { gap: 15px; margin-top: 100px; }
-  .footer__contacts { top: 358px; left: calc(50% + 10px); width: 44.53vw; min-height: 555px; justify-content: space-between; padding: 20px 0 20px 20px; border-top: 0; border-left: 1px solid var(--light); }
+  .footer__contacts { grid-area: 2 / 4 / 3 / 5; align-self: start; width: auto; min-height: 555px; margin: 118px 0 0; justify-content: space-between; padding: 20px 0 20px 20px; border-top: 0; border-left: 1px solid var(--light); }
   .footer__contacts > div:first-child { gap: 10px; font-size: 21px; }
   .footer__legal { width: min(299px, 100%); gap: 15px; margin: 0; font-size: clamp(12.5px, 2.0833vw, 16px); line-height: normal; }
-  .footer__copyright { top: 988px; left: 50%; font-size: 16px; transform: translateX(-50%); white-space: nowrap; }
+  .footer__copyright { grid-area: 3 / 1 / 4 / 6; justify-self: center; margin: 75px 0 0; font-size: 16px; white-space: nowrap; }
 }
 
 @media (min-width: 1200px) {
@@ -2876,13 +2885,13 @@ body.menu-closing .hero__descriptor {
     display: grid;
     grid-template-columns: 3.125vw 47.3958vw 23.6979vw 21.6146vw 1fr;
     align-content: start;
-    padding-top: 1.5625vw;
+    padding: 1.5625vw 0 0;
     /* Расстояние от логотипа до копирайта в исходном кадре:
        20.3125vw - 1.5625vw - 7.6563vw. */
     row-gap: 11.0937vw;
   }
-  .footer__logo { position: static; inset: auto; grid-area: 1 / 2 / 2 / 3; width: 38.4375vw; height: 7.6563vw; }
-  .footer__nav { position: static; inset: auto; grid-area: 1 / 3 / 3 / 4; align-self: start; width: auto; min-height: 19.7396vw; padding: 1.0417vw 0 0 1.0417vw; border-left: 1px solid var(--light); }
+  .footer__logo { grid-area: 1 / 2 / 2 / 3; width: 38.4375vw; height: 7.6563vw; margin: 0; }
+  .footer__nav { grid-area: 1 / 3 / 3 / 4; align-self: start; width: auto; min-height: 19.7396vw; margin: 0; padding: 1.0417vw 0 0 1.0417vw; border-left: 1px solid var(--light); }
   .footer__nav nav,
   .footer__socials,
   .footer__contacts > div:first-child { align-items: flex-start; }
@@ -2892,12 +2901,12 @@ body.menu-closing .hero__descriptor {
   .footer__socials a,
   .footer__contacts > div:first-child a { width: fit-content; max-width: 100%; font-size: .8333vw; line-height: 1; }
   .footer__socials { gap: .3646vw; margin-top: auto; transform: translateY(6.2vw); }
-  .footer__contacts { position: static; inset: auto; grid-area: 1 / 4 / 3 / 5; align-self: start; display: flex; width: auto; min-height: 19.7396vw; justify-content: space-between; padding: 1.0417vw 0 0 1.0417vw; border: 0; border-left: 1px solid var(--light); }
+  .footer__contacts { grid-area: 1 / 4 / 3 / 5; align-self: start; display: flex; width: auto; min-height: 19.7396vw; margin: 0; justify-content: space-between; padding: 1.0417vw 0 0 1.0417vw; border: 0; border-left: 1px solid var(--light); }
   .footer__contacts > div:first-child { gap: .3646vw; font-size: .8333vw; line-height: 1; }
   .footer__legal { width: 15.625vw; gap: .5208vw; margin: 0 0 .5208vw; font-size: .8333vw; line-height: 1; }
   .footer__legal a { height: 2em; }
   .footer__legal-line { flex-basis: 1em; }
-  .footer__copyright { position: static; inset: auto; grid-area: 2 / 2 / 3 / 3; justify-self: start; margin: 0; font-size: .8333vw; white-space: nowrap; }
+  .footer__copyright { grid-area: 2 / 2 / 3 / 3; justify-self: start; margin: 0; font-size: .8333vw; white-space: nowrap; }
 }
 
 @media (prefers-reduced-motion: reduce) {
