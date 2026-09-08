@@ -1177,3 +1177,77 @@ document.addEventListener('keydown', (event) => {
    весь viewport. Прежняя реализация (canvas на каждую картинку +
    CPU-фолбэк) лежала здесь и была недостижима — SITE_DITHER_ENGINE
    выставляется в 'shared-webgl' в начале этого же файла. Удалена. */
+
+/* Ленивые картинки догружаются фоном, когда страница уже показана.
+
+   Зачем. Подготовка кадра для дизера — загрузка текстуры в видеопамять —
+   стоит около 60 мс главного потока и не зависит от размера картинки: это
+   не перекачка пикселей, а остановка конвейера GL. Пока картинки были
+   ленивыми, они долетали ровно в момент появления секции, и эта остановка
+   приходилась на анимацию её заголовка. Замер CDP на Intel HD 530: 13
+   загрузок из 18 попадали в прокрутку.
+
+   Теперь после входной анимации мы тихо доводим оставшиеся кадры по одному,
+   в свободное время. К моменту, когда пользователь доберётся до секции,
+   всё готово, и в прокрутку не приходится ничего. Замер: просевших кадров
+   при прокрутке 0 из 359.
+
+   Первый экран это не утяжеляет: файлы запрашиваются уже после загрузки
+   страницы и с низким приоритетом. */
+(function initLazyWarmup() {
+  /* Экономия трафика и медленная сеть — случай, когда лишнего качать нельзя:
+     пользователь сам попросил обратное. Там ленивость остаётся как была. */
+  const connection = navigator.connection;
+  if (connection && (connection.saveData
+      || /^(slow-)?2g$/.test(connection.effectiveType || ''))) return;
+
+  let busy = false;
+
+  function next() {
+    return document.querySelector('img[loading="lazy"]:not([data-warmed])');
+  }
+
+  function step() {
+    if (busy) return;
+    const image = next();
+    if (!image) return;
+    busy = true;
+    image.dataset.warmed = '1';
+    image.loading = 'eager';
+    if ('fetchPriority' in image) image.fetchPriority = 'low';
+    /* Следующий кадр берём только после того, как этот долетел: две
+       остановки конвейера подряд в одном кадре не нужны никому. */
+    const done = () => {
+      busy = false;
+      schedule();
+    };
+    if (image.complete && image.naturalWidth) {
+      window.setTimeout(done, 0);
+      return;
+    }
+    image.addEventListener('load', () => window.setTimeout(done, 0), { once: true });
+    image.addEventListener('error', done, { once: true });
+  }
+
+  function schedule() {
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(step, { timeout: 1500 });
+    } else {
+      window.setTimeout(step, 150);
+    }
+  }
+
+  /* Ждём не просто load, а конец входной анимации: лоадер держит экран 2 с,
+     потом полторы секунды въезжает заголовок первого экрана. Начни раньше —
+     и остановка конвейера придётся ровно на этот заголовок, то есть рывок
+     был бы перенесён, а не убран. */
+  let started = false;
+  function start() {
+    if (started) return;
+    started = true;
+    window.setTimeout(schedule, 1800);
+  }
+  window.addEventListener('site:loaded', start, { once: true });
+  /* Страховка для страниц без лоадера и на случай, если событие не пришло. */
+  window.setTimeout(start, 6000);
+})();
