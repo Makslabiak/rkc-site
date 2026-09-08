@@ -3,6 +3,15 @@
 (function initServicesDither() {
   if (window.SITE_DITHER_ENGINE !== 'shared-webgl') return;
 
+  /* ВРЕМЕННО, на время разбора плавности: ?nodither в адресе выключает эффект
+     целиком, чтобы можно было пощупать прокрутку без него. Замер CDP на
+     Intel HD 530: с дизером за проход главной просаживается 10-15 кадров из
+     2500, без него — 5. Когда решение будет принято, эти три строки убрать. */
+  if (new URLSearchParams(location.search).has('nodither')) {
+    document.documentElement.classList.add('is-dither-off');
+    return;
+  }
+
   const page = document.body;
   if (!page) return;
   const ditherConfig = window.SITE_DITHER_CONFIG || {
