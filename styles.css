@@ -355,17 +355,6 @@ html.is-page-leaving body {
   background: var(--blue);
 }
 
-/* Единый цветовой слой для всех фотографий — тот же, что используется в hero. */
-.image-tone::after {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  pointer-events: none;
-  background: rgba(8, 37, 84, 0.28);
-  content: "";
-  transition: opacity 260ms ease;
-}
-
 .image-tone::before {
   position: absolute;
   z-index: 3;
@@ -1289,11 +1278,6 @@ body.menu-closing .hero__descriptor {
   transform: scale(1.025);
 }
 
-.project-card__media:hover::after,
-.project-card__media:focus-visible::after {
-  opacity: 0;
-}
-
 .project-card__media:hover > img:first-child,
 .project-card__media:focus-visible > img:first-child {
   opacity: 1;
@@ -1518,8 +1502,7 @@ body.menu-closing .hero__descriptor {
   transition: opacity 260ms ease, visibility 0s linear 0s;
 }
 
-.video-frame.is-playing .video-frame__media::before,
-.video-frame.is-playing .video-frame__media::after {
+.video-frame.is-playing .video-frame__media::before {
   opacity: 0 !important;
 }
 
@@ -1527,11 +1510,6 @@ body.menu-closing .hero__descriptor {
   background:
     linear-gradient(rgba(8, 37, 84, 0.7), rgba(8, 37, 84, 0.7)),
     linear-gradient(180deg, rgba(0, 0, 0, 0) 46.57%, rgba(0, 0, 0, 0.3) 100%);
-}
-
-.video-frame__media::after {
-  z-index: 1;
-  background: rgba(8, 37, 84, 0.28);
 }
 
 .video-frame__ticker {
@@ -2124,8 +2102,7 @@ body.menu-closing .hero__descriptor {
 }
 
 .video-frame:not(.is-enhanced) .play-button { display: none; }
-.video-frame:not(.is-enhanced) .video-frame__media::before,
-.video-frame:not(.is-enhanced) .video-frame__media::after { display: none; }
+.video-frame:not(.is-enhanced) .video-frame__media::before { display: none; }
 .video-frame .play-button[hidden],
 .video-control[hidden] { display: none; }
 
@@ -3066,16 +3043,12 @@ html.is-loaded .loader {
   font-weight: 400 !important;
 }
 
-/* Собственные градиенты у ::before/::after каждого блока с фотографией
-   гасятся: общий тон задаётся ниже одним правилом .image-tone::before, а его
-   в свою очередь снимает дизер, когда действительно рисует картинку.
-
-   TODO при посекционном проходе по остальным страницам: .image-tone::after
-   после этих правил не рисует ничего и остаётся пустым абсолютным слоем.
-   Убирать его нужно вместе с зависящими правилами в project/service/video —
-   на главной они уже не работают, но проверять надо на всех страницах. */
-.image-tone::before,
-.image-tone::after {
+/* Собственные градиенты у ::before каждого блока с фотографией гасятся:
+   общий тон задаётся ниже одним правилом .image-tone::before, а его в свою
+   очередь снимает дизер, когда действительно рисует картинку. Второй слой
+   (::after) здесь же гасился до конца и не рисовал ничего — он убран вместе
+   с правилами, которые им управляли. */
+.image-tone::before {
   background: none !important;
   opacity: 1 !important;
 }

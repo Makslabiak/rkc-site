@@ -16,9 +16,7 @@
 }
 
 .news-detail-page .news-detail__hero:hover::before,
-.news-detail-page .news-detail__hero:hover::after,
-.news-detail-page .news-detail__gallery .image-tone:hover::before,
-.news-detail-page .news-detail__gallery .image-tone:hover::after {
+.news-detail-page .news-detail__gallery .image-tone:hover::before {
   opacity: 0;
 }
 

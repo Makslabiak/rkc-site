@@ -127,15 +127,12 @@
   transform: scale(1.025);
 }
 
-.news-page-card__image::before,
-.news-page-card__image::after {
+.news-page-card__image::before {
   transition: opacity 500ms cubic-bezier(.165, .84, .44, 1);
 }
 
 .news-page-card:hover .news-page-card__image::before,
-.news-page-card:hover .news-page-card__image::after,
-.news-page-card:focus-visible .news-page-card__image::before,
-.news-page-card:focus-visible .news-page-card__image::after {
+.news-page-card:focus-visible .news-page-card__image::before {
   opacity: 0;
 }
 
