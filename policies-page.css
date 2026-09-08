@@ -1,0 +1,25 @@
+@media (min-width: 600px) and (max-width: 1199px) {
+  .company-policies-page .documents-contact__details > p:last-child {
+    grid-column: 2;
+  }
+
+  .company-policies-page .document-section {
+    padding-right: 32px;
+    padding-left: 32px;
+  }
+
+  .company-policies-page .document-section__number {
+    display: none;
+  }
+
+  .company-policies-page .document-section__body {
+    width: 100%;
+  }
+}
+
+@media (max-width: 599px) {
+  .company-policies-page .documents-cover__title {
+    font-size: 38px;
+    white-space: nowrap;
+  }
+}
