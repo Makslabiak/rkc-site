@@ -20,7 +20,7 @@
     <section class="video-section" aria-label="Видео о компании">
       <div class="video-frame" data-video-player>
         <div class="video-frame__media image-tone image-tone--hero">
-          <img src="../assets/images/figma/home-clean/video-cover.webp" alt="Обложка">
+          <img src="../assets/images/home/video-cover.webp" alt="Обложка">
         </div>
         <button class="play-button" type="button" aria-label="Воспроизвести видео">
           <img src="../assets/icons/play.svg" width="127" height="127" alt="">
@@ -36,7 +36,7 @@
     video.setAttribute('preload', 'metadata');
     video.setAttribute('playsinline', '');
     video.setAttribute('controls', '');
-    video.setAttribute('poster', '../assets/images/figma/home-clean/video-cover.webp');
+    video.setAttribute('poster', '../assets/images/home/video-cover.webp');
     video.setAttribute('aria-label', 'Видео о компании');
     video.innerHTML = '<source src="../assets/videos/company.mp4" type="video/mp4">';
     frame.append(video);

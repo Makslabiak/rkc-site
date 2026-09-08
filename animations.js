@@ -809,6 +809,33 @@
     });
   }
 
+  /* ---------- ступени на фото услуг: обратное раскрытие слева ---------- */
+  function initServicesHeroStairs() {
+    var steps = document.querySelector('.services-hero__steps');
+    var stairs = steps ? gsap.utils.toArray(steps.querySelectorAll('span')) : [];
+    var section = document.querySelector('.services-hero');
+    if (!steps || !stairs.length || !section) return;
+
+    gsap.fromTo(steps, {
+      scaleX: 0,
+      transformOrigin: 'left center',
+      force3D: true
+    }, {
+      scaleX: 1,
+      transformOrigin: 'left center',
+      force3D: true,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: stairs[stairs.length - 1],
+        start: 'top 100%',
+        endTrigger: section,
+        end: 'bottom 45%',
+        scrub: 0.35,
+        invalidateOnRefresh: true
+      }
+    });
+  }
+
   /* ---------- параллакс карточек проектов (только десктоп) ----------
      Двигаем только содержимое .project-card__body. Номера, вертикальные
      разделители и кнопка остаются в статической сетке секции. */
@@ -1214,6 +1241,7 @@
     initServiceLinksScramble();
     initFooterLinksScramble();
     initStairs();
+    initServicesHeroStairs();
     initProjectsParallax();
     initAdvantagesParallax();
     initServicesCardsReveal();

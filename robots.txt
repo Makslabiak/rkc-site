@@ -1,13 +1,8 @@
 User-agent: *
 Allow: /
-Disallow: /dither-tuner.html
+# Инструменты разработки: харнесс плеера и тюнер дизера лежат здесь же.
 Disallow: /tests/
 Disallow: /tools/
-
-# Архивы исходников до пережатия: на сайте не используются, в индексе им
-# делать нечего. На боевой сервер их лучше вообще не выкладывать.
-Disallow: /assets/images/_original/
-Disallow: /assets/images/about/raw/
 
 # При переносе на боевой домен заменить хост в этой строке и в canonical/og:url.
 Sitemap: https://rks-nr.ru/sitemap.xml
