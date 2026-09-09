@@ -1053,7 +1053,7 @@ body.menu-closing .hero__descriptor {
   top: 84px;
   left: 15px;
   width: calc(100% - 30px);
-  font-size: 15.234px;
+  font-size: 14px;
   text-transform: uppercase;
 }
 
@@ -1278,7 +1278,7 @@ body.menu-closing .hero__descriptor {
 
 .project-card p {
   margin-top: 15px;
-  font-size: 15.234px;
+  font-size: 14px;
   line-height: 1.4;
   text-transform: uppercase;
 }
@@ -1309,7 +1309,7 @@ body.menu-closing .hero__descriptor {
 .services__intro > p {
   width: 100%;
   margin-top: 14px;
-  font-size: 15.234px;
+  font-size: 14px;
   text-transform: uppercase;
 }
 
@@ -1414,7 +1414,7 @@ body.menu-closing .hero__descriptor {
 .service-card__content > p {
   max-width: 326px;
   margin-top: 13px;
-  font-size: 15.234px;
+  font-size: 14px;
   line-height: 1.4;
   text-transform: uppercase;
 }

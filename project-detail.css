@@ -409,8 +409,8 @@
 
   .project-detail__meta {
     gap: 10px;
-    font-size: 12px;
-    line-height: 12px;
+    font-size: 14px;
+    line-height: 1.15;
   }
 
   .project-detail__meta > div {

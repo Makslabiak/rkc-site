@@ -362,7 +362,7 @@
   .news-page__category {
     width: 100%;
     min-height: 33px;
-    font-size: 30px;
+    font-size: 25px;
   }
 
   .news-page__list {
@@ -400,13 +400,14 @@
     padding: 30px 15px 0;
   }
 
-  .news-page-card time { font-size: 24px; }
+  .news-page-card time { font-size: 18px; }
 
   /* Обрезка в четыре строки не работала: -webkit-line-clamp требует ещё
      box-orient и overflow, без них текст просто вылезал за карточку и его
      срезал её собственный overflow — посреди строки. */
   .news-page-card__headline {
     display: -webkit-box;
+    font-size: 18px;
     width: calc(100% - 50px);
     margin-top: 17px;
     overflow: hidden;
@@ -414,11 +415,16 @@
     -webkit-line-clamp: 4;
   }
 
+  /* Стрелка показывалась только по наведению, а на телефоне наведения нет:
+     класс is-arrow-active туда никогда не приходил, и стрелки не было видно.
+     Здесь она просто стоит на месте. */
   .news-page-card__arrow {
     top: 245px;
     right: 15px;
     width: 36px;
     height: 36px;
-    transform: translateX(0);
+    transform: scale(1);
   }
+
+  .news-page-card__arrow::after { transform: scale(1); }
 }
