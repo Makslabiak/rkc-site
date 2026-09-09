@@ -690,6 +690,53 @@
     if (!running) return;
     const now = gsapTicker ? timestamp * 1000 : timestamp;
     resizeCanvas();
+
+    /* Сначала выясняем, попадает ли хоть одно фото в кадр — это чистая
+       арифметика по сохранённой геометрии, без единого вызова GL.
+       Без этой проверки слой очищался и композитился 60 раз в секунду
+       даже там, где фотографий на экране нет: IntersectionObserver держит
+       item.visible с запасом в 100 px, поэтому цикл продолжал крутиться
+       вхолостую. На секциях без фото это давало полноэкранный clear и
+       перекомпозицию каждый кадр — то есть просадку ровно там, где
+       рисовать нечего. */
+    const кадр = [];
+    const scrollXPre = window.scrollX;
+    const scrollYPre = getScrollY();
+    items.forEach((item) => {
+      if (!item.texture || !item.visible) return;
+      const geometry = getRenderGeometry(item, scrollXPre, scrollYPre);
+      if (!geometry) return;
+      const rect = geometry.rect;
+      if (
+        rect.bottom <= canvasRect.top ||
+        rect.top >= canvasRect.bottom ||
+        rect.right <= canvasRect.left ||
+        rect.left >= canvasRect.right ||
+        rect.width <= 0 ||
+        rect.height <= 0
+      ) return;
+      кадр.push({ item, geometry });
+    });
+
+    if (!кадр.length) {
+      /* Один раз гасим слой и больше его не трогаем, пока фото не вернутся.
+         Скрытый canvas композитор исключает из сцены целиком. */
+      if (!canvas.hidden) {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.viewport(0, 0, canvasWidth, canvasHeight);
+        gl.scissor(0, 0, canvasWidth, canvasHeight);
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        canvas.hidden = true;
+      }
+      /* Хвост указателя продолжает затухать, иначе при возврате фото
+         в кадр он прыгнет из старого положения. */
+      pointerEnergy *= 0.94;
+      if (!gsapTicker) rafId = window.requestAnimationFrame(render);
+      return;
+    }
+    if (canvas.hidden) canvas.hidden = false;
+
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, canvasWidth, canvasHeight);
     gl.scissor(0, 0, canvasWidth, canvasHeight);
@@ -705,22 +752,8 @@
     gl.uniform2fv(locations.trail, trailPoints);
     gl.uniform1f(locations.pointerEnergy, pointerEnergy);
 
-    const scrollX = window.scrollX;
-    const scrollY = getScrollY();
-
-    items.forEach((item) => {
-      if (!item.texture || !item.visible) return;
-      const renderGeometry = getRenderGeometry(item, scrollX, scrollY);
-      if (!renderGeometry) return;
+    кадр.forEach(({ item, geometry: renderGeometry }) => {
       const rect = renderGeometry.rect;
-      if (
-        rect.bottom <= canvasRect.top ||
-        rect.top >= canvasRect.bottom ||
-        rect.right <= canvasRect.left ||
-        rect.left >= canvasRect.right ||
-        rect.width <= 0 ||
-        rect.height <= 0
-      ) return;
 
       const left = Math.round((rect.left - canvasRect.left) * pixelRatio);
       const bottom = Math.round((canvasRect.bottom - rect.bottom) * pixelRatio);

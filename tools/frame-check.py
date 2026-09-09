@@ -73,10 +73,10 @@ def evaluate(ws, expression):
         'expression': expression, 'returnByValue': True})['result'].get('value')
 
 
-def run(url, label, seconds, before, block, scale):
+def run(url, label, seconds, before, block, scale, window):
     chrome = subprocess.Popen([
         CHROME, '--headless=new', f'--remote-debugging-port={PORT}',
-        '--window-size=1440,900', f'--force-device-scale-factor={scale}',
+        f'--window-size={window}', f'--force-device-scale-factor={scale}',
         '--hide-scrollbars', '--mute-audio', '--no-first-run',
         '--remote-allow-origins=*',
         # Профиль свежий на каждый прогон: общий копит кеш и шейдеры,
@@ -150,5 +150,8 @@ if __name__ == '__main__':
     parser.add_argument('--before', default='', help='JS до скриптов страницы')
     parser.add_argument('--block', default='', help='маски URL через запятую')
     parser.add_argument('--scale', default='2', help='device scale factor')
+    parser.add_argument('--window', default='1440,900',
+                        help='размер окна; у владельца 1680,928 — дизер там на 43%% больше')
     args = parser.parse_args()
-    run(args.url, args.label, args.seconds, args.before, args.block, args.scale)
+    run(args.url, args.label, args.seconds, args.before, args.block, args.scale,
+        args.window)
