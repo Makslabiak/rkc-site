@@ -1108,19 +1108,42 @@ document.addEventListener('keydown', (event) => {
     activeLayer = nextLayer || activeLayer;
     grid.style.setProperty('--news-indicator-x', `${column * 100}%`);
     grid.style.setProperty('--news-indicator-y', `${row * 100}%`);
-    grid.style.setProperty('--news-button-right', `${column === 0 ? 50 : 0}%`);
-    grid.style.setProperty('--news-button-top', `${row * 50}%`);
+  };
+
+  /* Стрелка одна на весь блок и держится, пока указатель или фокус внутри
+     сетки. При переходе на соседнюю карточку она переезжает вместе с тёмной
+     подложкой, а не гаснет и не раскрывается заново. Считаем указатель и
+     фокус по отдельности: иначе уход фокуса гасил бы стрелку под курсором. */
+  let pointerInside = false;
+  let focusInside = false;
+  const syncArrow = () => {
+    grid.classList.toggle('is-arrow-visible', pointerInside || focusInside);
   };
 
   cards.forEach((card) => {
     card.addEventListener('pointerenter', () => activate(card));
-    card.addEventListener('focus', () => activate(card));
+    card.addEventListener('focus', () => {
+      focusInside = true;
+      syncArrow();
+      activate(card);
+    });
   });
 
-  grid.addEventListener('pointerleave', () => activate(defaultCard));
+  grid.addEventListener('pointerenter', () => {
+    pointerInside = true;
+    syncArrow();
+  });
+  grid.addEventListener('pointerleave', () => {
+    pointerInside = false;
+    syncArrow();
+    activate(defaultCard);
+  });
   grid.addEventListener('focusout', () => {
     requestAnimationFrame(() => {
-      if (!grid.contains(document.activeElement)) activate(defaultCard);
+      if (grid.contains(document.activeElement)) return;
+      focusInside = false;
+      syncArrow();
+      activate(defaultCard);
     });
   });
 

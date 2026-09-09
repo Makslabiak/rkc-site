@@ -21,6 +21,9 @@
     const itemRect = item.getBoundingClientRect();
     accordion.style.setProperty('--service-hover-y', `${itemRect.top - accordionRect.top}px`);
     accordion.style.setProperty('--service-hover-height', `${itemRect.height}px`);
+    /* Общая стрелка едет по этим же переменным. На раскрытом пункте её
+       прячем: там уже стоит собственная кнопка закрытия. */
+    accordion.classList.toggle('is-hover-open', item.classList.contains('is-open'));
 
     if (initial) {
       accordion.classList.add('is-hover-initializing');
@@ -43,7 +46,7 @@
   function clearHover() {
     hoveredItem = null;
     items.forEach((item) => item.classList.remove('is-hovered'));
-    accordion?.classList.remove('has-hover', 'is-hover-initializing');
+    accordion?.classList.remove('has-hover', 'is-hover-initializing', 'is-hover-open');
   }
 
   function stopCurrentScroll() {

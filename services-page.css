@@ -229,6 +229,12 @@
   justify-self: end;
 }
 
+/* Общая стрелка аккордеона появляется только на десктопе, где есть наведение.
+   Ниже 1200px переключатель у каждого пункта свой. */
+.service-accordion__hover-arrow {
+  display: none;
+}
+
 .service-accordion__toggle::before {
   position: absolute;
   inset: 0;
@@ -667,17 +673,20 @@
     transition: transform 500ms cubic-bezier(.165, .84, .44, 1);
     grid-area: auto;
   }
-  .service-accordion__item:not(.is-open).is-hovered .service-accordion__toggle {
-    border-color: var(--dark);
-    background: var(--light);
-    pointer-events: auto;
-    transform: scale(1);
-  }
-  .service-accordion__item:not(.is-open).is-hovered .service-accordion__toggle::before {
-    background: var(--dark);
-    transform: rotate(180deg) scale(1);
-    transition-delay: 100ms;
-  }
+  /* Стрелка при наведении теперь одна на весь аккордеон, см. ниже. У пункта
+     остаётся только собственный переключатель раскрытого состояния: это
+     рабочая кнопка закрытия, а не украшение. */
+  /* Одна стрелка на весь аккордеон. Едет по тем же переменным и тем же
+     переходом, что и тёмная подложка, поэтому они всегда в такт: при переходе
+     на соседний пункт стрелка переезжает, а не гаснет и не раскрывается
+     заново. Пропадает только когда указатель уходит из аккордеона.
+     На раскрытом пункте её нет: там уже стоит рабочая кнопка закрытия. */
+  .service-accordion__hover-arrow { --service-arrow-size: 4.6875vw; position: absolute; z-index: 2; top: 0; right: 0; display: block; width: var(--service-arrow-size); height: var(--service-arrow-size); overflow: hidden; pointer-events: none; transform: translate3d(0, calc(var(--service-hover-y) + var(--service-hover-height) - var(--service-arrow-size)), 0); transition: transform 320ms cubic-bezier(.22, 1, .36, 1); }
+  .service-accordion.is-hover-initializing .service-accordion__hover-arrow { transition: none; }
+  .service-accordion__hover-arrow::before { position: absolute; inset: 0; border: 1px solid var(--dark); background: var(--light); content: ""; transform: scale(0); transform-origin: bottom right; transition: transform 500ms cubic-bezier(.165, .84, .44, 1); }
+  .service-accordion__hover-arrow::after { position: absolute; inset: 0; background: var(--dark); content: ""; -webkit-mask: url("assets/icons/accordion-arrow-up.svg") center / 100% 100% no-repeat; mask: url("assets/icons/accordion-arrow-up.svg") center / 100% 100% no-repeat; transform: rotate(180deg) scale(0); transform-origin: center; transition: transform 400ms cubic-bezier(.165, .84, .44, 1); }
+  .service-accordion.has-hover:not(.is-hover-open) .service-accordion__hover-arrow::before { transform: scale(1); }
+  .service-accordion.has-hover:not(.is-hover-open) .service-accordion__hover-arrow::after { transform: rotate(180deg) scale(1); transition-delay: 100ms; }
   .service-accordion__item:first-child:not(.is-open) .service-accordion__toggle { top: auto; bottom: 0; }
   .service-accordion__item:not(:first-child) .service-accordion__header { min-height: 15.625vw; }
   .service-accordion__item.is-open .service-accordion__header { min-height: 15.625vw; padding: 1.5625vw 0 0 1.0417vw; }
