@@ -42,6 +42,9 @@
     depth: false,
     stencil: false,
     premultipliedAlpha: false,
+    /* На MacBook владельца две видеокарты, и high-performance держит
+       включённой дискретную. В замерах атрибут не дал ни выигрыша, ни
+       проигрыша — оставлен как был. */
     powerPreference: 'high-performance'
   });
   if (!gl) return;
@@ -290,6 +293,8 @@
   let pixelRatio = Math.min(window.devicePixelRatio || 1, ditherConfig.dpr);
   let canvasWidth = 0;
   let canvasHeight = 0;
+  let viewportHeight = window.innerHeight;
+  let viewportWidth = window.innerWidth;
   let canvasRect = { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0 };
   let geometryFrame = 0;
   let pointerX = -10000;
@@ -308,6 +313,24 @@
   let rafId = 0;
   const gsapTicker = window.gsap?.ticker || null;
   let tickerAttached = false;
+
+  /* Частота в покое. Пока по экрану ничего не движется, слой всё равно
+     обязан обновляться: узор дышит от uTime. Но каждое обновление — это
+     полная пересборка кадра компоновщиком (замеры в README, раздел «Слой
+     дизера: во что он обходится»), и в покое шестьдесят таких пересборок в
+     секунду не нужны: и drift, и pulse считаются от времени медленно, на
+     глаз разницы нет. На любое движение — прокрутку, курсор, проявление,
+     параллакс — частота возвращается к полной в тот же кадр.
+
+     Половинная частота ПРИ ПРОКРУТКЕ проверялась дважды и отклонена: в
+     первый раз эффект отставал от вёрстки, во второй (со сдвигом слоя
+     вместо перерисовки) выигрыша не дал. Подробности в README. */
+  const IDLE_FPS = 18;
+  const idleFrameGap = 1000 / IDLE_FPS;
+  /* null, а не число: подпись бывает отрицательной (фото уехало за левый
+     край), и любой числовой сторож мог бы с ней совпасть. */
+  let frameSignature = null;
+  let lastDrawTime = -Infinity;
 
   function parseObjectPosition(value) {
     const parts = value.trim().split(/\s+/);
@@ -488,6 +511,11 @@
 
   function resizeCanvas(force) {
     pixelRatio = Math.min(window.devicePixelRatio || 1, ditherConfig.dpr);
+    /* Центр экрана для внутреннего параллакса и границы отсечения берутся
+       от окна, а не от коробки холста: так они не зависят от того, как
+       холст в этот момент устроен. */
+    viewportHeight = window.innerHeight;
+    viewportWidth = window.innerWidth;
     const nextRect = force || !canvasRect.width
       ? canvas.getBoundingClientRect()
       : canvasRect;
@@ -702,16 +730,32 @@
     const кадр = [];
     const scrollXPre = window.scrollX;
     const scrollYPre = getScrollY();
+    const cullBottom = viewportHeight;
+    const cullRight = viewportWidth;
     items.forEach((item) => {
       if (!item.texture || !item.visible) return;
+      /* Полностью прозрачный слой не даёт ни одного пикселя: блендинг идёт
+         по SRC_ALPHA, и при alpha = 0 результат равен фону. А платили за
+         него полным проходом шейдера по площади фотографии.
+
+         Так лежат блоки статистики и новостей на главной: четыре снимка
+         друг на друге, из которых виден один, остальные ждут своей очереди
+         в кроссфейде. То есть на этих секциях дизер делал вчетверо больше
+         работы, чем нужно. Как только кроссфейд поднимает прозрачность выше
+         нуля, слой снова попадает в кадр. */
+      if (item.opacity <= 0.001) return;
       const geometry = getRenderGeometry(item, scrollXPre, scrollYPre);
       if (!geometry) return;
       const rect = geometry.rect;
+      /* Отсечение считается от ОКНА, а не от холста: в режиме полосы холст
+         меньше окна, и отсечение по нему выкинуло бы из кадра те самые
+         фотографии, под которые полосу и надо подводить. При холсте во весь
+         экран это те же самые границы, что были. */
       if (
-        rect.bottom <= canvasRect.top ||
-        rect.top >= canvasRect.bottom ||
-        rect.right <= canvasRect.left ||
-        rect.left >= canvasRect.right ||
+        rect.bottom <= 0 ||
+        rect.top >= cullBottom ||
+        rect.right <= 0 ||
+        rect.left >= cullRight ||
         rect.width <= 0 ||
         rect.height <= 0
       ) return;
@@ -728,6 +772,10 @@
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
         canvas.hidden = true;
+        /* Слой очищен, и его содержимое больше не соответствует подписи.
+           Иначе вернувшееся в кадр фото с той же геометрией не было бы
+           нарисовано ещё до трёх кадров, а на экране висел бы пустой слой. */
+        frameSignature = null;
       }
       /* Хвост указателя продолжает затухать, иначе при возврате фото
          в кадр он прыгнет из старого положения. */
@@ -736,6 +784,36 @@
       return;
     }
     if (canvas.hidden) canvas.hidden = false;
+
+    /* Подпись кадра: всё, от чего зависит картинка, кроме самого времени —
+       положение и поворот прямоугольников, прозрачность, проявление по
+       наведению, число фотографий, размер холста, энергия курсора. Совпала
+       с прошлой — на экране покой, и слой можно обновлять реже. Любое
+       движение возвращает полную частоту в тот же кадр.
+
+       Это только арифметика по уже посчитанной геометрии, без чтения
+       раскладки. */
+    {
+      let signature = кадр.length * 7919 + Math.round(pointerEnergy * 1000)
+        + canvasWidth * 3 + canvasHeight * 5;
+      кадр.forEach(({ item, geometry }) => {
+        const rect = geometry.rect;
+        signature = (signature * 31
+          + Math.round(rect.left * 16) + Math.round(rect.top * 16) * 3
+          + Math.round(rect.width * 16) * 5 + Math.round(rect.height * 16) * 7
+          + Math.round(geometry.rotation * 1000) * 11
+          + Math.round(item.opacity * 1000) * 13
+          + Math.round(item.ditherAmount * 1000) * 17
+          + Math.round(item.ditherTarget * 1000) * 19) % 2147483647;
+      });
+
+      if (signature === frameSignature && now - lastDrawTime < idleFrameGap) {
+        if (!gsapTicker) rafId = window.requestAnimationFrame(render);
+        return;
+      }
+      frameSignature = signature;
+      lastDrawTime = now;
+    }
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, canvasWidth, canvasHeight);
@@ -769,9 +847,9 @@
       const planeScale = 1 + Math.abs(parallax) * 2;
       const planeWidth = renderGeometry.width * planeScale;
       const planeHeight = renderGeometry.height * planeScale;
-      const viewportCenter = canvasRect.height * 0.5;
+      const viewportCenter = viewportHeight * 0.5;
       const elementCenter = rect.top + rect.height * 0.5;
-      const travel = Math.max(1, canvasRect.height * 0.5 + rect.height * 0.5);
+      const travel = Math.max(1, viewportHeight * 0.5 + rect.height * 0.5);
       const viewportProgress = Math.max(-1, Math.min(1, (elementCenter - viewportCenter) / travel));
       const planeOffsetY = viewportProgress * parallax * rect.height;
 
@@ -855,6 +933,7 @@
     if (running) startLoop();
     else stopLoop();
     canvas.hidden = !running;
+    frameSignature = null;
     items.forEach((item) => item.element.classList.toggle('is-shared-dither-ready', running && !!item.texture));
   }
 
