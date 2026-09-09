@@ -27,7 +27,8 @@
       "video-player.js",
       "news-home.js",
       "services-dither.js",
-      "animations.js"
+      "animations.js",
+      "cookie-notice.js"
     ],
     "jsonLd": 1,
     "footer": {
@@ -66,7 +67,8 @@
       "script.js",
       "services-dither.js",
       "about-page.js",
-      "animations.js"
+      "animations.js",
+      "cookie-notice.js"
     ],
     "jsonLd": 1,
     "footer": {
@@ -105,7 +107,8 @@
       "script.js",
       "services-dither.js",
       "services-page.js",
-      "animations.js"
+      "animations.js",
+      "cookie-notice.js"
     ],
     "jsonLd": 1,
     "footer": {
@@ -143,7 +146,8 @@
       "script.js",
       "projects-page.js",
       "services-dither.js",
-      "animations.js"
+      "animations.js",
+      "cookie-notice.js"
     ],
     "jsonLd": 1,
     "footer": {
@@ -182,7 +186,8 @@
       "script.js",
       "project-detail.js",
       "services-dither.js",
-      "animations.js"
+      "animations.js",
+      "cookie-notice.js"
     ],
     "jsonLd": 1,
     "footer": {
@@ -220,7 +225,8 @@
       "script.js",
       "services-dither.js",
       "news-page.js",
-      "animations.js"
+      "animations.js",
+      "cookie-notice.js"
     ],
     "jsonLd": 1,
     "footer": {
@@ -260,7 +266,8 @@
       "video-player.js",
       "news-detail.js",
       "services-dither.js",
-      "animations.js"
+      "animations.js",
+      "cookie-notice.js"
     ],
     "jsonLd": 2,
     "footer": {
@@ -297,7 +304,8 @@
       "site-header.js",
       "script.js",
       "documents-tabs.js",
-      "animations.js"
+      "animations.js",
+      "cookie-notice.js"
     ],
     "jsonLd": 1,
     "footer": {
@@ -335,7 +343,8 @@
       "site-header.js",
       "script.js",
       "documents-tabs.js",
-      "animations.js"
+      "animations.js",
+      "cookie-notice.js"
     ],
     "jsonLd": 1,
     "footer": {
@@ -373,7 +382,8 @@
       "script.js",
       "services-dither.js",
       "contacts-page.js",
-      "animations.js"
+      "animations.js",
+      "cookie-notice.js"
     ],
     "jsonLd": 2,
     "footer": {
@@ -410,7 +420,8 @@
       "assets/vendor/ScrambleTextPlugin.min.js",
       "site-header.js",
       "script.js",
-      "animations.js"
+      "animations.js",
+      "cookie-notice.js"
     ],
     "jsonLd": 0,
     "footer": {

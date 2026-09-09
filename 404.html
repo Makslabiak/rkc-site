@@ -12,7 +12,7 @@
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" sizes="120x120">
   <link rel="preload" href="assets/fonts/LTSuperior-Medium.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/Roboto-Variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260910-14">
+  <link rel="stylesheet" href="styles.css?v=20260910-16">
   <link rel="stylesheet" href="documents-page.css?v=20260910-10">
   <link rel="stylesheet" href="not-found.css?v=20260908-1">
   <script src="page-entry.js?v=20260910-1"></script>
@@ -25,6 +25,7 @@
   <script src="site-header.js?v=20260906-2" defer></script>
   <script src="script.js?v=20260910-5" defer></script>
   <script src="animations.js?v=20260910-1" defer></script>
+  <script src="cookie-notice.js?v=20260910-1" defer></script>
 </head>
 <body class="documents-page not-found-page" data-site-page="not-found">
   <a class="skip-link" href="#main">Перейти к содержимому</a>
@@ -59,5 +60,14 @@
     <div class="footer__contacts"><div><a href="tel:+74951472233">+7 (495) 147-22-33</a><a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a></div><div class="footer__legal"><a href="documents.html#agreement"><span class="footer__legal-line">Согласие на обработку</span><span class="footer__legal-line">персональных данных</span></a><a href="documents.html#policy"><span class="footer__legal-line">Политика в отношении обработки</span><span class="footer__legal-line">персональных данных</span></a></div></div>
     <p class="footer__copyright">© ООО «РКС-НР», 2026. Все права защищены</p>
   </footer>
+
+  <!-- Плашка о cookie. Скрипт снимает hidden, если согласие ещё не дано. -->
+  <aside class="cookie-notice" data-cookie-notice aria-label="Использование cookie" hidden>
+    <div class="cookie-notice__text">
+      <p class="cookie-notice__title">Использование cookie на сайте</p>
+      <p class="cookie-notice__copy">Мы используем cookie для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с нашей <a href="documents.html#document-cookies">политикой использования cookie</a>.</p>
+    </div>
+    <button class="cookie-notice__accept" type="button" data-cookie-accept>Принять</button>
+  </aside>
 </body>
 </html>

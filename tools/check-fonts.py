@@ -22,12 +22,15 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Шрифт -> где он применяется. Проверяем оба по всему тексту сайта: точное
 # соответствие правил CSS и узлов DOM здесь не нужно, важен сам факт наличия.
-FONTS = ["assets/fonts/LTSuperior-Regular.woff2", "assets/fonts/Roboto-Variable.woff2"]
+FONTS = ["assets/fonts/LTSuperior-Regular.woff2",
+         "assets/fonts/LTSuperior-Semibold.woff2",
+         "assets/fonts/Roboto-Variable.woff2"]
 
 # Символы, которых не было и в исходных OTF/TTF: их отсутствие не регрессия,
 # браузер и раньше брал их из системного шрифта.
 KNOWN_GAPS = {
     "LTSuperior-Regular.woff2": {0x2116, 0x3000},   # № и ideographic space
+    "LTSuperior-Semibold.woff2": {0x2116, 0x3000},  # тот же подрез, что у Regular
     "Roboto-Variable.woff2": {0x2192, 0x3000},      # → и ideographic space
 }
 

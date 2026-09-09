@@ -30,7 +30,7 @@
   <link rel="preload" href="assets/images/news/detail-hero.webp" as="image" fetchpriority="high">
   <link rel="preload" href="assets/fonts/LTSuperior-Medium.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/Roboto-Variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260910-14">
+  <link rel="stylesheet" href="styles.css?v=20260910-16">
   <link rel="stylesheet" href="news-detail.css?v=20260910-11">
   <script src="page-entry.js?v=20260910-1"></script>
   <script>document.documentElement.classList.add('has-anim');</script>
@@ -45,6 +45,7 @@
   <script src="news-detail.js?v=20260906-2" defer></script>
   <script src="services-dither.js?v=20260910-4" defer></script>
   <script src="animations.js?v=20260910-1" defer></script>
+  <script src="cookie-notice.js?v=20260910-1" defer></script>
 </head>
 <body class="news-detail-page" data-site-page="news-detail">
   <a class="skip-link" href="#main">Перейти к&nbsp;содержимому</a>
@@ -150,5 +151,14 @@
     "publisher": { "@id": "https://rks-nr.ru/#organization" }
   }
   </script>
+
+  <!-- Плашка о cookie. Скрипт снимает hidden, если согласие ещё не дано. -->
+  <aside class="cookie-notice" data-cookie-notice aria-label="Использование cookie" hidden>
+    <div class="cookie-notice__text">
+      <p class="cookie-notice__title">Использование cookie на сайте</p>
+      <p class="cookie-notice__copy">Мы используем cookie для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с нашей <a href="documents.html#document-cookies">политикой использования cookie</a>.</p>
+    </div>
+    <button class="cookie-notice__accept" type="button" data-cookie-accept>Принять</button>
+  </aside>
 </body>
 </html>

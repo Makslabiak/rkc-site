@@ -3,8 +3,18 @@
    деванагари и тайский — около мегабайта, который никогда не отрисуется.
    Лоадер главной ждёт document.fonts.ready, поэтому вес шрифтов напрямую
    определяет момент первой отрисовки. Проверка покрытия — tools/check-fonts.py.
-   Начертание Semibold (600) удалено: ни одно правило его не запрашивало,
-   браузер его и не скачивал. */
+   Начертание Semibold (600) вернулось: его просит заголовок плашки о cookie,
+   так в макете. Файл подрезан по тому же набору символов, что остальные.
+   Скачивается он только когда плашка на экране: пока она скрыта, ни одно
+   отрисованное правило шрифт не запрашивает. */
+@font-face {
+  font-family: "LT Superior";
+  src: url("assets/fonts/LTSuperior-Semibold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
 @font-face {
   font-family: "LT Superior";
   src: url("assets/fonts/LTSuperior-Regular.woff2") format("woff2");
@@ -3094,3 +3104,114 @@ html.is-loaded .loader {
   cursor: pointer;
 }
 
+
+/* ==========================================================================
+   Плашка о cookie. Значения сняты из макета: фон #0a1a34 (это НЕ --dark
+   сайта, там #082554), текст #f0faff, кнопка белая с радиусом 3.
+   Раскладок три: на телефоне полоса во всю ширину внизу экрана, на планшете
+   и десктопе — карточка с отступом от края. Пока согласие не дано, плашка
+   висит поверх всего; после нажатия скрипт ставит ей hidden.
+   ========================================================================== */
+.cookie-notice {
+  position: fixed;
+  z-index: 1001;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 15px;
+  color: var(--light);
+  background: #0a1a34;
+}
+
+.cookie-notice__text {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  flex-direction: column;
+  word-break: break-word;
+}
+
+.cookie-notice__title {
+  margin: 0;
+  font-family: "LT Superior", Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.cookie-notice__copy {
+  margin: 0;
+  font-family: "LT Superior", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 450;
+  line-height: 1.2;
+}
+
+.cookie-notice__copy a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  text-underline-position: from-font;
+}
+
+.cookie-notice__accept {
+  display: flex;
+  width: 100%;
+  height: 34px;
+  padding: 12px 30px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 3px;
+  color: #0a1a34;
+  background: var(--white);
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: normal;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+@media (min-width: 600px) and (max-width: 1199px) {
+  .cookie-notice {
+    right: 10px;
+    bottom: 32px;
+    left: 10px;
+    padding: 20px;
+    border-radius: 3px;
+  }
+
+  .cookie-notice__title { font-size: 22px; }
+  /* Ширину текста не ограничиваем: в макете планшет нарисован дважды, при
+     704 и при 748, и ширина абзаца там разная (576 против 653). Пусть
+     заполняет плашку — тогда на всём диапазоне 600-1199 выходит та же
+     раскладка, что в варианте 748. */
+  .cookie-notice__copy { font-size: 18px; }
+  .cookie-notice__accept { height: 43px; font-size: 16px; }
+}
+
+@media (min-width: 1200px) {
+  .cookie-notice {
+    right: 10px;
+    bottom: 10px;
+    left: auto;
+    width: 476px;
+    padding: 20px;
+    border-radius: 3px;
+  }
+
+  .cookie-notice__title { color: var(--white); font-size: 22px; }
+  .cookie-notice__copy { font-size: 18px; line-height: 1.15; }
+
+  .cookie-notice__accept {
+    width: 159px;
+    height: 43px;
+    font-size: 16px;
+  }
+}

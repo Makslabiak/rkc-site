@@ -24,7 +24,7 @@
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" sizes="120x120">
   <link rel="preload" href="assets/fonts/LTSuperior-Medium.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/Roboto-Variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260910-14">
+  <link rel="stylesheet" href="styles.css?v=20260910-16">
   <link rel="stylesheet" href="documents-page.css?v=20260910-10">
   <link rel="stylesheet" href="policies-page.css?v=20260908-7">
   <script src="page-entry.js?v=20260910-1"></script>
@@ -38,6 +38,7 @@
   <script src="script.js?v=20260910-5" defer></script>
   <script src="documents-tabs.js?v=20260910-1" defer></script>
   <script src="animations.js?v=20260910-1" defer></script>
+  <script src="cookie-notice.js?v=20260910-1" defer></script>
 </head>
 <body class="documents-page company-policies-page" data-site-page="policies">
   <a class="skip-link" href="#main">Перейти к содержимому</a>
@@ -201,5 +202,14 @@
     ]
   }
   </script>
+
+  <!-- Плашка о cookie. Скрипт снимает hidden, если согласие ещё не дано. -->
+  <aside class="cookie-notice" data-cookie-notice aria-label="Использование cookie" hidden>
+    <div class="cookie-notice__text">
+      <p class="cookie-notice__title">Использование cookie на сайте</p>
+      <p class="cookie-notice__copy">Мы используем cookie для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с нашей <a href="documents.html#document-cookies">политикой использования cookie</a>.</p>
+    </div>
+    <button class="cookie-notice__accept" type="button" data-cookie-accept>Принять</button>
+  </aside>
 </body>
 </html>
