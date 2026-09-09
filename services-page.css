@@ -432,7 +432,7 @@
   }
 
   .advantage-card__content { gap: 12px; }
-  .advantage-card__content h3 { width: min(255.6px, 100%); font-size: 20px; }
+  .advantage-card__content h3 { width: min(255.6px, 100%); font-size: 25px; }
 
   .advantage-card p {
     width: min(255.6px, 100%);
