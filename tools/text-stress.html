@@ -1,0 +1,448 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>text stress probe</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #111; }
+  iframe { border: 0; display: block; }
+  #probe { display: none; }
+</style>
+<body>
+<script>
+/* Проверка текста на живучесть: каждый текстовый блок страницы по очереди
+   удлиняется примерно на треть, и замеряется, что от этого ломается —
+   текст вылезает за свою колонку, обрезается родителем, наезжает на
+   соседа или на декоративную линию. Отдельно проверяются сами линии:
+   держат ли они отступ от текста, когда текста стало больше.
+
+   Страница открывается в iframe нужной ширины, результат печатается в
+   pre#probe как JSON и читается tools/text-stress.py через --dump-dom.
+   Сайт не правится: каждому блоку возвращается исходная разметка. */
+(function () {
+  var params = new URLSearchParams(location.search);
+  var page = params.get('page') || 'index.html';
+  var width = parseInt(params.get('w') || '1440', 10);
+  var height = parseInt(params.get('h') || '900', 10);
+  var grow = parseFloat(params.get('grow') || '0.35');
+  var loaderMs = parseInt(params.get('loader') || '7000', 10);
+  var settleMs = parseInt(params.get('settle') || '2500', 10);
+
+  var frame = document.createElement('iframe');
+  frame.style.width = width + 'px';
+  frame.style.height = height + 'px';
+  frame.setAttribute('scrolling', 'no');
+  frame.src = '/' + page.replace(/^\//, '');
+  document.body.appendChild(frame);
+
+  /* Результат отдаём двумя путями: в pre#probe — чтобы страницу можно было
+     открыть руками, и POST'ом на сервер — так прогон идёт в реальном
+     времени, без --virtual-time-budget. Виртуальное время у Chrome
+     отключает отрисовку, а вместе с ней requestAnimationFrame и
+     ResizeObserver: линии, которые подстраиваются в JS, при нём просто не
+     успевают сдвинуться, и проверка отступов врёт. */
+  function emit(data) {
+    var pre = document.createElement('pre');
+    pre.id = 'probe';
+    pre.textContent = JSON.stringify(data);
+    document.body.appendChild(pre);
+    try {
+      fetch('/stress-result', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    } catch (error) { /* открыли руками — хватит и pre */ }
+  }
+
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  /* Загрузчик уходит сам только на главной; в остальных случаях снимаем его
+     руками ровно так же, как это делает layout-probe.html. */
+  function loaded(win) {
+    return new Promise(function (resolve) {
+      var done = false;
+      function finish() { if (!done) { done = true; resolve(); } }
+      win.addEventListener('site:loaded', function () { setTimeout(finish, 400); });
+      setTimeout(function () {
+        try {
+          var doc = win.document;
+          var loader = doc.querySelector('.loader');
+          if (loader) loader.remove();
+          doc.documentElement.classList.remove('is-page-entering', 'is-page-entering-home');
+          doc.documentElement.classList.add('is-loaded');
+          if (doc.body) doc.body.inert = false;
+          win.dispatchEvent(new CustomEvent('site:loaded'));
+        } catch (error) { /* пробуем замерить как есть */ }
+        finish();
+      }, loaderMs);
+    });
+  }
+
+  function readiness(win) {
+    var doc = win.document;
+    var links = Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]'));
+    var css = links.length > 0 && links.every(function (link) {
+      try { return !!(link.sheet && link.sheet.cssRules.length); } catch (error) { return false; }
+    });
+    var fonts = !doc.fonts || (doc.fonts.check('16px "LT Superior"') && doc.fonts.check('16px Roboto'));
+    return { css: css, fonts: fonts, sheets: links.length };
+  }
+
+  function untilReady(win, limitMs) {
+    var deadline = Date.now() + limitMs;
+    return new Promise(function (resolve) {
+      (function poll() {
+        var state = readiness(win);
+        if ((state.css && state.fonts) || Date.now() > deadline) return resolve(state);
+        setTimeout(poll, 150);
+      })();
+    });
+  }
+
+  /* Ждём перерисовку, но не залипаем: в скрытой вкладке requestAnimationFrame
+     не вызывается вовсе, поэтому кадр всегда гонится с таймером.
+     Кадров нужно с запасом: ResizeObserver доставляется после кадра и сам
+     планирует следующий, поэтому подстройка линий под новый текст видна
+     только через кадр-два после правки. */
+  function frames(win, count) {
+    function once() {
+      return new Promise(function (resolve) {
+        var done = false;
+        function finish() { if (!done) { done = true; resolve(); } }
+        win.requestAnimationFrame(finish);
+        win.setTimeout(finish, 60);
+      });
+    }
+    var chain = Promise.resolve();
+    for (var i = 0; i < count; i++) chain = chain.then(once);
+    return chain;
+  }
+
+  var TEXT_SELECTOR = 'h1,h2,h3,h4,p,li,blockquote,figcaption,dd,dt,[data-anim]';
+
+  var ANIMATED = '.hero__line,[data-anim],[data-anim] *,.line-split,.char-split,.service-card';
+
+  /* Страницу нужно замерять в собранном виде. До своего ScrollTrigger блоки
+     стоят visibility: hidden, а GSAP держит на них стартовые inline-стили
+     (сдвиг под маску, scaleY(0) у линий). Прячущее правило перебиваем
+     стилем, стартовые состояния — снятием именно inline-свойств: то, что
+     задано в CSS (например центрирование через translate), остаётся. */
+  function unhide(win) {
+    var style = win.document.createElement('style');
+    style.textContent = '.has-anim [data-anim],.has-anim .services__list .service-card' +
+      '{visibility:visible!important}';
+    win.document.head.appendChild(style);
+    /* SplitText с autoSplit держит исходную разметку и возвращает её, как
+       только меняется размер блока: подменённый текст жил бы ровно до
+       следующего кадра. Для замера глушим саму пересборку. */
+    if (win.SplitText && win.SplitText.prototype) {
+      win.SplitText.prototype.split = function () { return this; };
+      win.SplitText.prototype.revert = function () { return this; };
+    }
+  }
+
+  function settle(win) {
+    var nodes = win.document.querySelectorAll(ANIMATED);
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      el.style.transform = '';
+      el.style.translate = '';
+      el.style.rotate = '';
+      el.style.scale = '';
+      el.style.opacity = '';
+      el.style.visibility = '';
+    }
+  }
+
+  function stress(win) {
+    var doc = win.document;
+    var px = function (value) { return Math.round(value * 10) / 10; };
+
+    function shown(el) {
+      var style = win.getComputedStyle(el);
+      if (style.display === 'none' || style.visibility === 'hidden') return false;
+      var box = el.getBoundingClientRect();
+      /* Порог именно такой: линии в макете ровно в пиксель шириной, и на
+         «> 1» они бы не прошли — а проверяем мы в первую очередь их. */
+      return box.width > 0.4 && box.height > 0.4;
+    }
+
+    function label(el) {
+      var cls = (el.getAttribute('class') || '').split(/\s+/).filter(function (name) {
+        return name && !/^(is-|has-|gsap-|split-text$|line-split$|line-mask)/.test(name);
+      });
+      return el.tagName.toLowerCase() + (cls.length ? '.' + cls.join('.') : '');
+    }
+
+    /* Тонкая декоративная полоса: одна из сторон в пару пикселей. */
+    function isRule(el) {
+      var box = el.getBoundingClientRect();
+      if (box.width < 1 || box.height < 1) return false;
+      return (box.width <= 3 && box.height > 12) || (box.height <= 3 && box.width > 12);
+    }
+
+    var only = params.get('only');
+    var texts = Array.prototype.slice.call(doc.querySelectorAll(TEXT_SELECTOR))
+      .filter(function (el) {
+        if (!shown(el)) return false;
+        if (el.querySelector(TEXT_SELECTOR)) return false;
+        if (only && label(el).indexOf(only) === -1) return false;
+        /* Текст для скринридера вырезан в пиксельный бокс — его «переполнение»
+           ничего не значит. */
+        if (el.closest('.visually-hidden,.sr-only')) return false;
+        var own = el.getBoundingClientRect();
+        if (own.width < 4 || own.height < 4) return false;
+        return (el.innerText || el.textContent).trim().length >= 12;
+      });
+    var trace = [];
+
+    /* Линии и соседей пересобираем перед каждым блоком: GSAP доводит
+       стартовые состояния лениво, и собранный один раз список успевает
+       устареть — линия со scaleY(0) в него просто не попадёт. */
+    var rules = [];
+    var obstacles = [];
+
+    function collect() {
+      settle(win);
+      rules = Array.prototype.slice.call(doc.querySelectorAll('[class]'))
+        .filter(function (el) { return shown(el) && isRule(el); });
+      obstacles = Array.prototype.slice.call(
+        doc.querySelectorAll('[class],a,button,img,video,svg')
+      ).filter(function (el) {
+        if (!shown(el)) return false;
+        if (el.querySelector(TEXT_SELECTOR + ',img,video')) return false;
+        /* Липкий слой (шапка, своя полоса прокрутки, меню) лежит поверх
+           содержимого по замыслу — пересечение с ним ничего не значит. */
+        if (win.getComputedStyle(el).position === 'fixed') return false;
+        /* Бегущая строка вокруг видео — полоса в несколько экранов длиной,
+           сдвинутая трансформом: её бокс накрывает соседние секции, и любое
+           пересечение с ним ничего не значит. */
+        if (el.closest('.video-frame__ticker')) return false;
+        var box = el.getBoundingClientRect();
+        if (box.height > height * 1.2 || box.width > width * 1.2) return false;
+        return box.width * box.height > 100;
+      });
+    }
+
+    function overlap(a, b) {
+      var x = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+      var y = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+      return (x > 1 && y > 1) ? px(Math.min(x, y)) : 0;
+    }
+
+    /* Родитель, который режет вылезший текст. */
+    function clipper(el) {
+      for (var node = el.parentElement; node && node !== doc.body; node = node.parentElement) {
+        var style = win.getComputedStyle(node);
+        if (/hidden|clip/.test(style.overflow + style.overflowY)) return node;
+      }
+      return null;
+    }
+
+    /* Строки после подмены текста: элемент содержит один текстовый узел,
+       поэтому Range отдаёт настоящие строчные боксы, а не обёртки SplitText. */
+    function lineBoxes(el) {
+      var node = el.firstChild;
+      if (!node || node.nodeType !== 3) return [];
+      var range = doc.createRange();
+      range.selectNodeContents(node);
+      return Array.prototype.slice.call(range.getClientRects());
+    }
+
+    /* Переменные, которыми страница подстраивает декор под текст: их ставит
+       inline'ом свой sync-скрипт, и в режиме --only полезно видеть, что они
+       действительно поехали за правкой. */
+    function liveVars(el) {
+      for (var node = el; node && node !== doc.body; node = node.parentElement) {
+        var css = node.getAttribute('style') || '';
+        if (css.indexOf('--') !== -1) return css;
+      }
+      return '';
+    }
+
+    function contentRight(el) {
+      var style = win.getComputedStyle(el);
+      return el.getBoundingClientRect().right -
+        parseFloat(style.paddingRight || 0) - parseFloat(style.borderRightWidth || 0);
+    }
+
+    var findings = [];
+    var index = 0;
+
+    function step() {
+      if (index >= texts.length) return Promise.resolve();
+      var el = texts[index++];
+      /* innerText, а не textContent: соседние span'ы в заголовках стоят без
+         пробела между ними, и склеенные слова дали бы несуществующий
+         «длинный токен» вместо двух обычных. */
+      var source = (el.innerText || el.textContent).replace(/\s+/g, ' ').trim();
+      var words = source.split(/\s+/);
+      var longer = words.slice();
+      var extra = Math.max(2, Math.round(words.length * grow));
+      for (var i = 0; i < extra; i++) longer.push(words[i % words.length]);
+      var shorter = words.slice(0, Math.max(2, Math.round(words.length / 2)));
+
+      collect();
+      var box = el.getBoundingClientRect();
+      var cut = clipper(el);
+      var cutBox = cut ? cut.getBoundingClientRect() : null;
+      var obstacleBoxes = obstacles.map(function (other) {
+        if (other === el || el.contains(other) || other.contains(el)) return null;
+        return other.getBoundingClientRect();
+      });
+      /* Линии этого блока: те, что стоят в его колонке не дальше 200px. */
+      var neighbours = rules.map(function (rule) {
+        if (rule === el || el.contains(rule) || rule.contains(el)) return null;
+        var rb = rule.getBoundingClientRect();
+        if (Math.min(box.right, rb.right) - Math.max(box.left, rb.left) < -60) return null;
+        if (rb.top >= box.bottom && rb.top - box.bottom < 200) {
+          return { rule: rule, side: 'снизу', gap: px(rb.top - box.bottom) };
+        }
+        if (rb.bottom <= box.top && box.top - rb.bottom < 200) {
+          return { rule: rule, side: 'сверху', gap: px(box.top - rb.bottom) };
+        }
+        return null;
+      });
+
+      var original = el.innerHTML;
+      var problems = [];
+
+      function gapNow(item, textBox) {
+        var rb = item.rule.getBoundingClientRect();
+        return item.side === 'снизу' ? px(rb.top - textBox.bottom) : px(textBox.top - rb.bottom);
+      }
+
+      el.textContent = longer.join(' ');
+      return frames(win, 5).then(function () {
+        settle(win);
+        var grown = el.getBoundingClientRect();
+        var edge = contentRight(el);
+        var widest = 0;
+        lineBoxes(el).forEach(function (line) {
+          if (line.right - edge > widest) widest = px(line.right - edge);
+        });
+        if (widest > 0.5) problems.push({ kind: 'строка вышла за колонку', by: widest });
+
+        if (cut) {
+          var cutNow = cut.getBoundingClientRect();
+          var over = px(grown.bottom - cutNow.bottom);
+          if (over > 1 && px(box.bottom - cutBox.bottom) <= 1) {
+            problems.push({ kind: 'обрезан родителем', by: over, who: label(cut) });
+          }
+        }
+        obstacles.forEach(function (other, k) {
+          var was = obstacleBoxes[k];
+          if (!was) return;
+          var nowBox = other.getBoundingClientRect();
+          /* Сосед, который сам сдвинулся, интереса не представляет: либо его
+             честно отодвинул выросший текст, либо это бегущая строка, у
+             которой бокс едет сам по себе. Ловим наезд на неподвижное. */
+          if (Math.abs(nowBox.left - was.left) > 1 || Math.abs(nowBox.top - was.top) > 1) return;
+          var now = overlap(grown, nowBox);
+          if (now > 2 && !overlap(box, was)) {
+            problems.push({ kind: 'наехал на соседа', by: now, who: label(other) });
+          }
+        });
+        if (only) {
+          trace.push({
+            step: 'длиннее',
+            vars: liveVars(el),
+            words: el.textContent.trim().split(/\s+/).length,
+            height: px(grown.height),
+            bottom: px(grown.bottom),
+            gaps: neighbours.filter(Boolean).map(function (item) {
+              return label(item.rule) + ' ' + item.gap + '→' + gapNow(item, grown);
+            })
+          });
+        }
+        neighbours.forEach(function (item) {
+          if (!item || item.gap <= 4) return;
+          var now = gapNow(item, grown);
+          if (now < item.gap - 4) {
+            problems.push({
+              kind: 'линия не отступила', who: label(item.rule),
+              side: item.side, gap: item.gap, after: now
+            });
+          }
+        });
+
+        el.textContent = shorter.join(' ');
+        return frames(win, 5);
+      }).then(function () {
+        settle(win);
+        var small = el.getBoundingClientRect();
+        neighbours.forEach(function (item) {
+          if (!item || item.gap <= 4) return;
+          var now = gapNow(item, small);
+          if (now > item.gap + 4) {
+            problems.push({
+              kind: 'линия не подтянулась', who: label(item.rule),
+              side: item.side, gap: item.gap, after: now
+            });
+          }
+        });
+
+        if (only) {
+          trace.push({
+            step: 'короче',
+            vars: liveVars(el),
+            words: el.textContent.trim().split(/\s+/).length,
+            height: px(small.height),
+            bottom: px(small.bottom),
+            gaps: neighbours.filter(Boolean).map(function (item) {
+              return label(item.rule) + ' ' + item.gap + '→' + gapNow(item, small);
+            })
+          });
+        }
+        if (problems.length) {
+          findings.push({
+            el: label(el),
+            text: source.slice(0, 40),
+            position: win.getComputedStyle(el).position,
+            problems: problems.slice(0, 6)
+          });
+        }
+
+        el.innerHTML = original;
+        return frames(win, 1);
+      }).then(step);
+    }
+
+    /* Диагностика окружения: если requestAnimationFrame в этом прогоне не
+       обслуживается, страница не успевает подстроить линии под новый текст,
+       и находки про отступы читать нельзя. */
+    var rafAlive = 0;
+    (function pump() { rafAlive++; win.requestAnimationFrame(pump); })();
+
+    collect();
+    return step().then(function () {
+      return {
+        page: page,
+        width: width,
+        height: height,
+        texts: texts.length,
+        rules: rules.length,
+        checked: texts.map(label),
+        trace: trace,
+        rafAlive: rafAlive,
+        ruleList: rules.map(label),
+        findings: findings
+      };
+    });
+  }
+
+  frame.addEventListener('load', function () {
+    var win = frame.contentWindow;
+    var ready = null;
+    loaded(win)
+      .then(function () { return win.document.fonts ? win.document.fonts.ready : null; })
+      .then(function () { return untilReady(win, 15000); })
+      .then(function (state) { ready = state; return wait(settleMs); })
+      .then(function () { unhide(win); settle(win); return wait(200); })
+      .then(function () { return stress(win); })
+      .then(function (data) { data.ready = ready; emit(data); })
+      .catch(function (error) { emit({ error: String((error && error.stack) || error) }); });
+  });
+})();
+</script>
