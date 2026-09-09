@@ -983,10 +983,11 @@
     });
   }
 
-  /* ---------- анимация карточек преимуществ ----------
-     Десктоп сохраняет параллакс макета. На мобильном каждая карточка
-     один раз проявляется снизу по обычному ScrollTrigger — без scrub,
-     поворота и дальнейшего движения вместе со скроллом. */
+  /* ---------- параллакс карточек преимуществ ----------
+     Десктоп и планшет повторяют внешний параллакс карточек проектов на
+     главной: колонки проходят секцию с разным вертикальным смещением.
+     На мобильном каждая карточка один раз проявляется снизу — постоянное
+     движение на узком экране мешало бы чтению длинных описаний. */
   function initAdvantagesParallax() {
     var grid = document.querySelector('.advantages__grid');
     if (!grid) return;
@@ -995,14 +996,14 @@
     if (!cards.length) return;
 
     gsap.matchMedia().add({
-      desktop: '(min-width: 1200px)',
+      parallax: '(min-width: 600px)',
       mobile: '(max-width: 599px)'
     }, function (context) {
       var tweens = [];
 
-      if (context.conditions.desktop) {
-        var from = [-6, 10, -4];
-        var to = [14, -10, 16];
+      if (context.conditions.parallax) {
+        var from = [8, 0, 10];
+        var to = [0, 8, 2];
 
         gsap.set(cards, {
           y: function (i) { return from[i % from.length] + 'vh'; },
@@ -1011,13 +1012,10 @@
 
         var timeline = gsap.timeline({
           scrollTrigger: {
-            /* Диапазон отсчитывается от секции, а не от сетки: сетка стоит
-               в потоке и занимает не всю секцию, поэтому по ней параллакс
-               проходил бы быстрее и в другом месте экрана. */
-            trigger: grid.closest('.advantages') || grid,
+            trigger: grid,
             start: 'top bottom',
-            end: 'bottom bottom',
-            scrub: 1.6,
+            end: 'bottom top',
+            scrub: 0.8,
             invalidateOnRefresh: true
           }
         });
