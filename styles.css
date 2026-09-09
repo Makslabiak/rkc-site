@@ -2360,8 +2360,10 @@ body.menu-closing .hero__descriptor {
     padding-top: var(--mobile-section-padding);
   }
 
+  /* min-height, а не height: из админки текст приходит любой длины, и жёсткая
+     высота обрезала бы секцию. Пол остаётся прежним, вид не меняется. */
   .stats {
-    height: 1079px;
+    min-height: 1079px;
     padding-block: var(--mobile-section-padding);
   }
 
