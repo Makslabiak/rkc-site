@@ -23,15 +23,6 @@
 
   if (window.rksReduceMotion()) return;
 
-  /* Пробник для проверки на устройстве: адрес с ?probe показывает, насколько
-     слой дизера разошёлся с фотографией. Нужен потому, что расхождение видно
-     только на айфоне и только при прокрутке, а headless его не повторяет.
-     Когда причина найдена и починена, всё, что помечено PROBE, удаляется. */
-  const PROBE = /[?&]probe(=|&|$)/.test(window.location.search);
-  let probeBadge = null;
-  let probeMax = 0;
-  let probeShownAt = 0;
-
   /* Длина хвоста указателя. Больше точек — плавнее дуга на резких
      движениях, но и больше сегментов считает шейдер на каждый пиксель. */
   const TRAIL_POINTS = 8;
@@ -895,8 +886,6 @@
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     });
 
-    if (PROBE) probeMeasure(now, кадр);
-
     /* Затухание чуть мягче прежних 0.925: иначе энергия гасла раньше, чем
        хвост успевал догнать курсор, и инерции не было видно. */
     pointerEnergy *= 0.94;
@@ -914,37 +903,6 @@
       trailPoints[current + 1] += (trailPoints[ahead + 1] - trailPoints[current + 1]) * TRAIL_FOLLOW_LERP;
     }
     if (!gsapTicker) rafId = window.requestAnimationFrame(render);
-  }
-
-  /* PROBE. Берём первую фотографию в кадре и сравниваем положение, которым
-     рисовали, с тем, где она на самом деле сейчас стоит в вёрстке. Разница и
-     есть та полоса, которую видно на телефоне. Замер идёт после отрисовки,
-     чтобы чтение раскладки не влияло на кадр, и не чаще десяти раз в секунду. */
-  function probeMeasure(now, кадр) {
-    const first = кадр[0];
-    if (!first) return;
-    const live = first.item.element.getBoundingClientRect();
-    const used = first.geometry.rect;
-    const shiftY = Math.round((used.top - live.top) * 10) / 10;
-    const shiftX = Math.round((used.left - live.left) * 10) / 10;
-    if (Math.abs(shiftY) > Math.abs(probeMax)) probeMax = shiftY;
-    if (now - probeShownAt < 100) return;
-    probeShownAt = now;
-
-    if (!probeBadge) {
-      probeBadge = document.createElement('div');
-      probeBadge.style.cssText = 'position:fixed;left:8px;top:8px;z-index:2147483647;' +
-        'background:#082554;color:#fff;font:600 13px/1.35 system-ui,sans-serif;' +
-        'padding:8px 10px;border-radius:6px;pointer-events:none;white-space:pre';
-      document.body.appendChild(probeBadge);
-    }
-    probeBadge.textContent =
-      'сдвиг слоя: ' + shiftY + ' px по вертикали\n' +
-      'по горизонтали: ' + shiftX + ' px\n' +
-      'наибольший за сеанс: ' + probeMax + ' px\n' +
-      'окно: ' + window.innerHeight + ', видимое: ' +
-      (window.visualViewport ? Math.round(window.visualViewport.height) +
-        ' (сдвиг ' + Math.round(window.visualViewport.offsetTop) + ')' : 'неизвестно');
   }
 
   function startLoop() {
