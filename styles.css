@@ -2842,14 +2842,18 @@ body.menu-closing .hero__descriptor {
      тёмной подложки и едет тем же переходом, поэтому стрелка переезжает
      вместе с фоном. Гаснет она только когда указатель уходит из блока. */
   .news__arrow { --news-arrow-size: 4.6875vw; position: absolute; z-index: 2; top: 0; left: 0; display: block; width: 50%; height: 50%; pointer-events: none; transform: translate(var(--news-indicator-x), var(--news-indicator-y)); transition: transform 320ms cubic-bezier(.22, 1, .36, 1); }
-  .news__arrow::before { position: absolute; top: 0; right: 0; width: var(--news-arrow-size); height: var(--news-arrow-size); border: var(--line); background: var(--light); content: ""; transform: scale(0); transform-origin: top right; transition: transform 500ms cubic-bezier(.165, .84, .44, 1); }
+  /* Раскрытие и закрытие идут в обратном порядке. Открываем: сначала
+     раскрывается квадрат, через 100 мс подхватывает стрелка. Закрываем:
+     сначала уходит стрелка, квадрат схлопывается следом. Задержка закрытия
+     живёт в основном правиле, задержка раскрытия — в правиле наведения. */
+  .news__arrow::before { position: absolute; top: 0; right: 0; width: var(--news-arrow-size); height: var(--news-arrow-size); border: var(--line); background: var(--light); content: ""; transform: scale(0); transform-origin: top right; transition: transform 500ms cubic-bezier(.165, .84, .44, 1) 100ms; }
   .news__arrow::after { position: absolute; top: calc(var(--news-arrow-size) * .32); right: calc(var(--news-arrow-size) * .32); width: calc(var(--news-arrow-size) * .36); height: calc(var(--news-arrow-size) * .36); background: var(--dark); content: ""; -webkit-mask: url("assets/icons/arrow-back.svg") center / contain no-repeat; mask: url("assets/icons/arrow-back.svg") center / contain no-repeat; transform: scale(0); transform-origin: center; transition: transform 400ms cubic-bezier(.165, .84, .44, 1); }
   /* will-change поднимается на время наведения, а не держит композиторные
      слои всю жизнь страницы. Слоя теперь три вместо восьми. */
   .news__grid.is-arrow-visible .news__arrow,
   .news__grid.is-arrow-visible .news__arrow::before,
   .news__grid.is-arrow-visible .news__arrow::after { will-change: transform; }
-  .news__grid.is-arrow-visible .news__arrow::before { transform: scale(1); }
+  .news__grid.is-arrow-visible .news__arrow::before { transform: scale(1); transition-delay: 0ms; }
   .news__grid.is-arrow-visible .news__arrow::after { transform: scale(1); transition-delay: 100ms; }
   .news-card.is-active { color: var(--light); }
   .news-card--featured { background: transparent; }
