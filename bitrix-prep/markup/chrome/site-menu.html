@@ -1,0 +1,30 @@
+<!-- Источник: site-header.js. Мобильное меню, парное к шапке. В HTML-страницах
+     его тоже нет: скрипт заполняет пустой <div data-site-menu></div>.
+
+     От страницы к странице меняется только aria-current="page" на пункте
+     текущего раздела. Атрибут hidden обязателен: без него панель видна до
+     инициализации. Открытием и закрытием управляет script.js, он же ставит
+     aria-hidden и tabindex.
+
+     Неразрывные пробелы в «О компании», «Свяжитесь с нами» и «Пн-Пт с 9:00»
+     ставит типограф из script.js. -->
+<div class="menu-panel" id="mobile-menu" data-site-menu hidden>
+  <nav class="menu-panel__nav" aria-label="Основная навигация">
+    <a href="about.html">О&nbsp;компании</a>
+    <a href="services.html">Услуги</a>
+    <a href="projects.html">Проекты</a>
+    <a href="news.html">Новости</a>
+    <a href="contacts.html">Контакты</a>
+  </nav>
+  <div class="menu-panel__contacts">
+    <p class="menu-panel__contacts-title">Свяжитесь с&nbsp;нами</p>
+    <div class="menu-panel__contacts-content">
+      <div class="menu-panel__contacts-links">
+        <a href="tel:+74951472233">+7 (495) 147-22-33</a>
+        <a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a>
+      </div>
+      <p>Пн-Пт с&nbsp;9:00 до 18:00</p>
+      <p>125167, город Москва,<br>Ленинградский проспект, д. 47, стр. 3, подъезд 3</p>
+    </div>
+  </div>
+</div>

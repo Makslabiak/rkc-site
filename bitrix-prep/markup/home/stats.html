@@ -1,0 +1,36 @@
+<!-- Источник: index.html. Вырезано tools/markup-kit.py, править здесь нельзя. -->
+<section class="stats" aria-labelledby="stats-title">
+      <h2 class="stats__title" id="stats-title"><span data-anim="title" data-anim-prewarm>Компания</span>&nbsp;<span data-anim="title" data-anim-delay=".12" data-anim-prewarm>в&nbsp;цифрах</span></h2>
+      <!-- Левая колонка секции: подзаголовок и фотография. Обёртка нужна,
+           чтобы на десктопе колонка была самостоятельным потоком и её высота
+           не зависела от списка показателей справа. На мобильном и планшете
+           у обёртки display: contents — раскладка там прежняя. -->
+      <div class="stats__aside">
+      <p class="stats__eyebrow" data-anim="lineUp" data-anim-delay=".2" data-anim-prewarm>В&nbsp;рамках реализации специального инфраструктурного проекта в&nbsp;сжатые сроки</p>
+      <div class="stats__image" data-anim="fadeIn" aria-hidden="true">
+        <div class="stats__image-layer image-tone is-active" data-stats-image="assets/images/home/stats.webp" data-dither-opacity="1"><img src="assets/images/home/stats.webp" alt="" width="1104" height="736" decoding="async" loading="lazy"></div>
+        <div class="stats__image-layer image-tone" data-stats-image="assets/images/home/stats-1841.webp" data-dither-opacity="0"><img src="assets/images/home/stats-1841.webp" alt="" width="1104" height="733" decoding="async" loading="lazy"></div>
+        <div class="stats__image-layer image-tone" data-stats-image="assets/images/home/stats-405.webp" data-dither-opacity="0"><img src="assets/images/home/stats-405.webp" alt="" width="1104" height="735" decoding="async" loading="lazy"></div>
+        <div class="stats__image-layer image-tone" data-stats-image="assets/images/home/stats-2275.webp" data-dither-opacity="0"><img src="assets/images/home/stats-2275.webp" alt="" width="1104" height="733" decoding="async" loading="lazy"></div>
+      </div>
+      </div>
+      <div class="stats__list">
+        <article class="stat-item" tabindex="0" data-stats-index="0">
+          <strong>30&nbsp;000</strong>
+          <p>Специалистов привлечено к&nbsp;реализации строительных проектов</p>
+        </article>
+        <article class="stat-item" tabindex="0" data-stats-index="1">
+          <strong>1&nbsp;841</strong>
+          <p>Объект восстановлен, в&nbsp;том числе в&nbsp;объёме теплового контура</p>
+        </article>
+        <article class="stat-item" tabindex="0" data-stats-index="2">
+          <strong>405</strong>
+          <p>Аварийных объектов демонтировано</p>
+        </article>
+        <article class="stat-item" tabindex="0" data-stats-index="3">
+          <strong>2&nbsp;275</strong>
+          <p>Положительных заключений Главгосэкспертизы России получено</p>
+        </article>
+        <a class="button stats__button" href="about.html"><span class="button__text button__text--current">Подробнее о&nbsp;компании</span><span class="button__text button__text--hover" aria-hidden="true">Подробнее о&nbsp;компании</span></a>
+      </div>
+    </section>

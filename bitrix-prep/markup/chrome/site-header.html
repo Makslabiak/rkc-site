@@ -1,0 +1,43 @@
+<!-- Источник: site-header.js. В HTML-страницах этой разметки нет: скрипт
+     подставляет её в пустой <div class="site-header" data-site-header></div>.
+     Для Bitrix её нужно вывести сервером в header.php, а site-header.js убрать.
+
+     Что меняется от страницы к странице:
+       • класс темы: site-header--light или site-header--dark;
+         dark на about, services, news-detail, project-detail; light на остальных;
+       • href логотипа: "#top" на главной, "index.html" на остальных;
+       • aria-current="page" на пункте текущего раздела
+         (about / services / projects / news / contacts;
+         project-detail считается «Проекты», news-detail — «Новости»).
+
+     Неразрывный пробел в «О компании» ставит типограф из script.js.
+     В серверной разметке его лучше проставить сразу, как здесь.
+
+     Атрибуты aria-disabled, tabindex и aria-hidden на кнопке «Меню»
+     расставляет script.js во время работы. В шаблон их писать не надо. -->
+<div class="site-header site-header--light" data-site-header>
+  <a class="site-logo" href="#top" aria-label="РКС-НР — на главную">
+    <img src="assets/icons/logo-header.svg" width="142" height="54" alt="РКС-НР">
+  </a>
+  <nav class="desktop-nav" aria-label="Основная навигация" data-anim="typeChars" data-anim-target="a" data-anim-on-load>
+    <div class="desktop-nav__group">
+      <a href="about.html">О&nbsp;компании</a>
+      <a href="services.html">Услуги</a>
+      <a href="projects.html">Проекты</a>
+    </div>
+    <div class="desktop-nav__group">
+      <a href="news.html">Новости</a>
+      <a href="contacts.html">Контакты</a>
+    </div>
+  </nav>
+  <div class="site-header__actions">
+    <button class="menu-button button--fill-hover" type="button" aria-expanded="false" aria-controls="mobile-menu">
+      <span class="button__text button__text--current">Меню</span>
+      <span class="button__text button__text--hover" aria-hidden="true">Меню</span>
+    </button>
+    <button class="language-button button--fill-hover" type="button" aria-label="Выбран русский язык">
+      <span class="button__text button__text--current">RU</span>
+      <span class="button__text button__text--hover" aria-hidden="true">EN</span>
+    </button>
+  </div>
+</div>

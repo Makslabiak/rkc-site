@@ -1,0 +1,27 @@
+<!-- Источник: index.html. Вырезано tools/markup-kit.py, править здесь нельзя. -->
+<section class="video-section" aria-label="Видео о компании">
+      <div class="video-frame" data-video-player>
+        <div class="video-frame__ticker video-frame__ticker--top" aria-hidden="true">Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории</div>
+        <div class="video-frame__ticker video-frame__ticker--right" aria-hidden="true">Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории</div>
+        <div class="video-frame__ticker video-frame__ticker--bottom" aria-hidden="true">Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории</div>
+        <div class="video-frame__ticker video-frame__ticker--left" aria-hidden="true">Первые в&nbsp;строительстве новой истории　 Первые в&nbsp;строительстве новой истории</div>
+        <!-- Обложка живёт в .image-tone: её рисует общий дизер.
+             Видео и панель управления плеер поднимает в .video-frame__stage. -->
+        <div class="video-frame__media image-tone image-tone--hero">
+          <img src="assets/images/home/video-cover.webp" alt="Строительство жилого комплекса" width="2048" height="1366" decoding="async" loading="lazy">
+        </div>
+        <!-- preload="none": ролик весит десятки мегабайт и лежит пятой секцией.
+             video-player.js поднимает preload до "metadata" через
+             IntersectionObserver, когда секция подходит к экрану, — длительность
+             и полоса прогресса появляются до того, как пользователь до них
+             дойдёт, но стартовая загрузка страницы к файлу не обращается. -->
+        <video class="video-frame__video" poster="assets/images/home/video-cover.webp" preload="none" playsinline webkit-playsinline controls aria-label="Видео о компании">
+          <source src="assets/videos/company.mp4" type="video/mp4">
+          <p>Ваш браузер не поддерживает встроенное видео.
+            <a href="assets/videos/company.mp4">Скачать ролик</a>.</p>
+        </video>
+        <button class="play-button" type="button" aria-label="Воспроизвести видео">
+          <img src="assets/icons/play.svg" width="127" height="127" alt="">
+        </button>
+      </div>
+    </section>

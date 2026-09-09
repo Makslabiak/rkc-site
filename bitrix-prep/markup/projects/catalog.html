@@ -1,0 +1,31 @@
+<!-- Источник: projects.html. Вырезано tools/markup-kit.py, править здесь нельзя. -->
+<section class="projects-page__catalog" aria-label="Каталог проектов">
+      <aside class="projects-page__filter" aria-label="Фильтр проектов">
+        <div class="projects-page__filter-sticky">
+          <button class="projects-page__filter-button is-active" type="button" aria-controls="projects-grid" data-filter="all" aria-pressed="true">Все</button>
+
+          <div class="projects-page__filter-group">
+            <button class="projects-page__filter-button projects-page__filter-button--group" type="button" aria-controls="projects-grid" data-filter="restoration" aria-pressed="false">Восстановление</button>
+            <div class="projects-page__filter-subgroup">
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" aria-controls="projects-grid" data-filter="restoration-residential" aria-pressed="false">Жилые здания</button>
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" aria-controls="projects-grid" data-filter="restoration-education" aria-pressed="false">Образовательные учреждения</button>
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" aria-controls="projects-grid" data-filter="restoration-medical" aria-pressed="false">Медицинские учреждения</button>
+            </div>
+          </div>
+
+          <div class="projects-page__filter-group">
+            <button class="projects-page__filter-button projects-page__filter-button--group" type="button" aria-controls="projects-grid" data-filter="construction" aria-pressed="false">Строительство</button>
+            <div class="projects-page__filter-subgroup">
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" aria-controls="projects-grid" data-filter="construction-residential" aria-pressed="false">Жилые здания</button>
+              <button class="projects-page__filter-button projects-page__filter-button--sub" type="button" aria-controls="projects-grid" data-filter="construction-infrastructure" aria-pressed="false">Коммунальная инфраструктура</button>
+            </div>
+          </div>
+
+          <button class="projects-page__filter-button projects-page__filter-button--group" type="button" aria-controls="projects-grid" data-filter="international" aria-pressed="false">Международные проекты</button>
+          <button class="projects-page__filter-button projects-page__filter-button--group" type="button" aria-controls="projects-grid" data-filter="demolition" aria-pressed="false">Демонтаж</button>
+        </div>
+      </aside>
+
+      <div class="projects-page__grid" data-projects-grid id="projects-grid"></div>
+      <p class="visually-hidden" data-projects-status role="status" aria-live="polite" aria-atomic="true"></p>
+    </section>

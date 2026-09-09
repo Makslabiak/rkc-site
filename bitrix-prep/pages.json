@@ -1,0 +1,424 @@
+{
+  "index.html": {
+    "sitePage": "home",
+    "bodyClass": "",
+    "title": "РКС-НР — первые в строительстве новой истории",
+    "description": "ООО «РКС-НР» — генеральный подрядчик строительства и восстановления объектов жилищной и социально-культурной сферы в новых регионах России. Восстановлено 1841 объектов, привлечено 30 000 специалистов.",
+    "canonical": "https://rks-nr.ru/",
+    "ogImage": "https://rks-nr.ru/assets/images/home/hero.webp",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+    "preload": [
+      "assets/images/home/hero.webp",
+      "assets/fonts/LTSuperior-Medium.woff2",
+      "assets/fonts/Roboto-Variable.woff2"
+    ],
+    "css": [
+      "styles.css"
+    ],
+    "js": [
+      "page-entry.js",
+      "assets/vendor/lenis.min.js",
+      "assets/vendor/gsap.min.js",
+      "assets/vendor/ScrollTrigger.min.js",
+      "assets/vendor/SplitText.min.js",
+      "assets/vendor/ScrambleTextPlugin.min.js",
+      "site-header.js",
+      "script.js",
+      "video-player.js",
+      "news-home.js",
+      "services-dither.js",
+      "animations.js"
+    ],
+    "jsonLd": 1,
+    "footer": {
+      "class": "",
+      "id": "contacts",
+      "anim": true,
+      "legalBase": "documents.html",
+      "policiesBase": "policies.html"
+    }
+  },
+  "about.html": {
+    "sitePage": "about",
+    "bodyClass": "about-page",
+    "title": "О компании — РКС-НР",
+    "description": "ООО «РКС-НР» — генеральный подрядчик полного цикла: от подготовки и организации строительства до ввода объектов в эксплуатацию. Руководство компании, преимущества, вакансии и заказчики.",
+    "canonical": "https://rks-nr.ru/about.html",
+    "ogImage": "https://rks-nr.ru/assets/images/home/hero.webp",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+    "preload": [
+      "assets/fonts/LTSuperior-Medium.woff2",
+      "assets/fonts/Roboto-Variable.woff2"
+    ],
+    "css": [
+      "styles.css",
+      "services-page.css",
+      "about-page.css"
+    ],
+    "js": [
+      "page-entry.js",
+      "assets/vendor/lenis.min.js",
+      "assets/vendor/gsap.min.js",
+      "assets/vendor/ScrollTrigger.min.js",
+      "assets/vendor/SplitText.min.js",
+      "assets/vendor/ScrambleTextPlugin.min.js",
+      "site-header.js",
+      "script.js",
+      "services-dither.js",
+      "about-page.js",
+      "animations.js"
+    ],
+    "jsonLd": 1,
+    "footer": {
+      "class": "",
+      "id": "contacts",
+      "anim": false,
+      "legalBase": "documents.html",
+      "policiesBase": "policies.html"
+    }
+  },
+  "services.html": {
+    "sitePage": "services",
+    "bodyClass": "services-page",
+    "title": "Услуги — РКС-НР",
+    "description": "Услуги РКС-НР: ЕРС- и ЕРСМ-контракты, технический заказчик, стоимостной инжиниринг, специализированный застройщик — реализация масштабных проектов жилищного строительства и инфраструктуры.",
+    "canonical": "https://rks-nr.ru/services.html",
+    "ogImage": "https://rks-nr.ru/assets/images/services/hero.webp",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+    "preload": [
+      "assets/images/services/hero.webp",
+      "assets/fonts/LTSuperior-Medium.woff2",
+      "assets/fonts/Roboto-Variable.woff2"
+    ],
+    "css": [
+      "styles.css",
+      "services-page.css"
+    ],
+    "js": [
+      "page-entry.js",
+      "assets/vendor/lenis.min.js",
+      "assets/vendor/gsap.min.js",
+      "assets/vendor/ScrollTrigger.min.js",
+      "assets/vendor/SplitText.min.js",
+      "assets/vendor/ScrambleTextPlugin.min.js",
+      "site-header.js",
+      "script.js",
+      "services-dither.js",
+      "services-page.js",
+      "animations.js"
+    ],
+    "jsonLd": 1,
+    "footer": {
+      "class": "",
+      "id": "contacts",
+      "anim": false,
+      "legalBase": "documents.html",
+      "policiesBase": "policies.html"
+    }
+  },
+  "projects.html": {
+    "sitePage": "projects",
+    "bodyClass": "projects-page",
+    "title": "Проекты — РКС-НР",
+    "description": "Проекты ООО «РКС-НР»: восстановление и строительство жилых домов, образовательных и медицинских учреждений, коммунальной инфраструктуры в новых регионах России.",
+    "canonical": "https://rks-nr.ru/projects.html",
+    "ogImage": "https://rks-nr.ru/assets/images/home/hero.webp",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+    "preload": [
+      "assets/fonts/LTSuperior-Medium.woff2",
+      "assets/fonts/Roboto-Variable.woff2"
+    ],
+    "css": [
+      "styles.css",
+      "projects-page.css"
+    ],
+    "js": [
+      "page-entry.js",
+      "assets/vendor/lenis.min.js",
+      "assets/vendor/gsap.min.js",
+      "assets/vendor/ScrollTrigger.min.js",
+      "assets/vendor/SplitText.min.js",
+      "assets/vendor/ScrambleTextPlugin.min.js",
+      "site-header.js",
+      "script.js",
+      "projects-page.js",
+      "services-dither.js",
+      "animations.js"
+    ],
+    "jsonLd": 1,
+    "footer": {
+      "class": "",
+      "id": "contacts",
+      "anim": false,
+      "legalBase": "documents.html",
+      "policiesBase": "policies.html"
+    }
+  },
+  "project-detail.html": {
+    "sitePage": "project-detail",
+    "bodyClass": "project-detail-page",
+    "title": "Жилой дом на ул. Артема — РКС-НР",
+    "description": "Восстановление жилого дома на улице Артема в историческом центре Мариуполя: фотографии до и после, состав и сроки работ ООО «РКС-НР».",
+    "canonical": "https://rks-nr.ru/project-detail.html",
+    "ogImage": "https://rks-nr.ru/assets/images/projects/project-detail-hero.webp",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+    "preload": [
+      "assets/images/projects/project-detail-hero.webp",
+      "assets/fonts/LTSuperior-Medium.woff2",
+      "assets/fonts/Roboto-Variable.woff2"
+    ],
+    "css": [
+      "styles.css",
+      "project-detail.css"
+    ],
+    "js": [
+      "page-entry.js",
+      "assets/vendor/lenis.min.js",
+      "assets/vendor/gsap.min.js",
+      "assets/vendor/ScrollTrigger.min.js",
+      "assets/vendor/SplitText.min.js",
+      "assets/vendor/ScrambleTextPlugin.min.js",
+      "site-header.js",
+      "script.js",
+      "project-detail.js",
+      "services-dither.js",
+      "animations.js"
+    ],
+    "jsonLd": 1,
+    "footer": {
+      "class": "",
+      "id": "contacts",
+      "anim": false,
+      "legalBase": "documents.html",
+      "policiesBase": "policies.html"
+    }
+  },
+  "news.html": {
+    "sitePage": "news",
+    "bodyClass": "news-page",
+    "title": "Новости — РКС-НР",
+    "description": "Новости ООО «РКС-НР»: ход восстановления и строительства объектов жилищной и социально-культурной сферы в новых регионах России.",
+    "canonical": "https://rks-nr.ru/news.html",
+    "ogImage": "https://rks-nr.ru/assets/images/home/hero.webp",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+    "preload": [
+      "assets/fonts/LTSuperior-Medium.woff2",
+      "assets/fonts/Roboto-Variable.woff2"
+    ],
+    "css": [
+      "styles.css",
+      "news-page.css"
+    ],
+    "js": [
+      "page-entry.js",
+      "assets/vendor/lenis.min.js",
+      "assets/vendor/gsap.min.js",
+      "assets/vendor/ScrollTrigger.min.js",
+      "assets/vendor/SplitText.min.js",
+      "assets/vendor/ScrambleTextPlugin.min.js",
+      "site-header.js",
+      "script.js",
+      "services-dither.js",
+      "news-page.js",
+      "animations.js"
+    ],
+    "jsonLd": 1,
+    "footer": {
+      "class": "news-footer",
+      "id": "",
+      "anim": true,
+      "legalBase": "documents.html",
+      "policiesBase": "policies.html"
+    }
+  },
+  "news-detail.html": {
+    "sitePage": "news-detail",
+    "bodyClass": "news-detail-page",
+    "title": "Восстановление дома на проспекте Маршала Жукова — РКС-НР",
+    "description": "ООО «РКС-НР» совместно с Фондом капитального ремонта Московской области завершили восстановление дома 1993 года постройки на проспекте Маршала Жукова.",
+    "canonical": "https://rks-nr.ru/news-detail.html",
+    "ogImage": "https://rks-nr.ru/assets/images/news/detail-hero.webp",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+    "preload": [
+      "assets/images/news/detail-hero.webp",
+      "assets/fonts/LTSuperior-Medium.woff2",
+      "assets/fonts/Roboto-Variable.woff2"
+    ],
+    "css": [
+      "styles.css",
+      "news-detail.css"
+    ],
+    "js": [
+      "page-entry.js",
+      "assets/vendor/lenis.min.js",
+      "assets/vendor/gsap.min.js",
+      "assets/vendor/ScrollTrigger.min.js",
+      "assets/vendor/SplitText.min.js",
+      "assets/vendor/ScrambleTextPlugin.min.js",
+      "site-header.js",
+      "script.js",
+      "video-player.js",
+      "news-detail.js",
+      "services-dither.js",
+      "animations.js"
+    ],
+    "jsonLd": 2,
+    "footer": {
+      "class": "news-detail-footer",
+      "id": "",
+      "anim": false,
+      "legalBase": "documents.html",
+      "policiesBase": "policies.html"
+    }
+  },
+  "documents.html": {
+    "sitePage": "documents",
+    "bodyClass": "documents-page",
+    "title": "Документы — РКС-НР",
+    "description": "Документы ООО «РКС-НР»: политика в отношении обработки персональных данных и согласие на обработку персональных данных.",
+    "canonical": "https://rks-nr.ru/documents.html",
+    "ogImage": "https://rks-nr.ru/assets/images/home/hero.webp",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+    "preload": [
+      "assets/fonts/LTSuperior-Medium.woff2",
+      "assets/fonts/Roboto-Variable.woff2"
+    ],
+    "css": [
+      "styles.css",
+      "documents-page.css"
+    ],
+    "js": [
+      "page-entry.js",
+      "assets/vendor/lenis.min.js",
+      "assets/vendor/gsap.min.js",
+      "assets/vendor/ScrollTrigger.min.js",
+      "assets/vendor/SplitText.min.js",
+      "assets/vendor/ScrambleTextPlugin.min.js",
+      "site-header.js",
+      "script.js",
+      "documents-tabs.js",
+      "animations.js"
+    ],
+    "jsonLd": 1,
+    "footer": {
+      "class": "documents-footer",
+      "id": "documents-footer",
+      "anim": false,
+      "legalBase": "",
+      "policiesBase": "policies.html"
+    }
+  },
+  "policies.html": {
+    "sitePage": "policies",
+    "bodyClass": "documents-page company-policies-page",
+    "title": "Политики компании — РКС-НР",
+    "description": "Политики ООО «РКС-НР» в области охраны труда, противодействия коррупции, этики и корпоративной ответственности.",
+    "canonical": "https://rks-nr.ru/policies.html",
+    "ogImage": "https://rks-nr.ru/assets/images/home/hero.webp",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+    "preload": [
+      "assets/fonts/LTSuperior-Medium.woff2",
+      "assets/fonts/Roboto-Variable.woff2"
+    ],
+    "css": [
+      "styles.css",
+      "documents-page.css",
+      "policies-page.css"
+    ],
+    "js": [
+      "page-entry.js",
+      "assets/vendor/lenis.min.js",
+      "assets/vendor/gsap.min.js",
+      "assets/vendor/ScrollTrigger.min.js",
+      "assets/vendor/SplitText.min.js",
+      "assets/vendor/ScrambleTextPlugin.min.js",
+      "site-header.js",
+      "script.js",
+      "documents-tabs.js",
+      "animations.js"
+    ],
+    "jsonLd": 1,
+    "footer": {
+      "class": "documents-footer",
+      "id": "documents-footer",
+      "anim": false,
+      "legalBase": "documents.html",
+      "policiesBase": ""
+    }
+  },
+  "contacts.html": {
+    "sitePage": "contacts",
+    "bodyClass": "contacts-page",
+    "title": "Контакты — РКС-НР",
+    "description": "Контакты ООО «РКС-НР»: Москва, Ленинградский проспект, д. 47, стр. 3. Телефон +7 (495) 147-22-33, почта mail@rks-nr.ru, форма обратной связи и карта проезда.",
+    "canonical": "https://rks-nr.ru/contacts.html",
+    "ogImage": "https://rks-nr.ru/assets/images/home/hero.webp",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+    "preload": [
+      "assets/fonts/LTSuperior-Medium.woff2",
+      "assets/fonts/Roboto-Variable.woff2"
+    ],
+    "css": [
+      "styles.css",
+      "contacts-page.css"
+    ],
+    "js": [
+      "page-entry.js",
+      "assets/vendor/lenis.min.js",
+      "assets/vendor/gsap.min.js",
+      "assets/vendor/ScrollTrigger.min.js",
+      "assets/vendor/SplitText.min.js",
+      "assets/vendor/ScrambleTextPlugin.min.js",
+      "site-header.js",
+      "script.js",
+      "services-dither.js",
+      "contacts-page.js",
+      "animations.js"
+    ],
+    "jsonLd": 2,
+    "footer": {
+      "class": "contacts-footer",
+      "id": "",
+      "anim": true,
+      "legalBase": "documents.html",
+      "policiesBase": "policies.html"
+    }
+  },
+  "404.html": {
+    "sitePage": "not-found",
+    "bodyClass": "documents-page not-found-page",
+    "title": "Страница не найдена — РКС-НР",
+    "description": "Такой страницы на сайте ООО «РКС-НР» нет. Вернитесь на главную или выберите раздел в меню.",
+    "canonical": "",
+    "ogImage": "",
+    "robots": "noindex, follow",
+    "preload": [
+      "assets/fonts/LTSuperior-Medium.woff2",
+      "assets/fonts/Roboto-Variable.woff2"
+    ],
+    "css": [
+      "styles.css",
+      "documents-page.css",
+      "not-found.css"
+    ],
+    "js": [
+      "page-entry.js",
+      "assets/vendor/lenis.min.js",
+      "assets/vendor/gsap.min.js",
+      "assets/vendor/ScrollTrigger.min.js",
+      "assets/vendor/SplitText.min.js",
+      "assets/vendor/ScrambleTextPlugin.min.js",
+      "site-header.js",
+      "script.js",
+      "animations.js"
+    ],
+    "jsonLd": 0,
+    "footer": {
+      "class": "documents-footer",
+      "id": "documents-footer",
+      "anim": false,
+      "legalBase": "documents.html",
+      "policiesBase": "policies.html"
+    }
+  }
+}

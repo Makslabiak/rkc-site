@@ -1,0 +1,22 @@
+<!-- Источник: index.html. Вырезано tools/markup-kit.py, править здесь нельзя. -->
+<header class="hero" id="top">
+    <div class="hero__media" data-dither-src="assets/images/home/hero.webp" aria-hidden="true">
+      <img src="assets/images/home/hero.webp" alt="" width="2048" height="1142" decoding="async">
+    </div>
+    <div class="site-header" data-site-header></div>
+
+    <div class="hero__lines" data-anim="line" data-anim-target=".hero__line" data-anim-stagger=".08" aria-hidden="true">
+      <div class="hero__line hero__line--nav-left"></div>
+      <div class="hero__line hero__line--nav-right"></div>
+      <div class="hero__line hero__line--top"></div>
+      <div class="hero__line hero__line--bottom"></div>
+      <div class="hero__line hero__line--left-bottom"></div>
+    </div>
+    <!-- Текст переносится сам: жёстких <br> здесь нет, чтобы правка из
+         админки Bitrix не ломала раскладку. Ширина колонки доведена до
+         правого поля макета, предлоги держатся на своих строках через
+         &nbsp;, а вертикальная линия под дескриптором отодвигается по
+         его фактической высоте (--hero-descriptor-bottom). -->
+    <p class="hero__descriptor" data-box-var="hero-descriptor" data-anim="lineUp" data-anim-duration=".8" data-anim-delay=".4" data-anim-stagger=".14">Комплексно реализуем сложные строительные и&nbsp;инфраструктурные проекты</p>
+    <h1 class="hero__title" data-box-var="hero-title" data-anim="title" data-anim-start="top 100%">Первые в&nbsp;строительстве новой истории</h1>
+  </header>
