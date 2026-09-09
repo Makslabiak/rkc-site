@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Проверка устройства — РКС-НР</title>
+<style>
+  /* Никаких шрифтов и картинок сайта: страница должна открыться даже там,
+     где остальное не работает. */
+  body { margin: 0; padding: 20px; font: 16px/1.5 -apple-system, system-ui, sans-serif;
+         background: #fff; color: #111; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 28px 0 8px; text-transform: uppercase;
+       letter-spacing: .06em; color: #666; }
+  p.lead { margin: 0 0 8px; color: #666; }
+  .row { border-top: 1px solid #e3e3e3; padding: 10px 0; }
+  .row:last-child { border-bottom: 1px solid #e3e3e3; }
+  .name { font-weight: 600; }
+  .detail { color: #666; font-size: 14px; word-break: break-word; }
+  .verdict { display: inline-block; padding: 2px 8px; border-radius: 3px;
+             font-size: 14px; font-weight: 600; }
+  .ok   { background: #e4f4e4; color: #1d6b1d; }
+  .bad  { background: #fae2e2; color: #9c1f1f; }
+  .warn { background: #fdf1d8; color: #85601a; }
+  .wait { background: #eee; color: #555; }
+  .verdict-line { margin: 16px 0 0; padding: 14px; border-radius: 4px;
+                  background: #f4f4f4; font-size: 17px; }
+  button { font: inherit; padding: 10px 18px; margin-top: 20px; }
+  iframe { position: absolute; left: -9999px; top: 0; height: 800px; border: 0; }
+</style>
+</head>
+<body>
+
+<h1>Проверка устройства</h1>
+<p class="lead">Откройте эту страницу на том устройстве, где пропали анимации
+и дизер. Ничего нажимать не нужно, ответ появится сам через несколько секунд.</p>
+
+<div id="verdict" class="verdict-line">Проверяю…</div>
+
+<h2>Настройки устройства</h2>
+<div id="device"></div>
+
+<h2>Библиотеки анимаций</h2>
+<div id="vendor"></div>
+
+<h2>Живая главная страница</h2>
+<div id="page"></div>
+
+<h2>Ошибки</h2>
+<div id="errors"></div>
+
+<button type="button" onclick="location.reload()">Проверить заново</button>
+
+<iframe id="probe" title="Проверочная загрузка главной"></iframe>
+
+<script>
+/* Намеренно старый JavaScript, без стрелок и без необязательной цепочки:
+   страница должна работать и на браузере, который не понимает нового. */
+(function () {
+  var errors = [];
+  window.onerror = function (message, source, line) {
+    errors.push(message + ' (' + String(source).split('/').pop() + ':' + line + ')');
+    draw();
+  };
+
+  function el(id) { return document.getElementById(id); }
+
+  function viewportWidth() {
+    return window.innerWidth ||
+      (document.documentElement && document.documentElement.clientWidth) ||
+      (document.body && document.body.clientWidth) || 390;
+  }
+
+  function row(kind, name, detail) {
+    var labels = { ok: 'ОК', bad: 'НЕТ', warn: 'ВНИМАНИЕ', wait: 'жду' };
+    return '<div class="row"><span class="verdict ' + kind + '">' + labels[kind] +
+           '</span> <span class="name">' + name + '</span>' +
+           (detail ? '<div class="detail">' + detail + '</div>' : '') + '</div>';
+  }
+
+  var state = {
+    reduceMotion: null,
+    webgl: null,
+    webglNote: '',
+    vendor: {},
+    page: null
+  };
+
+  function ask(query) {
+    if (!window.matchMedia) return null;
+    return window.matchMedia(query).matches;
+  }
+
+  function checkWebgl() {
+    var canvas = document.createElement('canvas');
+    var gl = null;
+    try {
+      gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    } catch (error) {
+      state.webglNote = String(error);
+    }
+    if (!gl) return false;
+    try {
+      var info = gl.getExtension('WEBGL_debug_renderer_info');
+      if (info) state.webglNote = String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL));
+    } catch (error) { /* видеокарту знать необязательно */ }
+    return true;
+  }
+
+  var VENDOR = [
+    ['gsap.min.js', 'gsap', 'GSAP, основа всех анимаций'],
+    ['ScrollTrigger.min.js', 'ScrollTrigger', 'запуск анимаций по прокрутке'],
+    ['SplitText.min.js', 'SplitText', 'разбор заголовков на буквы'],
+    ['ScrambleTextPlugin.min.js', 'ScrambleTextPlugin', 'набор текста буквами'],
+    ['lenis.min.js', 'Lenis', 'плавная прокрутка']
+  ];
+
+  function loadVendor(index) {
+    if (index >= VENDOR.length) { loadPage(); return; }
+    var item = VENDOR[index];
+    var script = document.createElement('script');
+    script.src = '../assets/vendor/' + item[0];
+    script.onload = function () {
+      state.vendor[item[1]] = window[item[1]] ? 'есть' : 'загрузился, но не появился';
+      draw(); loadVendor(index + 1);
+    };
+    script.onerror = function () {
+      state.vendor[item[1]] = 'файл не загрузился';
+      draw(); loadVendor(index + 1);
+    };
+    document.body.appendChild(script);
+  }
+
+  function loadPage() {
+    var frame = el('probe');
+    /* Рамка шириной с само устройство: иначе проверка увидит не ту раскладку,
+       что видит владелец. */
+    frame.style.width = viewportWidth() + 'px';
+    frame.src = '../index.html';
+    frame.onload = function () {
+      setTimeout(function () { readPage(frame); }, 2500);
+    };
+  }
+
+  function readPage(frame) {
+    var result = {};
+    try {
+      var win = frame.contentWindow;
+      var doc = frame.contentDocument;
+      result.gsap = !!win.gsap;
+      result.engine = win.SITE_DITHER_ENGINE || 'не задан';
+      result.canvas = doc.getElementsByTagName('canvas').length;
+      /* Признак того, что animations.js прошёл начало и не отказался
+         работать: обещание он заводит уже после всех проверок. */
+      result.animReady = !!win.__rksAnimationsReady;
+      result.animBlocks = doc.querySelectorAll('[data-anim]').length;
+      result.lenis = !!win.lenis;
+    } catch (error) {
+      result.blocked = String(error);
+    }
+    state.page = result;
+    draw();
+  }
+
+  function draw() {
+    var reduce = state.reduceMotion;
+    el('device').innerHTML =
+      row(reduce === null ? 'wait' : 'ok',
+          'Экономия движения в системе',
+          (reduce === true ? 'Включена. ' : 'Выключена. ') +
+          'С сентября 2026 сайт эту настройку не учитывает: анимации, дизер и ' +
+          'плавная прокрутка работают одинаково при любом её положении. ' +
+          'Раньше она гасила всё сразу.') +
+      row(state.webgl === true ? 'ok' : state.webgl === false ? 'bad' : 'wait',
+          'WebGL, на нём работает дизер',
+          state.webglNote || 'Без WebGL дизер не запускается.') +
+      row('ok', 'Экран и браузер',
+          'Ширина ' + viewportWidth() + ' px, плотность ' +
+          (window.devicePixelRatio || 1) + '×.<br>' + navigator.userAgent);
+
+    var vendorHtml = '';
+    for (var i = 0; i < VENDOR.length; i++) {
+      var name = VENDOR[i][1];
+      var value = state.vendor[name];
+      vendorHtml += row(!value ? 'wait' : value === 'есть' ? 'ok' : 'bad',
+                        name, VENDOR[i][2] + (value && value !== 'есть' ? '. ' + value : ''));
+    }
+    el('vendor').innerHTML = vendorHtml;
+
+    var page = state.page;
+    if (!page) {
+      el('page').innerHTML = row('wait', 'Главная страница', 'Открываю её в фоне…');
+    } else if (page.blocked) {
+      el('page').innerHTML = row('warn', 'Главная страница',
+        'Прочитать не удалось: ' + page.blocked +
+        '. Так бывает, если страницу открыли файлом с диска, а не с сайта.');
+    } else {
+      el('page').innerHTML =
+        row(page.gsap ? 'ok' : 'bad', 'GSAP на главной',
+            page.gsap ? 'Библиотека доступна странице.' : 'На странице библиотеки нет.') +
+        row(page.engine === 'shared-webgl' ? 'ok' : 'bad', 'Движок дизера',
+            'Значение: ' + page.engine + '. Его задаёт script.js.') +
+        row(page.canvas > 0 ? 'ok' : 'bad', 'Слой дизера на странице',
+            page.canvas > 0 ? 'Холст создан.' : 'Холста нет, дизер не запустился.') +
+        row(page.animReady ? 'ok' : 'bad', 'Анимации запустились',
+            page.animReady
+              ? 'Блоков с анимацией на странице: ' + page.animBlocks
+              : 'animations.js отказался работать. Обычно это экономия движения.') +
+        row(page.lenis ? 'ok' : 'warn', 'Плавная прокрутка',
+            page.lenis ? 'Работает.' : 'Не запущена.');
+    }
+
+    el('errors').innerHTML = errors.length
+      ? row('bad', 'Ошибки в коде', errors.join('<br>'))
+      : row('ok', 'Ошибки в коде', 'Ни одной не поймано.');
+
+    var verdict = 'Проверяю…';
+    if (state.webgl === false) {
+      verdict = 'Причина найдена: устройство не даёт WebGL. Дизер без него не работает. ' +
+        'Анимации при этом должны остаться, проверьте раздел ниже.';
+    } else if (errors.length) {
+      verdict = 'Похоже на ошибку в коде, она в разделе «Ошибки». Покажите её разработчику.';
+    } else if (page && !page.blocked) {
+      var broken = !page.gsap || page.canvas === 0 || !page.animReady;
+      verdict = broken
+        ? 'WebGL есть, но что-то на главной не поднялось. Смотрите разделы ниже: ' +
+          'там видно, что именно.'
+        : 'Всё на месте: WebGL есть, анимации и дизер запустились. ' +
+          'Если на экране их всё равно не видно, дело не в устройстве.';
+    }
+    el('verdict').innerHTML = verdict;
+  }
+
+  state.reduceMotion = ask('(prefers-reduced-motion: reduce)');
+  state.webgl = checkWebgl();
+  draw();
+  loadVendor(0);
+})();
+</script>
+</body>
+</html>

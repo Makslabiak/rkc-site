@@ -1,6 +1,7 @@
 """Local preview server with byte ranges for HTML video. Not a production server."""
 import argparse
 import re
+import socket
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -59,11 +60,45 @@ class RangeHandler(SimpleHTTPRequestHandler):
             pass  # A media client may cancel a range when seeking.
 
 
+def lan_addresses():
+    """Все адреса машины в локальных сетях.
+
+    Печатаем список, а не один адрес: когда поднят VPN, маршрут уводит на
+    его интерфейс, а телефону нужен адрес того же Wi-Fi. Угадывать за
+    владельца нечего, пусть выберет из списка.
+    """
+    found = []
+    try:
+        for info in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET):
+            address = info[4][0]
+            if not address.startswith('127.') and address not in found:
+                found.append(address)
+    except OSError:
+        pass
+    return found
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--port', type=int, default=4173)
+    parser.add_argument('--lan', action='store_true',
+                        help='отдавать сайт в локальную сеть: проверить на телефоне '
+                             'или на другом ноутбуке')
     args = parser.parse_args()
     handler = partial(RangeHandler, directory=str(Path(__file__).resolve().parents[1]))
-    server = ThreadingHTTPServer(('127.0.0.1', args.port), handler)
+    host = '0.0.0.0' if args.lan else '127.0.0.1'
+    server = ThreadingHTTPServer((host, args.port), handler)
     print(f'Preview: http://127.0.0.1:{args.port}', flush=True)
+    if args.lan:
+        addresses = lan_addresses()
+        if addresses:
+            print('\nС телефона или другого ноутбука в той же сети:', flush=True)
+            for address in addresses:
+                print(f'  http://{address}:{args.port}', flush=True)
+                print(f'  http://{address}:{args.port}/tools/device-check.html', flush=True)
+            print('Если адресов несколько, подходит тот, что начинается так же, '
+                  'как адрес телефона.', flush=True)
+        else:
+            print('Адрес в сети определить не вышло, посмотрите его в настройках Wi-Fi.',
+                  flush=True)
     server.serve_forever()
