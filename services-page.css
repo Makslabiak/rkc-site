@@ -423,7 +423,7 @@
     min-height: 330px;
     justify-content: flex-start;
     gap: 25.38px;
-    padding: 20.16px;
+    padding: 20px;
     border-width: .72px;
   }
 
@@ -432,7 +432,10 @@
   }
 
   .advantage-card__content { gap: 12px; }
-  .advantage-card__content h3 { width: min(255.6px, 100%); font-size: 25px; }
+  /* Заголовок занимает карточку целиком: границы задаёт только отступ
+     карточки, одинаковый со всех сторон. Прежние 255.6px обрывали строку
+     раньше края и заставляли длинные заголовки ломаться на лишние строки. */
+  .advantage-card__content h3 { width: 100%; font-size: 25px; }
 
   .advantage-card p {
     width: min(255.6px, 100%);
