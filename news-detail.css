@@ -40,8 +40,11 @@
   background: var(--light);
 }
 
+/* Жёсткой высоты у колонки быть не должно: она тянется во всю высоту статьи
+   и подстраивается под любой объём текста. Прижатую часть держит вложенный
+   .news-detail__lead-sticky. Прежние 2943px были подогнаны под один
+   конкретный текст и любую правку ломали. */
 .news-detail__lead {
-  min-height: 2943px;
   padding: 33px 60px 100px;
   border-top: 1px solid var(--dark);
   border-right: 1px solid var(--dark);
@@ -104,6 +107,12 @@
 .news-detail__body {
   min-width: 0;
   border-bottom: 1px solid var(--dark);
+}
+
+/* На телефоне под статьёй стояли две линии подряд: своя у статьи и верхняя
+   у секции видео. Оставляем одну, у видео. */
+@media (max-width: 599px) {
+  .news-detail__body { border-bottom: 0; }
 }
 
 .news-detail__hero {
@@ -339,7 +348,7 @@
 
   .news-detail__content {
     display: block;
-    padding-bottom: 60px;
+    padding-bottom: 50px;
   }
 
   .news-detail__lead {
@@ -357,8 +366,8 @@
   }
 
   .news-detail__heading h1 {
-    font-size: 40px;
-    line-height: 1;
+    font-size: 30px;
+    line-height: 1.05;
   }
 
   .news-detail__heading time {
@@ -374,8 +383,8 @@
   .news-detail__copy {
     padding: 35px 15px 45px;
     font-family: "LT Superior", Arial, sans-serif;
-    font-size: 22px;
-    line-height: 1.2;
+    font-size: 18px;
+    line-height: 1.3;
   }
 
   .news-detail__copy p + p {
