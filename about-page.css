@@ -72,11 +72,6 @@ body.leadership-modal-open { overflow:hidden; }
 .leadership-modal--gsap,.leadership-modal--gsap .leadership-modal__header,.leadership-modal--gsap .leadership-modal__person,.leadership-modal--gsap .leadership-modal__details { transition:none!important; }
 .leadership-modal--gsap { transform:translate3d(var(--leadership-modal-x,100%),0,0)!important; }
 
-@media(prefers-reduced-motion:reduce){
- .leadership-modal,.leadership-modal__backdrop,.leadership-modal__header,.leadership-modal__person,.leadership-modal__details{transition-duration:1ms!important}
- .about-clients__logos img{transition-duration:1ms!important}
-}
-
 @media (min-width:600px) and (max-width:1199px){
  .about-cover{min-height:430px;padding:240px 4.1667vw 50px}.about-cover__title{font-size:100px}.about-hero{height:550px}
  .about-section-title{font-size:80px}.about-section-title span{width:auto}

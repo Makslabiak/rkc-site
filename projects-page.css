@@ -269,10 +269,6 @@
   .projects-page-card__category { font-size: 14px; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .projects-page__filter-button { transition-duration: .01ms; }
-}
-
 /* Native hidden must override the flex display of reusable cards. */
 .projects-page-card[hidden],
 .projects-page__empty[hidden] { display: none; }
@@ -280,10 +276,6 @@
 .projects-page-card__link { color: inherit; text-decoration: none; }
 .projects-page-card__link:focus-visible { outline: 2px solid var(--dark); outline-offset: 6px; }
 .projects-page__grid { overflow-anchor: none; }
-
-@media (prefers-reduced-motion: reduce) {
-  .projects-page-card__media > img:first-child { transition: none; }
-}
 
 .projects-page [data-projects-status] {
   position: absolute;

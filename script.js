@@ -1,3 +1,9 @@
+/* Страховка на случай, если page-entry.js не подключили: там объявлен общий
+   переключатель системной настройки «Уменьшение движения», и без него все
+   двенадцать мест, которые его спрашивают, упали бы с ошибкой. Значение то
+   же самое, менять решение надо в page-entry.js, а не здесь. */
+window.rksReduceMotion = window.rksReduceMotion || function () { return false; };
+
 /* Единый пресет дизера для всех фото сайта. Меняем параметры здесь —
    основной движок и страницы получают одинаковые значения. */
 /* Единый fixed WebGL-canvas нужен для сохранения исходного вида дизера на
@@ -58,7 +64,7 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
    с ускорением, а подготовленная страница проявляется с замедлением. */
 (function initPageTransitions() {
   const root = document.documentElement;
-  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const motion = { get matches() { return window.rksReduceMotion(); } };
   const ENTER_MS = 800;
   const EXIT_MS = 600;
   const easeOut = 'cubic-bezier(.215, .61, .355, 1)';
@@ -330,7 +336,7 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
 
     done = true;
 
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduceMotion = window.rksReduceMotion();
     if (!loader || !loaderBackdrop || !loaderLogo || !heroLogo || reduceMotion) {
       startHeroZoom();
       startHeroAnimations();
@@ -401,7 +407,7 @@ document.documentElement.style.setProperty('--dither-saturation', window.SITE_DI
 /* Плавный скролл на всех страницах */
 (function initSmoothScroll() {
   if (typeof window.Lenis !== 'function') return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.rksReduceMotion()) return;
   /* lerp вместо duration+easing: Lenis больше не считает currentTime += delta
      по кадрам, а просто подтягивает позицию к цели на фиксированную долю
      каждый кадр. Просадка кадра тогда даёт чуть больший шаг, а не скачок по
@@ -734,7 +740,7 @@ function setMenu(open) {
         menuPanel.hidden = true;
         menuPanel.classList.remove('is-closing');
         document.body.classList.remove('menu-closing');
-      }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 20 : 1050);
+      }, window.rksReduceMotion() ? 20 : 1050);
     }
   }
 

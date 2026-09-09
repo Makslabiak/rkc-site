@@ -2,7 +2,7 @@
   const items = Array.from(document.querySelectorAll('.service-accordion__item'));
   if (!items.length) return;
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotion = window.rksReduceMotion();
   const easing = 'cubic-bezier(.4, 0, .2, 1)';
   const openDuration = 520;
   const closeDuration = 420;

@@ -17,7 +17,7 @@
     return;
   }
 
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (window.rksReduceMotion()) {
     reveal();
     return;
   }

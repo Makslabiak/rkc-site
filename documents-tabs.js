@@ -21,8 +21,9 @@
       window.lenis.scrollTo(tabsRow, { offset: -80 });
       return;
     }
-    /* Lenis нет ровно в одном случае — prefers-reduced-motion (script.js,
-       initSmoothScroll выходит сразу). Значит и прыжок делаем без анимации. */
+    /* Lenis может не подняться: библиотека не загрузилась или страница
+       выключила плавную прокрутку через window.rksReduceMotion (page-entry.js).
+       Тогда и прыжок делаем без анимации. */
     tabsRow.scrollIntoView({ behavior: 'auto', block: 'start' });
   }
 

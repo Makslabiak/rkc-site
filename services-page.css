@@ -733,11 +733,3 @@
   .services-cta__button { width: 16.5625vw; margin: 2.0833vw 0 0 .3646vw; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .services-hero__steps { display: none; }
-  .service-accordion::after,
-  .service-accordion__item,
-  .service-accordion__header,
-  .service-accordion__toggle,
-  .service-accordion__toggle::before { transition: none; }
-}

@@ -203,12 +203,6 @@ html.is-page-leaving body {
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html.is-page-entering body {
-    opacity: 1;
-  }
-}
-
 .section-title,
 .hero__title,
 .company-intro__lead,
@@ -1583,10 +1577,6 @@ body.menu-closing .hero__descriptor {
   to { transform: translate3d(0, 0, 0); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .video-frame__ticker-track { animation-play-state: paused; }
-}
-
 .play-button {
   position: absolute;
   z-index: 3;
@@ -2138,21 +2128,6 @@ body.menu-closing .hero__descriptor {
   .video-menu { min-width: 118px; }
   /* Мини-плеер на телефоне даёт сама система, а место на панели дороже. */
   .video-control--pip { display: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .video-frame__video,
-  .video-controls,
-  .play-button,
-  .play-button img,
-  .play-button::after,
-  .video-slider__track,
-  .video-slider__fill,
-  .video-slider__thumb,
-  .video-slider__tooltip,
-  .video-status,
-  .video-spinner { transition: none; }
-  .video-spinner.is-visible { animation: none; }
 }
 
 /* News — mobile */
@@ -2902,11 +2877,6 @@ body.menu-closing .hero__descriptor {
   .footer__copyright { grid-area: 2 / 2 / 3 / 3; justify-self: start; margin: 0; font-size: .8333vw; white-space: nowrap; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { transition-duration: .01ms !important; }
-}
-
 /* ==========================================================================
    Лоадер: держит страницу закрытой, пока не готовы шрифты и hero-фото.
    Вся тяжёлая разовая подготовка (декодирование картинки, дизер, разбор
@@ -2969,18 +2939,6 @@ html.is-loaded .loader {
   opacity: 0;
   pointer-events: none;
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .button::before,
-  .button__text {
-    transition: none;
-  }
-
-  .loader { transition: none; }
-  .loader__backdrop { transition: none; }
-  .loader__logo { animation: none; opacity: .8; transition: none; }
-}
-
 
 /* Пока GSAP не расставил стартовые состояния — прячем анимируемые элементы,
    чтобы не было вспышки готового контента */
@@ -3120,8 +3078,3 @@ html.is-loaded .loader {
   cursor: pointer;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .has-anim [data-anim] {
-    visibility: visible;
-  }
-}

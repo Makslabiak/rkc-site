@@ -211,15 +211,6 @@
 
 .news-page-card:focus-visible { outline-offset: -4px; }
 
-@media (prefers-reduced-motion: reduce) {
-  .news-page-card__arrow,
-  .news-page-card__arrow::after {
-    transition-duration: 1ms;
-    transition-delay: 0ms;
-  }
-}
-
-
 @media (min-width: 1200px) {
   .news-page .desktop-nav__group,
   .news-page .desktop-nav__group:last-child { height: 10.4167vw; }

@@ -76,7 +76,7 @@
     lastTrigger?.focus();
   }
 
-  if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (window.gsap && !window.rksReduceMotion()) {
     const gsap = window.gsap;
     modal.classList.add('leadership-modal--gsap');
     gsap.set(modal, { '--leadership-modal-x': '100%', autoAlpha: 0 });
@@ -114,7 +114,7 @@
     if (isSwitching || !modal.classList.contains('is-open')) return;
     const nextIndex = (current + offset + people.length) % people.length;
     const gsap = window.gsap;
-    if (!gsap || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (!gsap || window.rksReduceMotion()) {
       render(nextIndex);
       return;
     }
@@ -177,7 +177,7 @@
     } else {
       closeTimer = window.setTimeout(
         finishClose,
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 20 : 1000
+        window.rksReduceMotion() ? 20 : 1000
       );
     }
   }

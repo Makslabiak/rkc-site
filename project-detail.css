@@ -478,8 +478,3 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .project-detail__gallery-item img {
-    transition: none;
-  }
-}

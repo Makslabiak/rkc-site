@@ -67,7 +67,7 @@
   let activeFilter;
   let animationId = 0;
 
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const reducedMotion = { get matches() { return window.rksReduceMotion(); } };
   const matchesFilter = (project, filter) => filter === 'all' || filter === project.category
     || filter === `${project.category}-${project.subcategory}`;
 

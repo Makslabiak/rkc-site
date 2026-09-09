@@ -21,8 +21,7 @@
   ));
   if (!mediaElements.length) return;
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (reduceMotion.matches) return;
+  if (window.rksReduceMotion()) return;
 
   /* Длина хвоста указателя. Больше точек — плавнее дуга на резких
      движениях, но и больше сегментов считает шейдер на каждый пиксель. */
@@ -929,7 +928,7 @@
 
   function setVisibility() {
     const hasVisibleTexture = items.some((item) => item.visible && !!item.texture);
-    running = !document.hidden && !reduceMotion.matches && hasVisibleTexture;
+    running = !document.hidden && !window.rksReduceMotion() && hasVisibleTexture;
     if (running) startLoop();
     else stopLoop();
     canvas.hidden = !running;
@@ -962,7 +961,6 @@
   }
 
   document.addEventListener('visibilitychange', setVisibility);
-  reduceMotion.addEventListener?.('change', setVisibility);
   window.addEventListener('resize', scheduleGeometryRefresh, { passive: true });
   window.visualViewport?.addEventListener('resize', scheduleGeometryRefresh, { passive: true });
   window.addEventListener('load', scheduleGeometryRefresh, { once: true });
