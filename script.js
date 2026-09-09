@@ -904,18 +904,33 @@ syncDesktopMenu();
   });
 })();
 
-(function initTabletHeroLines() {
-  const hero = document.querySelector('.hero');
-  const descriptor = hero?.querySelector('.hero__descriptor');
-  if (!hero || !descriptor) return;
+/* Декор, привязанный к тексту. Линии и разрывы в линиях раньше стояли на
+   долях высоты, подогнанных под текущий текст: правка из админки на строку
+   длиннее наезжала на линию, на строку короче оставляла дыру. Блок, за
+   который держится декор, помечается data-box-var="имя", и его фактическая
+   коробка публикуется переменными --имя-top / --имя-bottom на своей секции
+   (или на элементе из data-box-target). Куда их подставить, решает CSS. */
+(function initTextBoxVars() {
+  const parts = Array.from(document.querySelectorAll('[data-box-var]'))
+    .map((element) => ({
+      element,
+      name: element.dataset.boxVar,
+      host: (element.dataset.boxTarget && element.closest(element.dataset.boxTarget))
+        || element.closest('section, header, footer')
+        || element.parentElement,
+    }))
+    .filter((part) => part.name && part.host);
+  if (!parts.length) return;
 
   let frameId = 0;
   const sync = () => {
     frameId = 0;
-    const heroRect = hero.getBoundingClientRect();
-    const descriptorRect = descriptor.getBoundingClientRect();
-    hero.style.setProperty('--hero-descriptor-top', `${descriptorRect.top - heroRect.top}px`);
-    hero.style.setProperty('--hero-descriptor-bottom', `${descriptorRect.bottom - heroRect.top}px`);
+    parts.forEach(({ element, name, host }) => {
+      const hostRect = host.getBoundingClientRect();
+      const rect = element.getBoundingClientRect();
+      host.style.setProperty(`--${name}-top`, `${rect.top - hostRect.top}px`);
+      host.style.setProperty(`--${name}-bottom`, `${rect.bottom - hostRect.top}px`);
+    });
   };
 
   const scheduleSync = () => {
@@ -929,7 +944,8 @@ syncDesktopMenu();
   document.fonts?.ready.then(scheduleSync);
 
   if ('ResizeObserver' in window) {
-    new ResizeObserver(scheduleSync).observe(descriptor);
+    const observer = new ResizeObserver(scheduleSync);
+    parts.forEach(({ element }) => observer.observe(element));
   }
 })();
 

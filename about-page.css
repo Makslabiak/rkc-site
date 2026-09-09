@@ -24,7 +24,10 @@
 .about-career__image { grid-column:1/-1; height:623px; margin-top:70px; overflow:hidden; }
 .about-career__image img { width:100%; height:100%; object-fit:cover; object-position:center 66%; }
 .about-clients { position:relative; overflow:hidden; }
-.about-clients .about-section-title { width:max-content; white-space:nowrap; }
+/* Заголовок стоит по своей длине, но не длиннее колонки: правка из админки
+   переносится на вторую строку, а не уезжает за экран (на мобильном) и не
+   наползает на логотипы (на десктопе — предел до второй линии, 66.3021vw). */
+.about-clients .about-section-title { width:max-content; max-width:100%; }
 .about-clients__copy { width:388px; }
 .about-clients__logos { display:flex; flex-wrap:wrap; justify-content:center; }
 .about-clients__logos img { display:block; flex:0 0 auto; object-fit:contain; mix-blend-mode:multiply; transform:scale(1); transform-origin:center; transition:transform 420ms cubic-bezier(.22,1,.36,1); will-change:transform; }
@@ -87,8 +90,14 @@ body.leadership-modal-open { overflow:hidden; }
  .about-page .desktop-nav__group:last-child{left:74.2188vw;width:20vw;height:10.4167vw}
  .about-page .desktop-nav__group::before{position:absolute;top:0;left:0;width:1px;height:100%;background:var(--dark);content:"";transition:transform 420ms cubic-bezier(.22,1,.36,1);will-change:transform}
  .about-page.is-scrolled .desktop-nav__group::before{transform:translateY(-100%)}
- .about-clients{display:grid;min-height:54.6875vw;padding:8.3333vw 0 5.7292vw;grid-template-columns:34.7396vw 65.2604vw;align-items:start}.about-clients__intro{padding-left:3.125vw}.about-clients .about-section-title{font-size:6.7708vw}.about-clients__copy{width:20.2083vw;margin:2.0833vw 0 0 7.9167vw;font-size:.9896vw}.about-clients__logos{display:grid;width:65.2604vw;grid-template-columns:31.5625vw 33.6979vw;grid-auto-rows:12.5vw;row-gap:1.5625vw}.about-clients__logos::before{content:""}.about-clients__logos img{width:12.5vw;height:12.5vw;justify-self:center}
- .about-clients::before{position:absolute;top:2.6042vw;bottom:2.6042vw;left:34.7396vw;width:1px;background:linear-gradient(to bottom,var(--dark) 0,var(--dark) 5.7292vw,transparent 5.7292vw,transparent 12.5vw,var(--dark) 12.5vw,var(--dark) 100%);content:"";pointer-events:none}
+ .about-clients{display:grid;min-height:54.6875vw;padding:8.3333vw 0 5.7292vw;grid-template-columns:34.7396vw 65.2604vw;align-items:start}.about-clients__intro{padding-left:3.125vw}.about-clients .about-section-title{max-width:calc(66.3021vw - 4.1667vw);font-size:6.7708vw}.about-clients__copy{width:20.2083vw;margin:2.0833vw 0 0 7.9167vw;font-size:.9896vw}.about-clients__logos{display:grid;width:65.2604vw;grid-template-columns:31.5625vw 33.6979vw;grid-auto-rows:12.5vw;row-gap:1.5625vw}.about-clients__logos::before{content:""}.about-clients__logos img{width:12.5vw;height:12.5vw;justify-self:center}
+ /* Линию разрывает заголовок, который её пересекает. Границы разрыва берутся
+    из фактического бокса заголовка: его публикует initTextBoxVars по метке
+    data-box-var="clients-title", остаётся вычесть отступ самой линии от
+    верха секции. Заголовок в две строки расширяет разрыв, а не оказывается
+    перечёркнутым. Запасные значения — исходные координаты макета. */
+ .about-clients{--clients-rule-gap-start:calc(var(--clients-title-top, 8.3333vw) - 2.6042vw);--clients-rule-gap-end:calc(var(--clients-title-bottom, 15.1042vw) - 2.6042vw)}
+ .about-clients::before{position:absolute;top:2.6042vw;bottom:2.6042vw;left:34.7396vw;width:1px;background:linear-gradient(to bottom,var(--dark) 0,var(--dark) var(--clients-rule-gap-start),transparent var(--clients-rule-gap-start),transparent var(--clients-rule-gap-end),var(--dark) var(--clients-rule-gap-end),var(--dark) 100%);content:"";pointer-events:none}
  .about-clients::after{position:absolute;top:2.6042vw;bottom:2.6042vw;left:66.3021vw;width:1px;background:var(--dark);content:"";pointer-events:none}
 }
 @media(min-width:1200px) and (max-width:1919px){

@@ -707,19 +707,17 @@ body.menu-closing .hero__descriptor {
   z-index: 2;
   top: 59.7403%;
   left: 15px;
-  width: calc(100% - 30px);
+  /* На мобильном колонка уже поля: на всю ширину экрана текст ложится в две
+     длинные строки, а по макету их три. Ограничение снимают правила
+     планшета и десктопа — там ширина задана своя. */
+  width: min(calc(100% - 30px), 300px);
   font-family: "LT Superior", Arial, sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: normal;
-}
-
-.hero__descriptor-copy {
-  display: block;
-}
-
-.hero__descriptor-copy--tablet {
-  display: none;
+  /* Текст приходит из админки: длина неизвестна, поэтому строки набираются
+     переносом, а слово длиннее колонки рвётся, а не свисает за край. */
+  overflow-wrap: break-word;
 }
 
 .hero__title {
@@ -2449,8 +2447,6 @@ body.menu-closing .hero__descriptor {
   .hero__line--top { top: 0; height: max(0px, calc(var(--hero-descriptor-top, 46.8608%) - var(--hero-description-line-gap))); }
   .hero__line--bottom { top: calc(var(--hero-descriptor-bottom, 56.6879%) + var(--hero-description-line-gap)); display: block; height: max(0px, calc(75.5232% - var(--hero-descriptor-bottom, 56.6879%) - var(--hero-description-line-gap))); }
   .hero__descriptor { top: 46.8608%; left: calc(50% + 10px); width: calc(50% - 3.125vw - 10px); font-size: clamp(18.75px, 3.125vw, 24px); }
-  .hero__descriptor-copy--tablet { display: block; }
-  .hero__descriptor-copy--default { display: none; }
   .hero__title { top: 80.0728%; left: 4.1667vw; width: 91.4vw; font-size: clamp(46.7px, 7.7865vw, 59.8px); }
 
   .menu-panel { top: 83px; right: 4.1667vw; bottom: 24px; left: 4.1667vw; padding: 48px 45px 45px; }
@@ -2559,7 +2555,7 @@ body.menu-closing .hero__descriptor {
 
   .button { height: 4.1667vw; font-size: .9896vw; }
 
-  .hero { min-height: 100vh; min-height: 100dvh; }
+  .hero { --hero-description-line-gap: clamp(30px, 4.5496vh, 50px); min-height: 100vh; min-height: 100dvh; }
   .hero__media { --dither-position-x: 50%; }
   .site-header { height: 10.4167vw; padding: 1.5625vw 3.125vw 0; }
   .site-logo { top: 1.5625vw; left: 3.125vw; }
@@ -2592,16 +2588,42 @@ body.menu-closing .hero__descriptor {
     display: block;
     height: min(36.3542vw, calc(66.2964% - max(8px, .9375vw)));
   }
+  /* Обе линии в правой колонке отбиваются от дескриптора одним и тем же
+     отступом и считаются от его фактических границ (--hero-descriptor-top /
+     --hero-descriptor-bottom; их публикует initTextBoxVars в script.js по
+     метке data-box-var у самого текста).
+     Раньше концы стояли на фиксированных долях высоты: на 1920×1080 сверху
+     получалось 50px, снизу 74px, а на других высотах разъезжалось ещё
+     сильнее — и любой текст длиннее трёх строк наезжал на нижнюю линию. */
   .hero__line--nav-right {
     top: 0;
     left: 74.2188vw;
     display: block;
-    height: min(17.2917vw, calc(35.3703% - max(14px, 2.6042vw)));
+    height: max(0px, calc(var(--hero-descriptor-top, 35.3703%) - var(--hero-description-line-gap)));
   }
-  .hero__line--top { top: 50%; height: 14.7223%; }
-  .hero__line--bottom { top: 92.037%; display: block; height: 7.963%; }
-  .hero__line--left-bottom { top: 92.037%; left: 50.5208vw; display: block; height: 7.963%; }
-  .hero__descriptor { top: 35.3703%; left: 74.2188vw; width: 20vw; font-size: 1.25vw; }
+  .hero__line--top {
+    /* Запасное значение подобрано так, чтобы без JS линия встала ровно на
+       прежние 50% высоты: отступ прибавляется к нему тем же calc'ом. */
+    --hero-line-top-start: calc(var(--hero-descriptor-bottom, calc(50% - var(--hero-description-line-gap))) + var(--hero-description-line-gap));
+    top: var(--hero-line-top-start);
+    height: max(0px, calc(64.7223% - var(--hero-line-top-start)));
+  }
+  /* Нижние засечки тоже считаются от текста, а не от доли высоты: раньше
+     до заголовка оставалось 18px на 1920×1080 и 37px на 1440×900, а если
+     заголовок набирался в одну строку — больше сотни. Нижним краем они
+     по-прежнему упираются в низ первого экрана. */
+  .hero__line--bottom,
+  .hero__line--left-bottom {
+    --hero-line-bottom-start: calc(var(--hero-title-bottom, calc(92.037% - var(--hero-description-line-gap))) + var(--hero-description-line-gap));
+    top: var(--hero-line-bottom-start);
+    display: block;
+    height: max(0px, calc(100% - var(--hero-line-bottom-start)));
+  }
+  .hero__line--left-bottom { left: 50.5208vw; }
+  /* Ширина колонки доведена до правого поля макета (96.875vw): на 20vw
+     строка «строительные и инфраструктурные» не помещалась четырьмя
+     пикселями и уезжала на четвёртую строку. */
+  .hero__descriptor { top: 35.3703%; left: 74.2188vw; width: 22.6563vw; font-size: 1.25vw; }
   .hero__title { top: 66.2964%; left: 2.8646vw; width: 79.4792vw; font-size: 6.7708vw; }
 
   /* Сетка секции повторяет колонки макета, но лид и текст лежат в потоке:

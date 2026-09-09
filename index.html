@@ -32,7 +32,7 @@
   <link rel="preload" href="assets/images/home/hero.webp" as="image" fetchpriority="high">
   <link rel="preload" href="assets/fonts/LTSuperior-Medium.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/Roboto-Variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260908-32">
+  <link rel="stylesheet" href="styles.css?v=20260909-36">
   <script src="page-entry.js?v=20260906-1"></script>
   <script>document.documentElement.classList.add('has-anim');</script>
   <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
@@ -41,7 +41,7 @@
   <script src="assets/vendor/SplitText.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
     <script src="site-header.js?v=20260906-2" defer></script>
-  <script src="script.js?v=20260908-14" defer></script>
+  <script src="script.js?v=20260909-36" defer></script>
   <script src="video-player.js?v=20260908-4" defer></script>
   <script src="news-home.js?v=20260904-1" defer></script>
   <script src="services-dither.js?v=20260909-5" defer></script>
@@ -68,14 +68,13 @@
       <div class="hero__line hero__line--bottom"></div>
       <div class="hero__line hero__line--left-bottom"></div>
     </div>
-    <!-- Две копии текста — вынужденная мера, а не небрежность: SplitText
-         разбивает абзац на строки ПО ИСХОДНОЙ разметке и учитывает <br>
-         независимо от display, поэтому переключить переносы одним CSS не
-         получается — планшетный перенос протекает в десктопную раскладку.
-         При посадке на Bitrix это одно поле в админке; вариант с другими
-         переносами собирает шаблон. Подробности — в README. -->
-    <p class="hero__descriptor" aria-label="Восстановление объектов жилищного и социально-бытового назначения в новых регионах России" data-anim="lineUp" data-anim-duration=".8" data-anim-delay=".4" data-anim-stagger=".14"><span class="hero__descriptor-copy hero__descriptor-copy--default">Восстановление объектов<br>жилищного и&nbsp;социально-бытового<br>назначения в&nbsp;новых регионах России</span><span class="hero__descriptor-copy hero__descriptor-copy--tablet">Восстановление объектов<br>жилищного и&nbsp;социально-<br>бытового назначения<br>в&nbsp;новых регионах России</span></p>
-    <h1 class="hero__title" data-anim="title" data-anim-start="top 100%">Первые в&nbsp;строительстве новой истории</h1>
+    <!-- Текст переносится сам: жёстких <br> здесь нет, чтобы правка из
+         админки Bitrix не ломала раскладку. Ширина колонки доведена до
+         правого поля макета, предлоги держатся на своих строках через
+         &nbsp;, а вертикальная линия под дескриптором отодвигается по
+         его фактической высоте (--hero-descriptor-bottom). -->
+    <p class="hero__descriptor" data-box-var="hero-descriptor" data-anim="lineUp" data-anim-duration=".8" data-anim-delay=".4" data-anim-stagger=".14">Комплексно реализуем сложные строительные и&nbsp;инфраструктурные проекты</p>
+    <h1 class="hero__title" data-box-var="hero-title" data-anim="title" data-anim-start="top 100%">Первые в&nbsp;строительстве новой истории</h1>
   </header>
 
   <div data-site-menu></div>
@@ -85,10 +84,10 @@
       <div class="company-intro__steps" aria-hidden="true">
         <span></span><span></span><span></span><span></span>
       </div>
-      <h2 class="company-intro__lead" data-anim="lineUp" data-anim-auto-split="false" data-anim-keep-split data-anim-prewarm>Наша компания осуществляет функции генерального подрядчика строительства и&nbsp;восстановления объектов жилищной и&nbsp;социально-культурной сферы в&nbsp;новых регионах Российской Федерации</h2>
+      <h2 class="company-intro__lead" data-anim="lineUp" data-anim-auto-split="false" data-anim-keep-split data-anim-prewarm>ООО&nbsp;«РКС-НР» специализируется на&nbsp;комплексном управлении строительными проектами и&nbsp;выступает в&nbsp;роли генерального подрядчика, технического заказчика и&nbsp;EPCM-партнёра.</h2>
       <div class="company-intro__copy">
-        <p data-anim="lineUp" data-anim-auto-split="false" data-anim-keep-split data-anim-prewarm>ООО&nbsp;«РКС-НР» было создано в&nbsp;2022&nbsp;году по&nbsp;поручению Министерства строительства и&nbsp;жилищно-коммунального хозяйства Российской Федерации для&nbsp;участия в&nbsp;реализации специального инфраструктурного проекта.</p>
-        <p data-anim="lineUp" data-anim-auto-split="false" data-anim-keep-split data-anim-delay=".15" data-anim-prewarm>В&nbsp;марте 2023&nbsp;года Минстроем России было принято решение о&nbsp;расширении деятельности ООО&nbsp;«РКС-НР» по&nbsp;реализации проектов в&nbsp;других регионах Российской Федерации, странах Ближнего Зарубежья и&nbsp;дружественных странах.</p>
+        <p data-anim="lineUp" data-anim-auto-split="false" data-anim-keep-split data-anim-prewarm>Компания создана в&nbsp;2022&nbsp;году по&nbsp;поручению Минстроя России для&nbsp;участия в&nbsp;реализации специального инфраструктурного проекта по&nbsp;восстановлению исторических регионов России.</p>
+        <p data-anim="lineUp" data-anim-auto-split="false" data-anim-keep-split data-anim-delay=".15" data-anim-prewarm>С&nbsp;2023&nbsp;года ООО&nbsp;«РКС-НР» реализует проекты в&nbsp;других регионах России и&nbsp;за&nbsp;рубежом, масштабируя накопленный опыт и&nbsp;компетенции в&nbsp;реализации сложных проектов.</p>
       </div>
     </section>
 
@@ -110,19 +109,19 @@
       <div class="stats__list">
         <article class="stat-item" tabindex="0" data-stats-index="0">
           <strong>30&nbsp;000</strong>
-          <p>Привлечено специалистов в&nbsp;области строительства</p>
+          <p>Специалистов привлечено к&nbsp;реализации строительных проектов</p>
         </article>
         <article class="stat-item" tabindex="0" data-stats-index="1">
           <strong>1&nbsp;841</strong>
-          <p>Восстановлено объектов, в&nbsp;т.&nbsp;ч. в&nbsp;объеме теплового контура</p>
+          <p>Объект восстановлен, в&nbsp;том числе в&nbsp;объёме теплового контура</p>
         </article>
         <article class="stat-item" tabindex="0" data-stats-index="2">
           <strong>405</strong>
-          <p>Демонтировано аварийных объектов</p>
+          <p>Аварийных объектов демонтировано</p>
         </article>
         <article class="stat-item" tabindex="0" data-stats-index="3">
           <strong>2&nbsp;275</strong>
-          <p>Положительных заключений от&nbsp;Главгосэкспертизы РФ</p>
+          <p>Положительных заключений Главгосэкспертизы России получено</p>
         </article>
         <a class="button stats__button" href="about.html"><span class="button__text button__text--current">Подробнее о&nbsp;компании</span><span class="button__text button__text--hover" aria-hidden="true">Подробнее о&nbsp;компании</span></a>
       </div>

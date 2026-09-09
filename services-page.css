@@ -184,6 +184,15 @@
   line-height: 1;
 }
 
+/* Название переносится само, включая перенос по слогам: «Специализированный»
+   в узкую колонку не влезает, и раньше ради него в разметке лежала вторая
+   копия названия с ручным дефисом. Правка из админки ломала бы обе. */
+.service-accordion__name {
+  overflow-wrap: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
 .service-accordion__number {
   grid-area: number;
 }
@@ -321,12 +330,8 @@
   text-underline-position: from-font;
 }
 
-.service-accordion__name-mobile { display: none; }
-
 @media (max-width: 599px) {
   .service-accordion__panel { border-top: 0; }
-  .service-accordion__item:nth-child(5) .service-accordion__name-wide { display: none; }
-  .service-accordion__item:nth-child(5) .service-accordion__name-mobile { display: inline; }
 }
 
 .advantages {
@@ -529,10 +534,10 @@
   .advantages__title { width: 573px; font-size: 75px; }
   .advantages__title span + span { margin-top: 0; }
   .advantages__grid {
-    width: 86.7188vw;
-    margin: 62px 0 0 2.0833vw;
+    width: 100%;
+    margin: 62px 0 0;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 7.0313vw;
+    column-gap: 11.9792vw;
     row-gap: 44px;
   }
   .advantage-card { width: 100%; min-height: 0; aspect-ratio: 1; padding: 20.88px; border-width: .72px; }
@@ -689,9 +694,18 @@
   .service-accordion__panel-link { font-size: .8333vw; }
 
   .advantages { min-height: 86.4063vw; padding: 8.3333vw 0 8.3334vw 3.125vw; overflow: hidden; }
-  .advantages::before { position: absolute; top: 15.1042vw; bottom: 0; left: 3.125vw; width: 1px; background: var(--dark); box-shadow: 31.6146vw 0 var(--dark), 63.1771vw 0 var(--dark); content: ""; }
-  .advantages::after { position: absolute; top: 0; left: 34.7396vw; width: 1px; height: 8.3333vw; background: var(--dark); box-shadow: 31.5625vw 0 var(--dark); content: ""; }
-  .advantages__title { position: static; inset: auto; display: block; width: max-content; font-size: 6.7708vw; white-space: nowrap; }
+  /* Три линии начинаются ровно под заголовком, а верхняя засечка кончается
+     ровно над ним: раньше это были доли ширины, подогнанные под заголовок в
+     одну строку (8.3333vw сверху, 15.1042vw снизу). Теперь границы берутся
+     из фактического бокса заголовка — его публикует initTextBoxVars по
+     метке data-box-var="advantages-title". */
+  .advantages::before { position: absolute; top: var(--advantages-title-bottom, 15.1042vw); bottom: 0; left: 3.125vw; width: 1px; background: var(--dark); box-shadow: 31.6146vw 0 var(--dark), 63.1771vw 0 var(--dark); content: ""; }
+  .advantages::after { position: absolute; top: 0; left: 34.7396vw; width: 1px; height: var(--advantages-title-top, 8.3333vw); background: var(--dark); box-shadow: 31.5625vw 0 var(--dark); content: ""; }
+  /* nowrap здесь стоял ради одной строки «Наши преимущества»; заголовок
+     длиннее просто обрезался бы секцией (overflow: hidden). Теперь он
+     переносится, упираясь в правое поле, а линии под ним считаются от его
+     фактического низа — см. .advantages::before. */
+  .advantages__title { position: static; inset: auto; display: block; width: max-content; max-width: calc(100% - 3.125vw); font-size: 6.7708vw; }
   .advantages__title span:last-child { margin-left: 7.2396vw; }
   /* gap: 0 обязателен — базовое правило задаёт 15px, и они разъехались бы
      по колонкам и рядам. align-items: start не даёт карточке растянуться на

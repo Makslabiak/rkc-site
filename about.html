@@ -29,9 +29,9 @@
   <!-- Два начертания, которыми набраны обложка и лид первого экрана. -->
   <link rel="preload" href="assets/fonts/LTSuperior-Medium.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/Roboto-Variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260908-32">
-  <link rel="stylesheet" href="services-page.css?v=20260908-3">
-  <link rel="stylesheet" href="about-page.css?v=20260908-1">
+  <link rel="stylesheet" href="styles.css?v=20260909-36">
+  <link rel="stylesheet" href="services-page.css?v=20260909-9">
+  <link rel="stylesheet" href="about-page.css?v=20260909-3">
   <script src="page-entry.js?v=20260906-1"></script>
   <script>document.documentElement.classList.add('has-anim');</script>
   <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
@@ -40,9 +40,9 @@
   <script src="assets/vendor/SplitText.min.js" defer></script>
   <script src="assets/vendor/ScrambleTextPlugin.min.js" defer></script>
   <script src="site-header.js?v=20260906-2" defer></script>
-  <script src="script.js?v=20260908-14" defer></script>
+  <script src="script.js?v=20260909-36" defer></script>
   <script src="services-dither.js?v=20260909-5" defer></script>
-  <script src="about-page.js?v=20260908-1" defer></script>
+  <script src="about-page.js?v=20260909-3" defer></script>
   <script src="animations.js?v=20260908-4" defer></script>
 </head>
 <body class="about-page" data-site-page="about">
@@ -69,14 +69,14 @@
     </section>
 
     <section class="advantages" aria-labelledby="advantages-title">
-      <h2 class="advantages__title" id="advantages-title"><span>Наши</span><span>преимущества</span></h2>
+      <h2 class="advantages__title" id="advantages-title" data-box-var="advantages-title"><span>Наши</span><span>преимущества</span></h2>
       <div class="advantages__grid">
-        <article class="advantage-card"><strong>01</strong><p>Мобилизация большого количества работников и&nbsp;техники в&nbsp;кратчайшие сроки.</p></article>
-        <article class="advantage-card"><strong>02</strong><p>Организация работ в&nbsp;сложных условиях</p></article>
-        <article class="advantage-card"><strong>03</strong><p>Достижение поставленных целей в&nbsp;кратчайшие сроки и&nbsp;в&nbsp;условиях ограниченных ресурсов</p></article>
-        <article class="advantage-card"><strong>04</strong><p>Одновременное управление множеством подрядных организаций</p></article>
-        <article class="advantage-card"><strong>05</strong><p>Продуктивное взаимодействие со&nbsp;структурами Правительства&nbsp;РФ</p></article>
-        <article class="advantage-card"><strong>06</strong><p>Успешный опыт команды ООО&nbsp;«РКС-НР» в&nbsp;реализации масштабных инфраструктурных проектов</p></article>
+        <article class="advantage-card"><strong>01</strong><div class="advantage-card__content"><h3>Мобилизация ресурсов в&nbsp;кратчайшие сроки</h3><p>Быстрое формирование команды, привлечение специалистов, техники и&nbsp;необходимых ресурсов для запуска проекта</p></div></article>
+        <article class="advantage-card"><strong>02</strong><div class="advantage-card__content"><h3>Работа в&nbsp;условиях высокой сложности</h3><p>Организация и&nbsp;управление проектами при ограниченной инфраструктуре, сложной логистике и&nbsp;высокой динамике изменений</p></div></article>
+        <article class="advantage-card"><strong>03</strong><div class="advantage-card__content"><h3>Результат в&nbsp;сжатые сроки</h3><p>Способность достигать поставленных целей при жёстких сроках и&nbsp;ограниченных ресурсах</p></div></article>
+        <article class="advantage-card"><strong>04</strong><div class="advantage-card__content"><h3>Управление масштабной подрядной структурой</h3><p>Координация большого количества подрядных организаций в&nbsp;рамках единой системы управления проектом</p></div></article>
+        <article class="advantage-card"><strong>05</strong><div class="advantage-card__content"><h3>Эффективное взаимодействие с&nbsp;гос. структурами</h3><p>Опыт реализации проектов во&nbsp;взаимодействии с&nbsp;федеральными и&nbsp;региональными органами власти, государственными заказчиками и&nbsp;профильными ведомствами</p></div></article>
+        <article class="advantage-card"><strong>06</strong><div class="advantage-card__content"><h3>Опыт реализации масштабных проектов</h3><p>Практический опыт управления крупными строительными и&nbsp;инфраструктурными проектами на&nbsp;всех ключевых этапах их&nbsp;реализации</p></div></article>
       </div>
     </section>
 
@@ -117,7 +117,7 @@
 
     <section class="about-clients">
       <div class="about-clients__intro">
-        <h2 class="about-section-title" data-anim="title">Нам доверяют</h2>
+        <h2 class="about-section-title" data-box-var="clients-title" data-anim="title">Нам доверяют</h2>
         <p class="about-clients__copy">Наши заказчики — государственные структуры, профессиональные девелоперы и региональные органы власти</p>
       </div>
       <div class="about-clients__logos">
