@@ -19,3 +19,6 @@ assets/images/_backup-original/
 # Сайту он нужен — лежит на диске и выкладывается на сервер отдельно, мимо
 # репозитория. Копия: /Users/maksim/Figma-adaptive-heavy-files/
 assets/videos/
+
+# Настройки плашки о cookie: адреса почты, в репозитории не место.
+cookie-consent-config.php
