@@ -61,7 +61,7 @@ $animTitle = $footerAnim ? ' data-anim="typeChars" data-anim-start="top bottom"'
     </div>
     <div class="footer__contacts">
       <div<?= $animType ?>><a href="tel:+74951472233">+7&nbsp;(495)&nbsp;147-22-33</a><a href="mailto:mail@rks-nr.ru">mail@rks-nr.ru</a></div>
-      <div class="footer__legal"<?= $animFade ?>><a href="<?= $footerLegalBase ?>#agreement"><span class="footer__legal-line">Согласие на обработку</span><span class="footer__legal-line">персональных данных</span></a><a href="<?= $footerLegalBase ?>#policy"><span class="footer__legal-line">Политика в отношении обработки</span><span class="footer__legal-line">персональных данных</span></a></div>
+      <div class="footer__legal"<?= $animFade ?>><a href="<?= $footerLegalBase ?>#agreement"><span class="footer__legal-line">Согласие на обработку</span> <span class="footer__legal-line">персональных данных</span></a><a href="<?= $footerLegalBase ?>#policy"><span class="footer__legal-line">Политика в отношении обработки</span> <span class="footer__legal-line">персональных данных</span></a></div>
     </div>
     <p class="footer__copyright"<?= $animTitle ?>>©&nbsp;ООО&nbsp;«РКС-НР», 2026. Все права защищены</p>
   </footer>
