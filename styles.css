@@ -2382,7 +2382,7 @@ body.menu-closing .hero__descriptor {
 
 @media (max-width: 599px) {
   main {
-    --mobile-section-padding: 50px;
+    --mobile-section-padding: 25px;
   }
 
   /* Подвал по макету телефона: линия над меню, все ссылки одного размера,
@@ -2461,6 +2461,9 @@ body.menu-closing .hero__descriptor {
   }
 
   .company-intro {
+    /* Пол секции ниже на те же 25, на которые уменьшился отступ сверху:
+       иначе секция осталась бы прежней высоты и отступ бы не сработал. */
+    min-height: 680px;
     padding-top: var(--mobile-section-padding);
     /* Запас снизу, чтобы лестница заканчивалась ниже последней строки. На
        375 секция и так выше текста, и этот отступ ничего не двигает. Он
@@ -2490,7 +2493,7 @@ body.menu-closing .hero__descriptor {
   /* min-height, а не height: из админки текст приходит любой длины, и жёсткая
      высота обрезала бы секцию. Пол остаётся прежним, вид не меняется. */
   .stats {
-    min-height: 1079px;
+    min-height: 1029px;
     padding-block: var(--mobile-section-padding);
   }
 
@@ -2499,17 +2502,20 @@ body.menu-closing .hero__descriptor {
     top: auto;
   }
 
-  .stats__eyebrow { top: 99px; }
-  .stats__image { top: 191px; }
-  .stats__list { top: 436px; }
+  /* Подзаголовок, фотография и список стоят координатами, поэтому при
+     уменьшении отступа секции их сдвигаем на те же 25: внутри блока
+     расстояния остаются макетными. */
+  .stats__eyebrow { top: 74px; }
+  .stats__image { top: 166px; }
+  .stats__list { top: 411px; }
 
   /* Проекты на телефоне: раскладка по макету, но без единой жёсткой высоты.
      Заголовок, описание и число карточек приходят из админки, поэтому
      карточка растёт под содержимое, фотография держит пропорцию, а min-height
      секции — только пол макета, не потолок. */
   .projects {
-    min-height: 1514px;
-    padding: 60px 15px 50px;
+    min-height: 1489px;
+    padding: 60px 15px 25px;
   }
 
   /* Две строки по 40, как в макете. */
