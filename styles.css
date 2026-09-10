@@ -2593,13 +2593,89 @@ body.menu-closing .hero__descriptor {
     top: auto;
   }
 
+  /* Новости на телефоне по макету: квадратная фотография, дата и стрелка в
+     одной строке, заголовок в две строки под ними. Высот нет: пол секции
+     равен макету, но карточки считаются от содержимого. */
   .news {
-    min-height: 964px;
-    padding: var(--mobile-section-padding) 15px;
+    min-height: 1043px;
+    padding: 20px 15px 60px;
+  }
+
+  .news__header .section-title {
+    line-height: 40px;
+  }
+
+  .news__header .text-link {
+    font-size: 13px;
+  }
+
+  .news__layout {
+    margin-top: 15px;
+  }
+
+  /* Формат фотографии по макету — квадрат. Пропорция вместо высоты: кадр
+     остаётся квадратным на любой ширине экрана. */
+  .news__image {
+    height: auto;
+    aspect-ratio: 1;
   }
 
   .news__grid {
-    margin-top: 35px;
+    margin-top: 15px;
+  }
+
+  .news-card {
+    display: grid;
+    /* 19, а не 20: линию карточка рисует своей нижней границей, и этот
+       пиксель входит в шаг между строками. С ним шаг ровно 137, как в макете. */
+    padding: 15px 0 19px;
+    align-items: start;
+    gap: 30px 0;
+    grid-template-columns: 1fr 36px;
+  }
+
+  .news-card time {
+    grid-area: 1 / 1;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.1;
+  }
+
+  /* Заголовок в две строки с многоточием, как в макете: из админки придёт
+     текст любой длины, а шаг карточек должен остаться прежним. */
+  .news-card > span:not(.news-card__arrow) {
+    display: -webkit-box;
+    overflow: hidden;
+    max-width: 280px;
+    grid-area: 2 / 1 / 3 / 3;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    font-size: 16.406px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  /* Стрелка та же, что в карточках на странице новостей, только 36 пикселей.
+     font-size: 0 прячет текстовую стрелку из разметки, знак рисует маска. */
+  .news-card__arrow {
+    position: relative;
+    display: block;
+    width: 36px;
+    height: 36px;
+    border: var(--line);
+    background: var(--dark);
+    grid-area: 1 / 2;
+    font-size: 0;
+  }
+
+  .news-card__arrow::after {
+    position: absolute;
+    inset: 32%;
+    background: var(--light);
+    content: "";
+    -webkit-mask: url("assets/icons/arrow-back.svg") center / contain no-repeat;
+    mask: url("assets/icons/arrow-back.svg") center / contain no-repeat;
   }
 }
 
