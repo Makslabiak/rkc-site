@@ -1125,6 +1125,11 @@ body.menu-closing .hero__descriptor {
   color: var(--dark);
 }
 
+/* Линия у показателя одна — сверху. Нижних в базовом виде нет: там, где
+   карточки идут столбиком, линия под третьей ложится ровно на линию над
+   четвёртой, две по пикселю рисуются друг на друге, и черта выглядит вдвое
+   толще остальных. Нижние линии включаются там, где им есть что закрывать:
+   на планшете это нижний ряд сетки, на десктопе — последняя строка. */
 .stat-item::before,
 .stat-item:nth-child(3)::after,
 .stat-item:nth-of-type(4)::after {
@@ -1132,7 +1137,6 @@ body.menu-closing .hero__descriptor {
   right: 0;
   left: 0;
   height: 1px;
-  content: "";
   background: var(--dark);
   transform: none !important;
   will-change: auto;
@@ -1140,11 +1144,13 @@ body.menu-closing .hero__descriptor {
 
 .stat-item::before {
   top: 0;
+  content: "";
 }
 
 .stat-item:nth-child(3)::after,
 .stat-item:nth-of-type(4)::after {
   bottom: 0;
+  content: none;
 }
 
 .stat-item:nth-child(4) {
@@ -2517,6 +2523,10 @@ body.menu-closing .hero__descriptor {
   .stat-item,
   .stat-item:nth-child(3),
   .stat-item:nth-child(4) { min-height: 200px; }
+  /* Здесь карточки стоят в два столбца, третья и четвёртая образуют нижний
+     ряд, и линии под ними закрывают сетку. Ни на что не накладываются. */
+  .stat-item:nth-child(3)::after,
+  .stat-item:nth-of-type(4)::after { content: ""; }
   .stat-item strong { margin-top: 19px; font-size: 52px; }
   .stat-item p { width: min(300px, 100%); margin-top: 21px; font-size: 16px; }
   .stats__button { grid-column: 1 / -1; margin-top: 40px; }
@@ -2736,6 +2746,8 @@ body.menu-closing .hero__descriptor {
   .stat-item:hover,
   .stat-item:focus { opacity: 1; }
   .stat-item:nth-child(4) { border-bottom: 0; }
+  /* Столбик из четырёх строк: закрывающая линия нужна только под последней. */
+  .stat-item:nth-of-type(4)::after { content: ""; }
   .stat-item strong { margin: 0; font-size: 4.1667vw; }
   .stat-item p { width: 19.6354vw; margin: 0; font-size: .8333vw; }
   .stats__button { width: 100%; margin-top: 40px; }
