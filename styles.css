@@ -3112,6 +3112,12 @@ html.is-loaded .loader {
    и десктопе — карточка с отступом от края. Пока согласие не дано, плашка
    висит поверх всего; после нажатия скрипт ставит ей hidden.
    ========================================================================== */
+/* Плашка ставит себе display: flex, а это перебивает [hidden] браузера —
+   без этой строки скрипт снимает согласие, но плашка остаётся на экране. */
+.cookie-notice[hidden] {
+  display: none;
+}
+
 .cookie-notice {
   position: fixed;
   z-index: 1001;
@@ -3158,7 +3164,11 @@ html.is-loaded .loader {
   text-underline-position: from-font;
 }
 
+/* Ховер тот же, что у кнопки «Меню» в шапке: заливка --light выезжает снизу,
+   надпись меняется на свою копию. Механику даёт .button--fill-hover, здесь
+   только размеры и цвет надписи — он остаётся цветом плашки, а не --dark. */
 .cookie-notice__accept {
+  position: relative;
   display: flex;
   width: 100%;
   height: 34px;
@@ -3175,7 +3185,22 @@ html.is-loaded .loader {
   line-height: normal;
   text-transform: uppercase;
   white-space: nowrap;
+  transition: color 180ms ease, background-color 180ms ease;
   cursor: pointer;
+}
+
+.cookie-notice__accept .button__text {
+  padding: 0 30px;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  text-transform: inherit;
+}
+
+.cookie-notice__accept.button--fill-hover:hover,
+.cookie-notice__accept.button--fill-hover:focus-visible {
+  color: #0a1a34;
 }
 
 @media (min-width: 600px) and (max-width: 1199px) {

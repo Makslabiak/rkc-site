@@ -29,7 +29,7 @@
   <!-- Два начертания, которыми набраны обложка и фильтр. -->
   <link rel="preload" href="assets/fonts/LTSuperior-Medium.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/Roboto-Variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260910-16">
+  <link rel="stylesheet" href="styles.css?v=20260910-17">
   <link rel="stylesheet" href="projects-page.css?v=20260910-1">
   <script src="page-entry.js?v=20260910-1"></script>
   <script>document.documentElement.classList.add('has-anim');</script>
@@ -43,7 +43,7 @@
   <script src="projects-page.js?v=20260910-1" defer></script>
   <script src="services-dither.js?v=20260910-4" defer></script>
   <script src="animations.js?v=20260910-1" defer></script>
-  <script src="cookie-notice.js?v=20260910-1" defer></script>
+  <script src="cookie-notice.js?v=20260910-2" defer></script>
 </head>
 <body class="projects-page" data-site-page="projects">
   <a class="skip-link" href="#main">Перейти к&nbsp;содержимому</a>
@@ -180,7 +180,10 @@
       <p class="cookie-notice__title">Использование cookie на сайте</p>
       <p class="cookie-notice__copy">Мы используем cookie для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с нашей <a href="documents.html#document-cookies">политикой использования cookie</a>.</p>
     </div>
-    <button class="cookie-notice__accept" type="button" data-cookie-accept>Принять</button>
+    <button class="cookie-notice__accept button--fill-hover" type="button" data-cookie-accept>
+      <span class="button__text button__text--current">Принять</span>
+      <span class="button__text button__text--hover" aria-hidden="true">Принять</span>
+    </button>
   </aside>
 </body>
 </html>
