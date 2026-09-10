@@ -2632,12 +2632,15 @@ body.menu-closing .hero__descriptor {
     align-items: start;
     gap: 30px 0;
     grid-template-columns: 1fr 36px;
+    /* Начертание то же, что на планшете и десктопе: LT Superior Regular.
+       Дата и заголовок его наследуют. */
+    font-family: "LT Superior", Arial, sans-serif;
+    font-weight: 400;
   }
 
   .news-card time {
     grid-area: 1 / 1;
     font-size: 18px;
-    font-weight: 500;
     line-height: 1.1;
   }
 
@@ -2652,7 +2655,6 @@ body.menu-closing .hero__descriptor {
     -webkit-line-clamp: 2;
     line-clamp: 2;
     font-size: 16.406px;
-    font-weight: 500;
     line-height: 18px;
   }
 
