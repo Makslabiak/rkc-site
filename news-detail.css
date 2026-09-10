@@ -346,9 +346,11 @@
     padding-top: 61px;
   }
 
+  /* Отступ до видео целиком отдан самому блоку с видео, см. ниже: в макете
+     от нижнего края фотографии до кадра ровно 60. */
   .news-detail__content {
     display: block;
-    padding-bottom: 50px;
+    padding-bottom: 0;
   }
 
   .news-detail__lead {
@@ -400,7 +402,7 @@
     gap: 15px;
     grid-auto-flow: row;
     grid-template-columns: minmax(0, 1fr);
-    padding: 0 15px 60px;
+    padding: 0 15px;
     cursor: default;
     scroll-snap-type: none;
     touch-action: auto;
@@ -411,6 +413,12 @@
     flex: none;
     aspect-ratio: 345 / 230;
     scroll-snap-align: none;
+  }
+
+  /* 60 от последней фотографии до кадра, как в макете. Правило только для
+     страницы новости: на главной у блока с видео свои отступы. */
+  .news-detail-page .video-section {
+    padding-top: 60px;
   }
 
   .news-detail-footer {
