@@ -2507,9 +2507,74 @@ body.menu-closing .hero__descriptor {
     margin-top: 30px;
   }
 
+  /* Услуги на телефоне: размеры и отступы сняты из макета, высоты нигде не
+     заданы. Название, описание и число карточек приходят из админки, поэтому
+     карточка растёт под содержимое, фотография держит пропорцию, min-height
+     секции — только пол макета. */
   .services {
-    min-height: 2152px;
-    padding: var(--mobile-section-padding) 15px;
+    min-height: 2116px;
+    padding: 60px 15px 20px;
+  }
+
+  .services__intro .section-title {
+    line-height: 40px;
+  }
+
+  .services__intro > p {
+    margin-top: 15px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  .services__list {
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  .service-card,
+  .service-card:nth-child(4),
+  .service-card:nth-child(5) {
+    min-height: 0;
+  }
+
+  .service-card__media {
+    height: auto;
+    flex: 0 0 auto;
+    aspect-ratio: 345 / 185;
+  }
+
+  /* Название и номер одним начертанием, как в макете: LT Superior 24.
+     Раньше название было набрано Roboto 19.9, а номер — LT Superior 25.8. */
+  .service-card__head {
+    padding-bottom: 8px;
+    font-size: 24px;
+  }
+
+  .service-card__head h3 {
+    max-width: 250px;
+    font-family: "LT Superior", Arial, sans-serif;
+    font-size: 24px;
+    font-weight: 450;
+    line-height: 1;
+  }
+
+  .service-card__head span {
+    font-size: 24px;
+  }
+
+  .service-card__content > p {
+    max-width: 240px;
+    margin-top: 15px;
+    font-size: 13px;
+  }
+
+  /* Ссылка отбивается от текста на 30 и стоит справа. Отступ вместо прежнего
+     margin-top: auto: тот прижимал её к низу карточки и зависел от заданной
+     высоты, а высоты больше нет. */
+  .service-card .text-link {
+    margin-top: 30px;
+    padding-bottom: 2px;
+    font-size: 13px;
   }
 
   .video-section {
