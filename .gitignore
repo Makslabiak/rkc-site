@@ -20,5 +20,5 @@ assets/images/_backup-original/
 # репозитория. Копия: /Users/maksim/Figma-adaptive-heavy-files/
 assets/videos/
 
-# Настройки плашки о cookie: адреса почты, в репозитории не место.
-cookie-consent-config.php
+# Настройки почтовых приёмников: адреса почты, в репозитории им не место.
+site-mail-config.php

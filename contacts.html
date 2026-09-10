@@ -30,7 +30,7 @@
   <link rel="preload" href="assets/fonts/LTSuperior-Medium.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/Roboto-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20260910-17">
-  <link rel="stylesheet" href="contacts-page.css?v=20260908-1">
+  <link rel="stylesheet" href="contacts-page.css?v=20260910-1">
   <script src="page-entry.js?v=20260910-1"></script>
   <script>document.documentElement.classList.add('has-anim');</script>
   <script src="assets/vendor/lenis.min.js?v=1.1.20" defer></script>
@@ -41,7 +41,7 @@
   <script src="site-header.js?v=20260906-2" defer></script>
     <script src="script.js?v=20260910-5" defer></script>
   <script src="services-dither.js?v=20260910-4" defer></script>
-  <script src="contacts-page.js?v=20260908-1" defer></script>
+  <script src="contacts-page.js?v=20260910-1" defer></script>
     <script src="animations.js?v=20260910-1" defer></script>
   <script src="cookie-notice.js?v=20260910-2" defer></script>
 </head>
@@ -73,6 +73,11 @@
       <section class="contacts-form-section" id="contact-form" aria-labelledby="contact-form-title">
         <h2 id="contact-form-title">Давайте строить вместе</h2>
         <form class="contact-form" data-contact-form novalidate>
+          <!-- Поле-ловушка для рассылочных роботов: человек его не видит и
+               не заполнит, а робот заполняет всё подряд. Заполненное поле —
+               признак робота, такая заявка на почту не уходит. Держать вне
+               .contact-fields: там раскладка считает соседей. -->
+          <input class="contact-form__trap" type="text" name="company_site" tabindex="-1" autocomplete="off" aria-hidden="true" hidden>
           <div class="contact-fields">
             <div class="contact-field" data-field>
               <label for="contact-name">Имя*</label>

@@ -2,6 +2,11 @@
 <section class="contacts-form-section" id="contact-form" aria-labelledby="contact-form-title">
         <h2 id="contact-form-title">Давайте строить вместе</h2>
         <form class="contact-form" data-contact-form novalidate>
+          <!-- Поле-ловушка для рассылочных роботов: человек его не видит и
+               не заполнит, а робот заполняет всё подряд. Заполненное поле —
+               признак робота, такая заявка на почту не уходит. Держать вне
+               .contact-fields: там раскладка считает соседей. -->
+          <input class="contact-form__trap" type="text" name="company_site" tabindex="-1" autocomplete="off" aria-hidden="true" hidden>
           <div class="contact-fields">
             <div class="contact-field" data-field>
               <label for="contact-name">Имя*</label>

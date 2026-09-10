@@ -1,9 +1,11 @@
-/* Форма обратной связи. Отправки НЕТ и пока не должно быть: заявки поедут
-   через компонент веб-форм Bitrix (`bitrix:form.result.new`), он же принесёт
-   свой обработчик, CSRF-токен и капчу. Здесь только клиентская валидация и
-   показ сообщения об успехе — точка, куда подключается бэкенд, помечена
-   ниже. Имена полей и состояния `.is-error` при посадке на Bitrix сохранить,
-   иначе поедут стили и подсказки. */
+/* Форма обратной связи. Заявка уходит на contact-form.php, тот шлёт письмо.
+   Здесь проверка полей, отправка и показ ответа; те же поля скрипт проверяет
+   ещё раз на сервере.
+
+   Это основа. Когда сайт переедет на Bitrix, заявки разумно перевести на
+   компонент веб-форм (`bitrix:form.result.new`): он принесёт свой обработчик,
+   токен и капчу, а с ними хранение заявок в админке. Имена полей и состояния
+   `.is-error` при этом сохранить, иначе поедут стили и подсказки. */
 (function initContactForm() {
   const form = document.querySelector('[data-contact-form]');
   if (!form) return;
@@ -55,8 +57,22 @@
     phone.value = digits ? `+7 ${digits}` : '';
   });
 
-  form.addEventListener('submit', (event) => {
+  const ENDPOINT = 'contact-form.php';
+  const submit = form.querySelector('.contact-form__submit');
+  const SUCCESS = status?.textContent ?? 'Спасибо, заявка отправлена.';
+  let sending = false;
+
+  function showStatus(text, failed) {
+    if (!status) return;
+    status.textContent = text;
+    status.classList.toggle('contact-form__status--error', failed);
+    status.hidden = false;
+  }
+
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (sending) return;
+
     const fieldsValid = fields.map(validateField).every(Boolean);
     const consentValid = validateConsent();
     if (!fieldsValid || !consentValid) {
@@ -65,11 +81,47 @@
       return;
     }
 
-    /* СЮДА подключается отправка на Bitrix. Пока данные никуда не уходят:
-       форма только показывает сообщение об успехе. До интеграции сайт
-       нельзя выпускать в бой с этой формой как с рабочей — заявки будут
-       теряться молча. */
-    if (status) status.hidden = false;
+    /* Пока запрос идёт, кнопка заперта: иначе нетерпеливый посетитель
+       отправит одну и ту же заявку трижды. */
+    sending = true;
+    if (submit) submit.disabled = true;
+    if (status) status.hidden = true;
+
+    try {
+      const response = await fetch(ENDPOINT, {
+        method: 'POST',
+        body: new FormData(form),
+        credentials: 'same-origin',
+      });
+
+      /* Ответ разбираем осторожно: на статическом хостинге вместо JSON
+         прилетит страница ошибки, и разбор упадёт. */
+      let payload = null;
+      try {
+        payload = await response.json();
+      } catch (error) {
+        payload = null;
+      }
+
+      if (response.ok && payload?.ok) {
+        form.reset();
+        fields.forEach((field) => setFieldState(field, false));
+        consent?.classList.remove('is-error');
+        showStatus(SUCCESS, false);
+      } else {
+        showStatus(
+          payload?.error || 'Не получилось отправить заявку. Попробуйте ещё раз или позвоните нам.',
+          true
+        );
+      }
+    } catch (error) {
+      /* Сеть отвалилась или сервера нет. Заявку не теряем: поля остаются
+         заполненными, человек может нажать ещё раз. */
+      showStatus('Связь с сайтом прервалась. Проверьте интернет и попробуйте ещё раз.', true);
+    } finally {
+      sending = false;
+      if (submit) submit.disabled = false;
+    }
   });
 })();
 
