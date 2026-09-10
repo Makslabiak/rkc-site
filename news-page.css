@@ -405,22 +405,32 @@
   .news-page-card__info {
     min-height: 0;
     margin: 0 -15px;
-    padding: 30px 15px 0;
+    padding: 20px 15px 0;
   }
 
-  .news-page-card time { font-size: 18px; }
+  /* Строка с датой по высоте равна стрелке: в макете заголовок отбит на 30
+     именно от неё, а не от короткой строки даты. Стрелка лежит абсолютом и
+     сама место в потоке не занимает. */
+  .news-page-card time {
+    display: block;
+    min-height: 36px;
+    font-size: 18px;
+  }
 
-  /* Обрезка в четыре строки не работала: -webkit-line-clamp требует ещё
-     box-orient и overflow, без них текст просто вылезал за карточку и его
-     срезал её собственный overflow — посреди строки. */
+  /* Заголовок обрезается тремя строками, как в макете. Одного line-clamp
+     мало: он требует ещё box-orient и overflow, без них текст вылезал за
+     карточку и его срезал её собственный overflow — посреди строки.
+     Ширина на 36 меньше колонки: справа стоит стрелка. */
   .news-page-card__headline {
     display: -webkit-box;
-    font-size: 18px;
-    width: calc(100% - 50px);
-    margin-top: 17px;
+    width: calc(100% - 36px);
+    margin-top: 30px;
     overflow: hidden;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    font-size: 18px;
+    line-height: 20px;
   }
 
   /* Стрелка показывалась только по наведению, а на телефоне наведения нет:
