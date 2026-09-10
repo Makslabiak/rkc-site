@@ -2395,6 +2395,10 @@ body.menu-closing .hero__descriptor {
   }
 
   .footer__nav {
+    /* stretch, а не прежний flex-start: линию рисует верхняя граница блока,
+       и с прижатым к левому краю блоком она обрывалась по ширине самого
+       длинного пункта меню. */
+    align-self: stretch;
     margin: 40px 15px 0;
     padding-top: 30px;
     border-top: 1px solid var(--blue);
