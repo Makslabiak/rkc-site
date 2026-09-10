@@ -391,14 +391,26 @@
     margin-top: 1.2em;
   }
 
+  /* Фотографии на телефоне идут столбиком, без слайдера: так в макете, и так
+     же устроена галерея на десктопе. Снимков может быть сколько угодно —
+     каждый новый просто продолжает столбик, ничего настраивать не нужно. */
   .news-detail__gallery {
+    display: grid;
+    overflow: visible;
     gap: 15px;
+    grid-auto-flow: row;
+    grid-template-columns: minmax(0, 1fr);
     padding: 0 15px 60px;
-    scroll-padding-inline: 15px;
+    cursor: default;
+    scroll-snap-type: none;
+    touch-action: auto;
   }
 
   .news-detail__gallery .image-tone {
-    flex-basis: calc(100vw - 66px);
+    width: 100%;
+    flex: none;
+    aspect-ratio: 345 / 230;
+    scroll-snap-align: none;
   }
 
   .news-detail-footer {

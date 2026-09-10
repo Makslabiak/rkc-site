@@ -1,8 +1,15 @@
+/* Галерея новости. Снимков может быть любое количество: скрипт сам считает
+   те, у которых есть картинка, и прячет пустые заготовки вместе со всей
+   галереей, если фотографий нет.
+
+   Перетаскивание мышью нужно только там, где галерея едет вбок, — на
+   планшете. На телефоне и десктопе фотографии идут столбиком, и слайдера
+   нет. */
 (function initNewsDetailGallery() {
   const galleries = Array.from(document.querySelectorAll('[data-news-gallery]'));
   if (!galleries.length) return;
 
-  const sliderMedia = window.matchMedia('(max-width: 1199px)');
+  const sliderMedia = window.matchMedia('(min-width: 600px) and (max-width: 1199px)');
   let refreshFrame = 0;
 
   function scheduleLayoutRefresh() {
