@@ -2580,6 +2580,10 @@ body.menu-closing .hero__descriptor {
   .video-section {
     height: auto;
     padding-block: var(--mobile-section-padding);
+    /* Разделяющих линий вокруг видео на телефоне нет: в макете блок отбит
+       от соседей воздухом. На планшете и десктопе линии остаются. */
+    border-top: 0;
+    border-bottom: 0;
   }
 
   .video-frame {
