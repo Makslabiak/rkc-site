@@ -998,10 +998,15 @@ body.menu-closing .hero__descriptor {
   background: var(--blue);
 }
 
-.company-intro__steps span:nth-child(1) { top: 0; left: 0; height: 169px; }
-.company-intro__steps span:nth-child(2) { top: 169px; left: 42px; height: 130px; }
-.company-intro__steps span:nth-child(3) { top: 299px; left: 99px; height: 131px; }
-.company-intro__steps span:nth-child(4) { top: 430px; left: 164px; height: 115px; }
+/* Высоты в процентах, а не в пикселях: лестница должна доходить до низа
+   секции, ниже последней строки текста. В пикселях она обрывалась на 545 при
+   секции в 705, то есть посреди текста. Доли те же, что на планшете и
+   десктопе, и при любой длине текста нижняя плашка заканчивается вместе с
+   секцией. */
+.company-intro__steps span:nth-child(1) { top: 0; left: 0; height: 31%; }
+.company-intro__steps span:nth-child(2) { top: 31%; left: 42px; height: 23.9%; }
+.company-intro__steps span:nth-child(3) { top: 54.9%; left: 99px; height: 24%; }
+.company-intro__steps span:nth-child(4) { top: 78.9%; left: 164px; height: 21.1%; }
 
 .company-intro__lead {
   width: calc(100% - 44px);
@@ -2389,6 +2394,11 @@ body.menu-closing .hero__descriptor {
 
   .company-intro {
     padding-top: var(--mobile-section-padding);
+    /* Запас снизу, чтобы лестница заканчивалась ниже последней строки. На
+       375 секция и так выше текста, и этот отступ ничего не двигает. Он
+       работает на узких экранах вроде 320, где текст дорастает до низа
+       секции и упирался в её край. */
+    padding-bottom: 20px;
   }
 
   /* min-height, а не height: из админки текст приходит любой длины, и жёсткая
