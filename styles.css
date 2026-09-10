@@ -2441,9 +2441,70 @@ body.menu-closing .hero__descriptor {
   .stats__image { top: 191px; }
   .stats__list { top: 436px; }
 
+  /* Проекты на телефоне: раскладка по макету, но без единой жёсткой высоты.
+     Заголовок, описание и число карточек приходят из админки, поэтому
+     карточка растёт под содержимое, фотография держит пропорцию, а min-height
+     секции — только пол макета, не потолок. */
   .projects {
-    min-height: 1569px;
-    padding: var(--mobile-section-padding) 15px;
+    min-height: 1514px;
+    padding: 60px 15px 50px;
+  }
+
+  /* Две строки по 40, как в макете. */
+  .projects__title {
+    line-height: 40px;
+  }
+
+  .projects__grid {
+    gap: 30px;
+    margin-top: 20px;
+  }
+
+  /* Содержимое отодвинуто от вертикальной черты у номера. */
+  .project-card {
+    padding-left: 11px;
+  }
+
+  .project-card::before {
+    display: block;
+    bottom: auto;
+    height: 60px;
+    background: var(--dark);
+  }
+
+  /* Размеры сняты из макета: номер Roboto 15/21, заголовок LT Superior 24,
+     описание Roboto 13/18. Номер вместе с отступом занимает те же 60, что и
+     черта слева от него. */
+  .project-card__number {
+    margin-bottom: 39px;
+    font-size: 15px;
+    line-height: 21px;
+  }
+
+  .project-card h3 {
+    margin-bottom: 15px;
+    font-size: 24px;
+  }
+
+  /* Пропорция вместо высоты: на любой ширине экрана кадр остаётся тем же,
+     что нарисован, и не зависит от размера исходного файла. */
+  .project-card__media {
+    height: auto;
+    aspect-ratio: 334 / 216;
+  }
+
+  .project-card__arrow {
+    width: 54px;
+    height: 54px;
+  }
+
+  .project-card p {
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .projects__button--adaptive {
+    margin-top: 30px;
   }
 
   .services {
