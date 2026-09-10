@@ -2385,17 +2385,75 @@ body.menu-closing .hero__descriptor {
     --mobile-section-padding: 50px;
   }
 
+  /* Подвал по макету телефона: линия над меню, все ссылки одного размера,
+     телефон и почта в общем столбце, вторая линия перед правовыми ссылками.
+     Жёстких высот нет — подвал считается от содержимого, min-height только
+     повторяет макет. */
+  .footer {
+    min-height: 768px;
+    padding: 40px 0;
+  }
+
+  .footer__nav {
+    margin: 40px 15px 0;
+    padding-top: 30px;
+    border-top: 1px solid var(--blue);
+  }
+
+  .footer__nav nav {
+    gap: 14px;
+  }
+
+  .footer__nav a {
+    font-size: 13px;
+    line-height: 15px;
+  }
+
+  .footer__socials {
+    gap: 14px;
+    margin-top: 30px;
+  }
+
+  .footer__contacts {
+    margin: 32px 0 auto;
+    padding: 0 15px;
+    border-top: 0;
+  }
+
+  .footer__contacts > div:first-child {
+    gap: 14px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 15px;
+  }
+
+  .footer__legal {
+    gap: 14px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid var(--blue);
+    font-size: 13px;
+    line-height: 15px;
+  }
+
   /* Правовые ссылки на телефоне переносятся сами, как в макете. Жёсткие
      переносы из разметки нужны широким экранам, где колонка узкая; на
-     345 px они дают не ту разбивку, что нарисована. */
+     245 px они дают не ту разбивку, что нарисована. */
   .footer__legal a {
     display: block;
+    max-width: 245px;
     height: auto;
   }
 
   .footer__legal-line {
     display: inline;
     white-space: normal;
+  }
+
+  .footer__copyright {
+    margin: 30px 0 0 15px;
+    font-size: 13px;
+    line-height: 18px;
   }
 
   .company-intro {
