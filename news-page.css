@@ -346,23 +346,28 @@
     padding: 40px 15px 97px;
   }
 
+  /* Фильтры по макету телефона: строка 22, зазор 12, снизу отбивка 40 и
+     линия во всю ширину. Высота блока считается от содержимого — категорий
+     из админки может стать больше или меньше. */
   .news-page__categories {
     position: static;
     display: flex;
     width: 100%;
-    min-height: 220px;
+    min-height: 0;
     flex-direction: column;
-    gap: 10px;
-    padding: 30px 0 0;
+    gap: 12px;
+    padding: 0 0 40px;
     border: 0;
+    border-bottom: 1px solid var(--dark);
   }
 
   .news-page__categories-sticky { display: contents; }
 
   .news-page__category {
     width: 100%;
-    min-height: 33px;
-    font-size: 25px;
+    min-height: 22px;
+    font-size: 22px;
+    line-height: 1;
   }
 
   .news-page__list {
